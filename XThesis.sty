@@ -1,26 +1,24 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%  Original Author: Dalhousie University thesis style
-%  Changed in October 2006 by Markus Hofmann - Institute of Technology Blanchardstown
-%  Email: markus.hofmann@itb.ie
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \typeout{Document Style Option `ITBthesis'.}
 
-
-
 % Define the page heading to be page number only.
-\newcommand{\properpagestyle}{
+\newcommand{\properpagestyle}{\pagestyle{myheadings}\markboth{}{}\markright{}}
 
-      \pagestyle{myheadings}\markboth{}{}\markright{}}
-
-
-\@ifundefined{chapter}{\@latexerr{The `ITBthesis' option should be used with the `report' document
-style}{You should probably read the ITBthesis documentation.}}{}
+\@ifundefined{chapter}{
+	\@latexerr
+	{The `ITBthesis' option should be used with the `report' document style}
+	{You should probably read the ITBthesis documentation.}
+}{}
 
 % We need 1" margins except on the binding edge, where it is 1 1/2"
 % Theses are single-sided, so we don't care about \evensidemargin
-\oddsidemargin 1.2cm \evensidemargin 0in \marginparwidth 40pt \marginparsep 10pt \topmargin 0cm
-\headsep 0.8cm \textheight 21.7cm \textwidth 15.5cm
+\oddsidemargin 1.2cm
+\evensidemargin 0in
+\marginparwidth 40pt
+\marginparsep 10pt
+\topmargin 0cm
+\headsep 0.8cm
+\textheight 21.7cm
+\textwidth 15.5cm
 
 % Disallow page breaks at hyphens (this will give some underfull vbox's,
 % so an alternative is to use \brokenpenalty=100 and manually search
@@ -34,31 +32,52 @@ style}{You should probably read the ITBthesis documentation.}}{}
 % so that single spacing is used.
 % (Note \def\figure{\@float{figure}set single spacing} doesn't work
 %  because figure has an optional argument)
-\def\@xfloat#1[#2]{\ifhmode \@bsphack\@floatpenalty -\@Mii\else
-   \@floatpenalty-\@Miii\fi\def\@captype{#1}\ifinner
-      \@parmoderr\@floatpenalty\z@
-    \else\@next\@currbox\@freelist{\@tempcnta\csname ftype@#1\endcsname
-       \multiply\@tempcnta\@xxxii\advance\@tempcnta\sixt@@n
-       \@tfor \@tempa :=#2\do
-            {\if\@tempa h\advance\@tempcnta \@ne\fi
-             \if\@tempa t\advance\@tempcnta \tw@\fi
-             \if\@tempa b\advance\@tempcnta 4\relax\fi
-             \if\@tempa p\advance\@tempcnta 8\relax\fi
-     }\global\count\@currbox\@tempcnta}\@fltovf\fi
-    \global\setbox\@currbox\vbox\bgroup
-    \def\baselinestretch{1}\@normalsize
-    \boxmaxdepth\z@
-    \hsize\columnwidth \@parboxrestore}
+\def\@xfloat#1[#2]{
+	\ifhmode
+		\@bsphack\@floatpenalty -\@Mii
+	\else
+		\@floatpenalty-\@Miii
+	\fi
+	\def\@captype{#1}
+	\ifinner
+		\@parmoderr\@floatpenalty\z@
+	\else
+		\@next\@currbox\@freelist{
+			\@tempcnta\csname ftype@#1\endcsname
+			\multiply\@tempcnta\@xxxii\advance\@tempcnta\sixt@@n
+			\@tfor \@tempa :=#2\do{
+				\if\@tempa h\advance\@tempcnta \@ne\fi
+				\if\@tempa t\advance\@tempcnta \tw@\fi
+				\if\@tempa b\advance\@tempcnta 4\relax\fi
+				\if\@tempa p\advance\@tempcnta 8\relax\fi
+			}
+			\global\count\@currbox\@tempcnta
+		}
+		\@fltovf
+	\fi
+	\global\setbox\@currbox\vbox\bgroup
+	\def\baselinestretch{1}\@normalsize
+	\boxmaxdepth\z@
+	\hsize\columnwidth \@parboxrestore
+}
 
 % Redefine the macro used for footnotes to use single spacing
-\long\def\@footnotetext#1{\insert\footins{\def\baselinestretch{1}\footnotesize
-    \interlinepenalty\interfootnotelinepenalty
-    \splittopskip\footnotesep
-    \splitmaxdepth \dp\strutbox \floatingpenalty \@MM
-    \hsize\columnwidth \@parboxrestore
-   \edef\@currentlabel{\csname p@footnote\endcsname\@thefnmark}\@makefntext
-    {\rule{\z@}{\footnotesep}\ignorespaces
-      #1\strut}}}
+\long\def\@footnotetext#1{
+	\insert\footins{
+		\def\baselinestretch{1}\footnotesize
+		\interlinepenalty\interfootnotelinepenalty
+		\splittopskip\footnotesep
+		\splitmaxdepth \dp\strutbox \floatingpenalty \@MM
+		\hsize\columnwidth \@parboxrestore
+		\edef\@currentlabel{
+			\csname p@footnote\endcsname\@thefnmark
+		}
+		\@makefntext{
+			\rule{\z@}{\footnotesep}\ignorespaces
+			#1\strut
+		}
+	}
+}
 
 % \author, \title are defined in report; here are the rest of the
 % front matter defining macros
@@ -92,30 +111,38 @@ style}{You should probably read the ITBthesis documentation.}}{}
 \def\@supervisor{}\def\@firstreader{}\def\@secondreader{}
 \def\@thirdreader{}\def\@fourthreader{}\def\@fifthreader{}
 \def\@examiner{}
-\def\@submitdate{\ifcase\the\month\or
-  January\or February\or March\or April\or May\or June\or
-  July\or August\or September\or October\or November\or December\fi
-  \space \number\the\year}
+\def\@submitdate{
+	\ifcase
+		\the\month\or January\or February\or March\or April\or May\or June\or July\or August\or September\or October\or November\or December
+	\fi
+	\space
+	\number\the\year
+}
 \def\@copyrightyear{\number\the\year}
 
 \def\convocation#1#2{\gdef\@convocationmonth{#1}\gdef\@convocationyear{#2}}
 \def\@convwarn{\typeout{Warning!  Convocation date may be incorrect!}}
-\ifnum\month<5
-   \def\@convocationmonth{May}
-   \def\@convocationyear{\number\the\year\@convwarn}
-\else\ifnum\month<10
-   \def\@convocationmonth{October}
-   \def\@convocationyear{\number\the\year\@convwarn}
+\ifnum \month<5
+	\def\@convocationmonth{May}
+	\def\@convocationyear{\number\the\year\@convwarn}
 \else
-   \def\@convocationmonth{February}
-   \@tempcnta=\year  \advance\@tempcnta by 1
-   \def\@convocationyear{\number\the\@tempcnta\@convwarn}
-\fi\fi
+	\ifnum \month<10
+		\def\@convocationmonth{October}
+		\def\@convocationyear{\number\the\year\@convwarn}
+	\else
+		\def\@convocationmonth{February}
+		\@tempcnta=\year  \advance\@tempcnta by 1
+		\def\@convocationyear{\number\the\@tempcnta\@convwarn}
+	\fi
+\fi
 
 \def\dedicate#1{\dedic@tiontrue\gdef\dedication@text{#1}}
 
-\def\draft{\renewcommand{\properpagestyle}{\pagestyle{myheadings}
-\markright{{\rm Draft Version -- \today}}}\draft@modetrue\properpagestyle}
+\def\draft{\renewcommand{\properpagestyle}{
+		\pagestyle{myheadings}
+		\markright{{\rm Draft Version -- \today}}
+	}
+	\draft@modetrue\properpagestyle}
 \def\nobib{\print@bibfalse}
 \def\nolistoffigures{\figurespagefalse}
 \def\nolistoftables{\tablespagefalse}
@@ -135,190 +162,201 @@ style}{You should probably read the ITBthesis documentation.}}{}
 \newif\ifprint@bib      \print@bibtrue
 \newif\ifdedic@tion     \dedic@tionfalse
 
-\def\no@breaks#1{{\def\\{ \ignorespaces}#1}}    % disallow explicit line breaks
+\def\no@breaks#1{{\def\\{\ignorespaces}#1}}    % disallow explicit line breaks
 
-\def\titlep{%
-    \thispagestyle{empty}%
-    \ifdraft@mode
-      \begin{center} \Large DRAFT COPY\\ \large Printed \today \end{center}
-    \fi
-    \null\vskip0.5in
-    \begin{center}
-        \hyphenpenalty=10000\Large\uppercase\expandafter{\@title}
-    \end{center}
-    \vfill
-    \begin{center}
-        \large\rm By\\
-       \Large \@author
-    \end{center}
-    \vfill
-    \begin{center}
-    \large Supervisor(s): \expandafter{\@supervisor}
-    \end{center}
- \vskip0.5in
-    \begin{center}
-        \footnotesize SUBMITTED IN PARTIAL FULFILLMENT OF THE \\
-        REQUIREMENTS FOR THE DEGREE OF \\
-        \uppercase\expandafter{\@degree} \\
-        AT \\
-        \uppercase\expandafter{\@university} \\
-        \uppercase\expandafter{\@address} \\
-        \uppercase\expandafter{\@submitdate}
-    \end{center}
-    \vskip0.25in
-  %  \begin{center}
-   %     \rm \copyright\ Copyright by \@author, \@copyrightyear
-  %  \end{center}
-  \newpage}
-   % \setcounter{page}{2}
+\def\titlep{
+	\thispagestyle{empty}
+	\ifdraft@mode
+		\begin{center} \Large DRAFT COPY\\ \large Printed \today \end{center}
+	\fi
+	\null\vskip0.5in
+	\begin{center}
+		\hyphenpenalty=10000\Large\uppercase\expandafter{\@title}
+	\end{center}
+	\vfill
+	\begin{center}
+		\large\rm By\\
+		\Large \@author
+	\end{center}
+	\vfill
+	\begin{center}
+		\large Supervisor(s): \expandafter{\@supervisor}
+	\end{center}
+	\vskip0.5in
+	\begin{center}
+		\footnotesize SUBMITTED IN PARTIAL FULFILLMENT OF THE \\
+		REQUIREMENTS FOR THE DEGREE OF \\
+		\uppercase\expandafter{\@degree} \\
+		AT \\
+		\uppercase\expandafter{\@university} \\
+		\uppercase\expandafter{\@address} \\
+		\uppercase\expandafter{\@submitdate}
+	\end{center}
+	\vskip0.25in
+	%  \begin{center}
+	%     \rm \copyright\ Copyright by \@author, \@copyrightyear
+	%  \end{center}
+	\newpage}
+% \setcounter{page}{2}
 
-\def\signature#1#2{\parbox[b]{1in}{\smash{#1}\vskip12pt}
-\hfill \parbox[t]{3in}{\shortstack{\vrule width 3in height 0.4pt\\\small#2}}}
-
-
-
- \def\signaturepage{%
-    \setcounter{page}{2}
-    \vskip1.75in
-    \begin{quotation}
-
-    \hyphenpenalty=10000
-    \parindent=36pt
-     \null \vskip0.2in plus 1fill minus 1.1in
-    \noindent \textbf{Declaration} \\
-\vskip0.2in
-
-    I herby certify that this material, which I now submit for assessment on the programme of study leading to
-    the award of \textbf{ \@degree} in the Institute of Technology Blanchardstown, is
-    entirely my own work except where otherwise stated, and has not been submitted for assessment for an academic
-    purpose at this or any other academic institution other than in partial fulfillment of the requirements of that
-    stated above.
-   \vskip1.2in
-    \begin{flushright}
-    Dated:  \@submitdate\
-    \end{flushright}
-
-    \iffourth@reader
-        \def\sigskip{\vskip0.15in plus 0.2in minus 0.1in}
-        \def\beginskip{\vskip0.3875in plus 0.2in minus 0.1in}
-    \else
-        \def\sigskip{\vskip0.4in plus 0.1in}
-        \def\beginskip{\vskip0.5875in plus 0.1in}
-    \fi
-
-    \ifph@d
-
-        \beginskip
-        \signature{Author:}{\@author} \\
-
-
-    \else % not Ph.D. degree:
-        \beginskip
-         \signature{Author:}{\@author} \\
-        \iftwo@supervisors
-      %    \signature{Supervisors:}{\@supervisor} \\
-      %    \sigskip \signature{}{\@firstreader} \\
-          \ifthird@reader
-       %     \sigskip \signature{Readers:}{\@secondreader} \\
-          \else
-     %       \sigskip \signature{Reader:}{\@secondreader} \\
-          \fi
-        \else
-     %     \signature{Supervisor:}{\@supervisor} \\
-     %     \sigskip \signature{Readers:}{\@firstreader} \\
-      %    \sigskip \signature{}{\@secondreader} \\
-        \fi
-    \fi
-
-        \ifthird@reader
-      %    \sigskip \signature{}{\@thirdreader} \\
-        \fi
-
-        \iffourth@reader
-       %   \sigskip \signature{}{\@fourthreader} \\
-        \fi
-
-        \iffifth@reader
-        %  \sigskip \signature{}{\@fifthreader} \\
-        \fi
-
-    \end{quotation}
-    \vfill\newpage\setcounter{page}{2} }
-
-
-
-\def\permissionpage{%
-    {\newpage \parindent=0.75in \hyphenpenalty=10000
-
-
-\include{./sections/abstract}
-
-    \bigskip
-    \def\baselinestretch{1.3}\@normalsize
-    \parindent=36pt
-
-\newpage \parindent=0.75in \hyphenpenalty=10000
-{ \typeout{Acknowledgements}
-\include{./sections/acknowledgement} %write your acknowledgements in a file called acknowledgement.tex
+\def\signature#1#2{
+	\parbox[b]{1in}{\smash{#1}\vskip12pt}
+	\hfill \parbox[t]{3in}{
+		\shortstack{\vrule width 3in height 0.4pt\\\small#2}
+	}
 }
 
+\def\signaturepage{
+	\setcounter{page}{2}
+	\vskip1.75in
+	\begin{quotation}
+		\hyphenpenalty=10000
+		\parindent=36pt
+		\null \vskip0.2in plus 1fill minus 1.1in
+		\noindent \textbf{Declaration} \\
+		\vskip0.2in
+		I herby certify that this material, which I now submit for assessment on the programme of study leading to
+		the award of \textbf{ \@degree} in the Institute of Technology Blanchardstown, is
+		entirely my own work except where otherwise stated, and has not been submitted for assessment for an academic
+		purpose at this or any other academic institution other than in partial fulfillment of the requirements of that
+		stated above.
+		\vskip1.2in
+		\begin{flushright}
+			Dated:  \@submitdate\
+		\end{flushright}
+		\iffourth@reader
+			\def\sigskip{\vskip0.15in plus 0.2in minus 0.1in}
+			\def\beginskip{\vskip0.3875in plus 0.2in minus 0.1in}
+		\else
+			\def\sigskip{\vskip0.4in plus 0.1in}
+			\def\beginskip{\vskip0.5875in plus 0.1in}
+		\fi
 
-    } \vfill}
+		\ifph@d
+			\beginskip
+			\signature{Author:}{\@author} \\
+		\else % not Ph.D. degree:
+			\beginskip
+			\signature{Author:}{\@author} \\
+			\iftwo@supervisors
+				%    \signature{Supervisors:}{\@supervisor} \\
+				%    \sigskip \signature{}{\@firstreader} \\
+				\ifthird@reader
+					%     \sigskip \signature{Readers:}{\@secondreader} \\
+				\else
+					%       \sigskip \signature{Reader:}{\@secondreader} \\
+				\fi
+			\else
+				%     \signature{Supervisor:}{\@supervisor} \\
+				%     \sigskip \signature{Readers:}{\@firstreader} \\
+				%    \sigskip \signature{}{\@secondreader} \\
+			\fi
+		\fi
 
+		\ifthird@reader
+			%    \sigskip \signature{}{\@thirdreader} \\
+		\fi
 
+		\iffourth@reader
+			%   \sigskip \signature{}{\@fourthreader} \\
+		\fi
 
+		\iffifth@reader
+			%  \sigskip \signature{}{\@fifthreader} \\
+		\fi
 
+	\end{quotation}
+	\vfill\newpage\setcounter{page}{2}
+}
+
+\def\permissionpage{
+{
+\newpage
+\parindent=0.75in
+\hyphenpenalty=10000
+\include{./sections/abstract}
+\bigskip
+\def\baselinestretch{1.3}\@normalsize
+\parindent=36pt
+\newpage \parindent=0.75in
+\hyphenpenalty=10000
+{
+\typeout{Acknowledgements}
+include{./sections/acknowledgement} %write your acknowledgements in a file called acknowledgement.tex
+}
+}
+\vfill
+}
 
 \def\beforepreface{
-\typeout{Most over/underfulls in first few pages are the fault of dalthesis.} \typeout{Ignore all
-them.  If uncorrectable errors occur, notify staff.}
-    \pagenumbering{roman}
-    \pagestyle{plain}
-    \titlep
-    \iffront@pages\signaturepage\else\addtocounter{page}{1}\fi
-    \ifpermission\permissionpage\else\addtocounter{page}{1}\fi
-    \iffront@pages\ifdedic@tion
-        \newpage\begin{center}\Large\em\null\vskip1in
-        \dedication@text
-        \vfill\end{center}
-    \fi\fi
-    \iffront@pages\tableofcontents\else\addtocounter{page}{1}\fi
-    \newpage
-    \iftablespage
-        \addcontentsline{toc}{chapter}{List of Tables}\listoftables
-        \newpage
-    \fi
-    \iffigurespage
-        \addcontentsline{toc}{chapter}{List of Figures}\listoffigures
-        \newpage
-    \fi
-    }
+	\typeout{Most over/underfulls in first few pages are the fault of dalthesis.}
+	\typeout{Ignore all them.  If uncorrectable errors occur, notify staff.}
+	\pagenumbering{roman}
+	\pagestyle{plain}
+	\titlep
+	\iffront@pages
+		\signaturepage
+	\else
+		\addtocounter{page}{1}
+	\fi
+	\ifpermission
+		\permissionpage
+	\else
+		\addtocounter{page}{1}
+	\fi
+	\iffront@pages
+		\ifdedic@tion
+			\newpage\begin{center}\Large\em\null\vskip1in
+				\dedication@text
+				\vfill\end{center}
+		\fi
+	\fi
+	\iffront@pages
+		\tableofcontents
+	\else
+		\addtocounter{page}{1}
+	\fi
+	\newpage
+	\iftablespage
+		\addcontentsline{toc}{chapter}{List of Tables}
+        \listoftables
+		\newpage
+	\fi
+	\iffigurespage
+		\addcontentsline{toc}{chapter}{List of Figures}
+        \listoffigures
+		\newpage
+	\fi
+}
 
-\def\nonumchapter#1{%
-    \chapter*{#1}
-    \addcontentsline{toc}{chapter}{#1}}
+\def\nonumchapter#1{
+	\chapter*{#1}
+	\addcontentsline{toc}{chapter}{#1}
+}
 
-\def\prefacesection#1{%
-    \chapter*{#1}
-    \addcontentsline{toc}{chapter}{#1}}
+\def\prefacesection#1{
+	\chapter*{#1}
+	\addcontentsline{toc}{chapter}{#1}
+}
 
-\newenvironment{dedication}{\newpage\begin{center}\Large\em\null\vskip1in}%
-{\vfill\end{center}}
+\newenvironment{dedication}{
+	\newpage\begin{center}\Large\em\null\vskip1in
+		}{\vfill\end{center}}
 
-
-\def\afterpreface{\newpage
-    \pagenumbering{arabic}
-    \typeout{Dalthesis preface pages completed.}
-    \properpagestyle}
-
+\def\afterpreface{
+	\newpage
+	\pagenumbering{arabic}
+	\typeout{Dalthesis preface pages completed.}
+	\properpagestyle
+}
 
 % Redefine \thebibliography to go to a new page and put an entry in the
 % table of contents
 \let\@ldthebibliography\thebibliography
-\renewcommand{\thebibliography}[1]{%
-    \newpage
-    \addcontentsline{toc}{chapter}{Bibliography}
-    \@ldthebibliography{#1}
+\renewcommand{\thebibliography}[1]{
+	\newpage
+	\addcontentsline{toc}{chapter}{Bibliography}
+	\@ldthebibliography{#1}
 }
 
 \let\@ldbibliography\bibliography
