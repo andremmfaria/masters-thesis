@@ -499,8 +499,8 @@
 			hypertexnames=false,
 			colorlinks=true,% Set to false to disable coloring links
 			citecolor=magenta,% The color of citations
-			linkcolor=red,% The color of references to document elements (sections, figures, etc)
-			urlcolor=mdtRed,% The color of hyperlinks (URLs)
+			linkcolor=black,% The color of references to document elements (sections, figures, etc)
+			urlcolor=blue,% The color of hyperlinks (URLs)
 			pdfstartview={FitV},
 			unicode,
 			breaklinks=true,
