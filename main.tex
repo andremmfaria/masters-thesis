@@ -287,11 +287,22 @@ headsepline, % Uncomment to get a line under the header
 % Include the chapters of the thesis as separate files from the Chapters folder
 % Uncomment the lines as you write the chapters
 
-\include{./chapter/Chapter1}
-%\include{./chapter/Chapter2} 
-%\include{./chapter/Chapter3}
-%\include{./chapter/Chapter4} 
-%\include{./chapter/Chapter5} 
+%----------------------------------------------------------------------------------------
+
+% Define some commands to keep the formatting separated from the content 
+\newcommand{\keyword}[1]{\textbf{#1}}
+\newcommand{\tabhead}[1]{\textbf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\file}[1]{\texttt{\bfseries#1}}
+\newcommand{\option}[1]{\texttt{\itshape#1}}
+
+%----------------------------------------------------------------------------------------
+
+\include{./chapter/chapter1}
+\include{./chapter/chapter2} 
+\include{./chapter/chapter3}
+\include{./chapter/chapter4} 
+\include{./chapter/chapter5} 
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - APPENDICES
@@ -302,9 +313,7 @@ headsepline, % Uncomment to get a line under the header
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
 
-\include{./appendice/AppendixA}
-%\include{./appendice/AppendixB}
-%\include{./appendice/AppendixC}
+\include{./appendice/appendix}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
