@@ -1,88 +1,174 @@
 % Chapter 1
 
-\chapter{Introduction and Background}
+\chapter{Introduction}
 \label{sec:introduction}
 
 \label{Chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
-\section{Before You Begin}
-!!IMPORTANT!!: before you begin this research, be sure that you are familiar with the University's policy on Academic Integrity: \url{https://www.tudublin.ie/explore/about-the-university/academic-affairs/academic-quality-assurance-and-enhancement/academic-integrity/}
+This is the introduction of the thesis.
 
-Also, read the important advice on receiving Feedback, Proofreading and the use
-of Writing Assistants in Appendix \ref{app:feedback}, \ref{app:proofreading} \&
-\ref{App:writing_assist}.
+\section{Background}
+Ever since the creation of the first computer by Charles Babbage in the 19th century, computers
+have been evolving at a rapid pace performing more and more tasks as the time passes. With this
+evolution, some people began to notice that manners in which to subvert the established systems.
+These individuals, by force of belief or personal gain, have caused losses in the trillions to
+organizations and individuals across the globe.
 
-\section{Section Introduction}
-%always begin a section with an introduction and end it with a summery
-A thesis is built up of a series of chapters that construct a substantiated and
-convincing response to the research question(s). Typically, a thesis contains
-the following chapters: an introduction; a literature review; a description of
-methodology; a report and discussion of results; and a conclusion. A thesis may
-have five to eight chapters depending on the nature of the study, the required
-word count and the requirements of the degree.
+As a response to these threats, these organizations and/or individuals began to develop techniques
+and tools to counter malicious actions. It has then, started the cat-and-mouse race between
+criminals and agents of the law. One of these techniques revolves around the analysis of what
+software adversaries develop to understand how they operate and the vulnerabilities they exploit to
+weaken or outright topple established security systems.
 
-\subsection{About the Introduction Chapter}
-An introduction is crucial to setting the tone of your thesis – it is the first
-impression you’ll make on your readers (assessors). Briefly, it presents the
-purpose, context and scope of your research. Likewise, a conclusion is just as
-crucial – it is the lasting impression you’ll make on your readers (assessors).
-Not only does it give a summary of your thesis, but should provide a clear,
-convincing answer to your research question(s).
-\subsection{Subsection header 2}
-After introducing your work, you should list your research questions,
-hypothesis, and objectives.
+As a basis, there are two types of analysis of software that can be made to understand any kind of
+software. These are as follows:
+\begin{itemize}
+	\item \textbf{Static Analysis}: Focuses on looking at the sequences of individual instructions on the software
+	      bytecode to identify the its characteristics, such as identification of the parameters in which the
+	      analyzed software is built upon (e.g. Operating system it executes on, processor architecture,
+	      etc), what execution paths it employs, what system calls it performs, etc. This analysis is done
+	      without running the code and it requires a lot of time and effort from the analyst.
+	\item \textbf{Dynamic Analysis}: Entails running the malware to gather runtime information such as network calls
+	      and system call execution data. This analysis is done by creating a special environment to have the
+	      analyzed software to run and gather the mentioned data.
+\end{itemize}
 
-Always keep in mind the meaning of the word ``\textit{Thesis}''. That is: a
-thesis is a statement or theory that is put forward as a premise to be
-maintained or proved. A Hypo\textit{thesis} then, is a sub-thesis, or a smaller
-part of the overarching thesis.
+The
 
-All of your research questions must aim to prove or disprove your thesis.. and
-thus your hypotheses.
+\section{Definitions}
+Here are defined all of the concepts and/or tools that are mentioned on this document.
 
-See more here: \url{https://www.statconsul.com/research-questions.php}
-\subsection{Subsection header 3}
-The last thing you do in an Introduction Chapter is to outline the contents of
-your thesis, i.e., a review of then literature is provided in Chapter
-\ref{sec:LitReview}, starting with... etc... Chapter \ref{sec:Method} provides
-a description of the method... etc...
+\subsection{Large Language Models}
+Large Language Models (LLMs) are a type of multi-parameter Machine Learning (ML) algorithm designed
+for natural language processing. These models that are trained on a large volume of text using a
+multitude of learning techniques such as self-supervised learning.
+
+Generative pre-trained transformers (GPTs) are the biggest and most powerful LLMs. Current models
+can be adapted to certain tasks (via fine-tuning) or directed by prompt engineering
+	[\cite{brown2020languagemodelsfewshotlearners}]. These models learn to predict the syntax,
+semantics and ontologies found in human language, but they also pick up biases and errors from the
+training data [\cite{10.1162/daed_a_01905}]. Popular examples of LLMs include:
+\begin{itemize}
+	\item GPT models (like GPT-4 or ChatGPT)
+	\item Google's PaLM and Gemini
+	\item Meta Llama series models
+\end{itemize}
+
+\subsection{Retrieval-Augmented Generation}
+Retrieval-Augmented Generation (RAG) is a technique that allows for LLMs to query information from
+a specific type of datastore and use it as context for the response it provides. This allows for
+adaptive learning of the models without the need of retraining (fine-tuning). It improves the
+quality of LLM output as the model does not rely solely on pre-trained knowledge but also on
+relevant information from the datastore.
+
+RAG works by having the LLM to query the datastore using vector search, embeddings or keyword
+matching (depending on the datastore type), feeding this data onto the LLM input and then
+continuing with the normal LLM process for output generation.
+
+\subsection{Malware}
+Short for \textit{Malicious Software}, Malware is any program or code that is created for malicious
+purposes like exploitation of computer systems networks or users. Often created with monetary gain
+in mind, these programs activities include stealing sensitive data, damage system, disrupt
+operations or gain unauthorized access to systems or environments. Common types of malware include:
+\begin{itemize}
+	\item Viruses: Attach themselves to legitimate software, spreading when the software is run.
+	\item Worms: Spread automatically over networks, replicating rapidly without user intervention.
+	\item Trojans: Disguised as legitimate software, tricking users into installing them to enable
+	      unauthorized access.
+	\item Ransomware: Encrypts or locks files, demanding payment (ransom) for restoration.
+	\item Spyware: Secretly collects sensitive information like passwords or browsing activity.
+	\item Adware: Delivers unwanted advertisements, potentially slowing down or compromising systems.
+\end{itemize}
+
+\subsection{Malware analysis}
+
+\subsection{Static Malware Analysis}
 
 \vfill
 \includegraphics[width=\textwidth]{intro1.png}
 \vfill
 
-\section{More about the Introduction chapter}
-The introduction allows you to orient the reader to your research project and
-preview the organisation of your thesis. In the introduction, state what the
-topic is about, explain why it needs to be further researched and introduce
-your research question(s) or hypothesis.
+\section{Research questions and objectives}
 
-Whilst patterns of organisation in introductions vary, there are some common
-features that will help you to achieve an informative and engaging
-introduction. Let’s identify these features:
-
+\subsection{Questions}
+These are the research questions that will guide the development of this thesis.
 \begin{itemize}
-	\item Introduce the topic
-	\item Define key terms and concepts
-	\item Give background and context for the topic (this may include a brief literature
-	      review)
-	\item Review and evaluate the current state of knowledge in the topic (this may
-	      include a brief literature review)
-	\item Identify any gaps, shortcomings and problems in the research to date
-	\item Introduce your research question(s) or hypothesis
-	\item Briefly describe your methodology and/or theoretical approach
-	\item Explain the aim of your research and what contribution it will make to the
-	      topic
-	\item Give an overview of the chapter outline of the thesis.
+	\item How can LLMs be leveraged to enhance static malware analysis?
+	\item How does a RAG-enhanced LLM compare to traditional static analysis techniques in terms of accuracy,
+	      efficiency, and interpretability?
+	\item How does RAG improve the accuracy and explainability of malware classification using static
+	      features?
+	\item Can a RAG-based LLM framework provide actionable threat intelligence insights from external malware
+	      databases?
 \end{itemize}
 
-It’s important to note that, depending on your field of study and the faculty
-requirements of your thesis, not all of these features will be relevant. Also,
-these features may occur in varied orders.
+\subsection{Objectives}
+\begin{itemize}
+	\item Develop a methodology for integrating LLMs with RAG to enhance static malware analysis.
+	\item Evaluate the effectiveness of RAG-enhanced LLMs in identifying and explaining malware threats using
+	      static features (e.g., file structure, bytecode, API calls).
+	\item Compare the proposed RAG-enhanced LLM-based approach against traditional static malware analysis
+	      techniques in terms of accuracy, efficiency, and interpretability identifying challenges and
+	      potential risks (e.g. adversarial manipulation and hallucination).
+\end{itemize}
 
-Most people write many drafts of their introduction. It can be useful to write
-one early in the research process to clarify your thinking. You will need to
-write a version for your confirmation proposal and other milestones. As your
-research progresses and your ideas develop, you will need to revise it. When
-the final draft of chapters is complete, check the introduction once more to
-make sure that it accurately reflects what you have actually done.
+% \section{Section Introduction}
+% %always begin a section with an introduction and end it with a summery
+% A thesis is built up of a series of chapters that construct a substantiated and convincing response
+% to the research question(s). Typically, a thesis contains the following chapters: an introduction;
+% a literature review; a description of methodology; a report and discussion of results; and a
+% conclusion. A thesis may have five to eight chapters depending on the nature of the study, the
+% required word count and the requirements of the degree.
+
+% \subsection{About the Introduction Chapter}
+% An introduction is crucial to setting the tone of your thesis – it is the first impression you’ll
+% make on your readers (assessors). Briefly, it presents the purpose, context and scope of your
+% research. Likewise, a conclusion is just as crucial – it is the lasting impression you’ll make on
+% your readers (assessors). Not only does it give a summary of your thesis, but should provide a
+% clear, convincing answer to your research question(s).
+% \subsection{Subsection header 2}
+% After introducing your work, you should list your research questions, hypothesis, and objectives.
+
+% Always keep in mind the meaning of the word ``\textit{Thesis}''. That is: a thesis is a statement
+% or theory that is put forward as a premise to be maintained or proved. A Hypo\textit{thesis} then,
+% is a sub-thesis, or a smaller part of the overarching thesis.
+
+% All of your research questions must aim to prove or disprove your thesis.. and thus your
+% hypotheses.
+
+% See more here: \url{https://www.statconsul.com/research-questions.php}
+% \subsection{Subsection header 3}
+% The last thing you do in an Introduction Chapter is to outline the contents of your thesis, i.e., a
+% review of then literature is provided in Chapter \ref{sec:LitReview}, starting with... etc...
+% Chapter \ref{sec:Method} provides a description of the method... etc...
+
+% \section{More about the Introduction chapter}
+% The introduction allows you to orient the reader to your research project and preview the
+% organisation of your thesis. In the introduction, state what the topic is about, explain why it
+% needs to be further researched and introduce your research question(s) or hypothesis.
+
+% Whilst patterns of organisation in introductions vary, there are some common features that will
+% help you to achieve an informative and engaging introduction. Let’s identify these features:
+
+% \begin{itemize}
+% 	\item Introduce the topic
+% 	\item Define key terms and concepts
+% 	\item Give background and context for the topic (this may include a brief literature review)
+% 	\item Review and evaluate the current state of knowledge in the topic (this may include a brief
+% 	      literature review)
+% 	\item Identify any gaps, shortcomings and problems in the research to date
+% 	\item Introduce your research question(s) or hypothesis
+% 	\item Briefly describe your methodology and/or theoretical approach
+% 	\item Explain the aim of your research and what contribution it will make to the topic
+% 	\item Give an overview of the chapter outline of the thesis.
+% \end{itemize}
+
+% It’s important to note that, depending on your field of study and the faculty requirements of your
+% thesis, not all of these features will be relevant. Also, these features may occur in varied
+% orders.
+
+% Most people write many drafts of their introduction. It can be useful to write one early in the
+% research process to clarify your thinking. You will need to write a version for your confirmation
+% proposal and other milestones. As your research progresses and your ideas develop, you will need to
+% revise it. When the final draft of chapters is complete, check the introduction once more to make
+% sure that it accurately reflects what you have actually done.

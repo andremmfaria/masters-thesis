@@ -49,7 +49,7 @@ headsepline, % Uncomment to get a line under the header
 %	THESIS INFORMATION
 %----------------------------------------------------------------------------------------
 
-\thesistitle{Automated Malware Analysis Using Large Language Models} % Your thesis title, this is used in the title and abstract, print it elsewhere with \ttitle
+\thesistitle{Enhancing Static Malware Analysis with Large Language Models and Retrieval-Augmented Generation} % Your thesis title, this is used in the title and abstract, print it elsewhere with \ttitle
 \supervisor{Dr Robert G \textsc{Smith}} % Your supervisor's name, this is used in the title page, print it elsewhere with \supname
 \examiner{} % Your examiner's name, this is not currently used anywhere in the template, print it elsewhere with \examname
 \degree{M.Sc} % Your degree name, this is used in the title page and abstract, print it elsewhere with \degreename
@@ -67,6 +67,8 @@ headsepline, % Uncomment to get a line under the header
 \hypersetup{pdfauthor=\authorname} % Set the PDF's author to your name
 \hypersetup{pdfkeywords=\keywordnames} % Set the PDF's keywords to your keywords
 }
+
+\pagecolor{gray}
 
 \begin{document}
 
@@ -127,19 +129,16 @@ headsepline, % Uncomment to get a line under the header
 	\noindent I, \authorname, declare that this thesis titled, \enquote{\ttitle} and the work presented in it are my own. I confirm that:
 
 	\begin{itemize}
-		\item This work was done wholly or mainly while in candidature for a research degree
-		      at this Institute of Technology Blanchardstown.
-		\item Where any part of this thesis has previously been submitted for a degree or any
-		      other qualification at this University or any other institution, this has been
-		      clearly stated.
-		\item Where I have consulted the published work of others, this is always clearly
-		      attributed.
-		\item Where I have quoted from the work of others, the source is always given. With
-		      the exception of such quotations, this thesis is entirely my own work.
+		\item This work was done wholly or mainly while in candidature for a research degree at this Institute of
+		      Technology Blanchardstown.
+		\item Where any part of this thesis has previously been submitted for a degree or any other qualification
+		      at this University or any other institution, this has been clearly stated.
+		\item Where I have consulted the published work of others, this is always clearly attributed.
+		\item Where I have quoted from the work of others, the source is always given. With the exception of such
+		      quotations, this thesis is entirely my own work.
 		\item I have acknowledged all main sources of help.
-		\item Where the thesis is based on work done by myself jointly with others, I have
-		      made clear exactly what was done by others and what I have contributed
-		      myself.\\
+		\item Where the thesis is based on work done by myself jointly with others, I have made clear exactly
+		      what was done by others and what I have contributed myself.\\
 	\end{itemize}
 
 	\noindent Signed:\\
@@ -157,7 +156,7 @@ headsepline, % Uncomment to get a line under the header
 
 \vspace*{0.2\textheight}
 
-\noindent\enquote{\itshape The true thesis are the friends we make along the way.}\bigbreak
+\noindent\enquote{\itshape The true masters are the friends we make along the way.}\bigbreak
 
 \hfill Anonymous
 
@@ -167,48 +166,75 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{abstract}
 	\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-	Despite the fact that an abstract is quite brief, it must do almost as much
-	work as the multi-page paper that follows it. In a computer science paper, this
-	means that it should in most cases include the following sections. Each section
-	is typically a single sentence, although there is room for creativity. In
-	particular, the parts may be merged or spread among a set of sentences. Use the
-	following as a checklist for your next abstract (URL:
-	http://www.ece.cmu.edu/~koopman/essays/abstract.html):
+	% Despite the fact that an abstract is quite brief, it must do almost as much
+	% work as the multi-page paper that follows it. In a computer science paper, this
+	% means that it should in most cases include the following sections. Each section
+	% is typically a single sentence, although there is room for creativity. In
+	% particular, the parts may be merged or spread among a set of sentences. Use the
+	% following as a checklist for your next abstract (URL:
+	% http://www.ece.cmu.edu/~koopman/essays/abstract.html):
 
-	\begin{description}
-	\item[Motivation:] Why do we care about the problem and the results? If the problem
-			isn't obviously "interesting" it might be better to put motivation first; but
-			if your work is incremental progress on a problem that is widely recognized as
-			important, then it is probably better to put the problem statement first to
-			indicate which piece of the larger problem you are breaking off to work on.
-			This section should include the importance of your work, the difficulty of the
-			area, and the impact it might have if successful.
-	\item[Problem statement:] What problem are you trying to solve? What is the scope of
-			your work (a generalized approach, or for a specific situation)? Be careful not
-			to use too much jargon. In some cases it is appropriate to put the problem
-			statement before the motivation, but usually this only works if most readers
-			already understand why the problem is important.
-	\item[Approach:] How did you go about solving or making progress on the problem? Did
-			you use simulation, analytic models, prototype construction, or analysis of
-			field data for an actual product? What was the extent of your work (did you
-			look at one application program or a hundred programs in twenty different
-			programming languages?) What important variables did you control, ignore, or
-			measure?
-	\item[Results:] What's the answer? Specifically, most good computer architecture
-			papers conclude that something is so many percent faster, cheaper, smaller, or
-			otherwise better than something else. Put the result there, in numbers. Avoid
-			vague, hand-waving results such as "very", "small", or "significant." If you
-			must be vague, you are only given license to do so when you can talk about
-			orders-of-magnitude improvement. There is a tension here in that you should not
-			provide numbers that can be easily misinterpreted, but on the other hand you
-			don't have room for all the caveats.
-	\item[Conclusions:] What are the implications of your answer? Is it going to change
-			the world (unlikely), be a significant "win", be a nice hack, or simply serve
-			as a road sign indicating that this path is a waste of time (all of the
-			previous results are useful). Are your results general, potentially
-			generalizable, or specific to a particular case?
+	Malware's quick growth presents serious cybersecurity concerns, necessitating ongoing innovation in
+	methods for detection, analysis, and mitigation. When it comes to handling complex and adaptable
+	threats, traditional malware analysis techniques, which mostly rely on manual labour and rule-based
+	systems, are progressively less effective. Large language models (LLMs) are a revolutionary way to
+	automate malware analysis, even though Artificial Intelligence (AI) approaches have been
+	effectively incorporated into cybersecurity. Current AI solutions, including machine learning
+	classifiers and clustering algorithms, concentrate on aspects of malware but frequently lack the
+	overall skills necessary to manage intricate datasets or fully understand virus behaviors.
 
-	\end{description}
+	This study suggests using LLMs to improve and automate static malware analysis. It seeks to
+	automate crucial components of malware reverse engineering, such as code analysis, possible
+	behavior interpretation and anomaly detection, by leveraging LLMs' capacity to handle and
+	synthesize massive, heterogeneous information. In addition to addressing the drawbacks of manual
+	and conventional AI techniques, this strategy adds scalability and adaptability to quickly changing
+	malware threats.
+
+	In order to optimize the efficacy of malware analysis in cybersecurity, this study proposes a
+	methodology that combines domain-specific datasets, such as malware sample databases, with prompt
+	engineering techniques to evaluate samples and identify parameters such as malware classification
+	categories and behavioral patterns on decompiled code. This approach is expected to provide a more
+	comprehensive and accurate analysis of malware samples, as well as to improve the overall
+	efficiency of malware analysis in cybersecurity.
+
+	Keywords: Malware Analysis, Large Language Models, Static Analysis, Cybersecurity, Artificial
+	Intelligence, Generative Artificial Intelligence, Machine Learning, Reverse Engineering, Anomaly
+	Detection, Code Analysis.
+
+	% \begin{description}
+	% 	\item[Motivation:] Why do we care about the problem and the results? If the problem
+	% 	      isn't obviously "interesting" it might be better to put motivation first; but
+	% 	      if your work is incremental progress on a problem that is widely recognized as
+	% 	      important, then it is probably better to put the problem statement first to
+	% 	      indicate which piece of the larger problem you are breaking off to work on.
+	% 	      This section should include the importance of your work, the difficulty of the
+	% 	      area, and the impact it might have if successful.
+	% 	\item[Problem statement:] What problem are you trying to solve? What is the scope of
+	% 	      your work (a generalized approach, or for a specific situation)? Be careful not
+	% 	      to use too much jargon. In some cases it is appropriate to put the problem
+	% 	      statement before the motivation, but usually this only works if most readers
+	% 	      already understand why the problem is important.
+	% 	\item[Approach:] How did you go about solving or making progress on the problem? Did
+	% 	      you use simulation, analytic models, prototype construction, or analysis of
+	% 	      field data for an actual product? What was the extent of your work (did you
+	% 	      look at one application program or a hundred programs in twenty different
+	% 	      programming languages?) What important variables did you control, ignore, or
+	% 	      measure?
+	% 	\item[Results:] What's the answer? Specifically, most good computer architecture
+	% 	      papers conclude that something is so many percent faster, cheaper, smaller, or
+	% 	      otherwise better than something else. Put the result there, in numbers. Avoid
+	% 	      vague, hand-waving results such as "very", "small", or "significant." If you
+	% 	      must be vague, you are only given license to do so when you can talk about
+	% 	      orders-of-magnitude improvement. There is a tension here in that you should not
+	% 	      provide numbers that can be easily misinterpreted, but on the other hand you
+	% 	      don't have room for all the caveats.
+	% 	\item[Conclusions:] What are the implications of your answer? Is it going to change
+	% 	      the world (unlikely), be a significant "win", be a nice hack, or simply serve
+	% 	      as a road sign indicating that this path is a waste of time (all of the
+	% 	      previous results are useful). Are your results general, potentially
+	% 	      generalizable, or specific to a particular case?
+
+	% \end{description}
 \end{abstract}
 
 %----------------------------------------------------------------------------------------
@@ -217,7 +243,13 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{acknowledgements}
 	\addchaptertocentry{\acknowledgementname} % Add the acknowledgements to the table of contents
-	The acknowledgments and the people to thank go here, don't forget to include your project advisor\ldots
+	Thanks for my parents that supported all of my bullshit over the years\ldots
+	\linebreak
+	\linebreak
+	Thanks to my supervisor, Dr Robert G Smith, for his guidance and support.
+	\linebreak
+	\linebreak
+	:D
 \end{acknowledgements}
 
 %----------------------------------------------------------------------------------------
@@ -236,8 +268,8 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{abbreviations}{ll} % Include a list of abbreviations (a table of two columns)
 
-	\textbf{LAH} & \textbf{L}ist \textbf{A}bbreviations \textbf{H}ere\\
-	\textbf{WSF} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or\\
+	\textbf{LLM} & \textbf{L}arge \textbf{L}anguage \textbf{M}odel(s)\\
+	\textbf{RAG} & \textbf{R}etrieval-\textbf{A}ugmented \textbf{G}eneration\\
 
 \end{abbreviations}
 
@@ -245,36 +277,30 @@ headsepline, % Uncomment to get a line under the header
 %	PHYSICAL CONSTANTS/OTHER DEFINITIONS
 %----------------------------------------------------------------------------------------
 
-\begin{constants}{lr@{${}={}$}l} % The list of physical constants is a three column table
+% \begin{constants}{lr@{${}={}$}l} % The list of physical constants is a three column table
 
-	% The \SI{}{} command is provided by the siunitx package, see its documentation for instructions on how to use it
+% 	% The \SI{}{} command is provided by the siunitx package, see its documentation for instructions on how to use it
 
-	Speed of Light & $c_{0}$ & \SI{2.99792458e8}{\meter\per\second} (exact)\\
-	%Constant Name & $Symbol$ & $Constant Value$ with units\\
+% 	Speed of Light & $c_{0}$ & \SI{2.99792458e8}{\meter\per\second} (exact)\\
+% 	%Constant Name & $Symbol$ & $Constant Value$ with units\\
 
-\end{constants}
+% \end{constants}
 
 %----------------------------------------------------------------------------------------
 %	SYMBOLS
 %----------------------------------------------------------------------------------------
 
-\begin{symbols}{lll} % Include a list of Symbols (a three column table)
+% \begin{symbols}{lll} % Include a list of Symbols (a three column table)
 
-	$a$ & distance & \si{\meter} \\
-	$P$ & power & \si{\watt} (\si{\joule\per\second}) \\
-	%Symbol & Name & Unit \\
+% 	$a$ & distance & \si{\meter} \\
+% 	$P$ & power & \si{\watt} (\si{\joule\per\second}) \\
+% 	%Symbol & Name & Unit \\
 
-	\addlinespace % Gap to separate the Roman symbols from the Greek
+% 	\addlinespace % Gap to separate the Roman symbols from the Greek
 
-	$\omega$ & angular frequency & \si{\radian} \\
+% 	$\omega$ & angular frequency & \si{\radian} \\
 
-\end{symbols}
-
-%----------------------------------------------------------------------------------------
-%	DEDICATION
-%----------------------------------------------------------------------------------------
-
-\dedicatory{For/Dedicated to/To my\ldots}
+% \end{symbols}
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - CHAPTERS
@@ -299,10 +325,10 @@ headsepline, % Uncomment to get a line under the header
 %----------------------------------------------------------------------------------------
 
 \include{./sections/chapters/chapter1-introduction-and-background}
-\include{./sections/chapters/chapter2-literature-review} 
+\include{./sections/chapters/chapter2-literature-review}
 \include{./sections/chapters/chapter3-methodology}
-\include{./sections/chapters/chapter4-discussion-of-results} 
-\include{./sections/chapters/chapter5-conclusion} 
+\include{./sections/chapters/chapter4-discussion-of-results}
+\include{./sections/chapters/chapter5-conclusion}
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - APPENDICES
