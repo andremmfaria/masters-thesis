@@ -212,7 +212,8 @@
 \newcommand{\HRule}{\rule{.9\linewidth}{.6pt}} % New command to make the lines in the title page
 \newcommand{\decoRule}{\rule{.8\textwidth}{.4pt}} % New command for a rule to be used under figures
 
-\setcounter{tocdepth}{3} % The depth to which the document sections are printed to the table of contents
+\setcounter{tocdepth}{5} % The depth to which the document sections are printed to the table of contents
+\setcounter{secnumdepth}{5} % The depth to which the document sections are numbered
 \ProvideDocumentCommand{\addchaptertocentry}{ m }{%
 	\addcontentsline{toc}{chapter}{#1}%
 }
@@ -242,7 +243,9 @@
 %	PENALTIES
 %----------------------------------------------------------------------------------------
 
-\doublehyphendemerits=10000 % No consecutive line hyphens
+% \hyphenpenalty=10000 % Prevent hyphenation
+% \exhyphenpenalty=10000 % Prevent hyphenation
+% \doublehyphendemerits=10000 % No consecutive line hyphens
 \brokenpenalty=10000 % No broken words across columns/pages
 \widowpenalty=9999 % Almost no widows at bottom of page
 \clubpenalty=9999 % Almost no orphans at top of page

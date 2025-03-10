@@ -4,7 +4,7 @@
 
 \documentclass[
 11pt, % The default document font size, options: 10pt, 11pt, 12pt
-%oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
+oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
 english, % ngerman for German
 singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
 %draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
@@ -30,6 +30,10 @@ headsepline, % Uncomment to get a line under the header
 \usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
 
 \usepackage{hyperref}% http://ctan.org/pkg/hyperref
+
+\usepackage[none]{hyphenat} % Disable hyphenation
+
+\sloppy % Aggressively justify text
 
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
@@ -243,7 +247,7 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{acknowledgements}
 	\addchaptertocentry{\acknowledgementname} % Add the acknowledgements to the table of contents
-	Thanks for my parents that supported all of my bullshit over the years\ldots
+	Thanks to my parents for supporting me through everything over the years\ldots
 	\linebreak
 	\linebreak
 	Thanks to my supervisor, Dr Robert G Smith, for his guidance and support.

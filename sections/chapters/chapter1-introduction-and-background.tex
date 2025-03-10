@@ -5,43 +5,29 @@
 
 \label{Chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
-This is the introduction of the thesis.
-
-\section{Background}
 Ever since the creation of the first computer by Charles Babbage in the 19th century, computers
 have been evolving at a rapid pace performing more and more tasks as the time passes. With this
-evolution, some people began to notice that manners in which to subvert the established systems.
-These individuals, by force of belief or personal gain, have caused losses in the trillions to
+evolution, malicious actors began to notice manners in which to subvert established systems. These
+individuals, by force of belief or personal gain, have caused losses in the trillions to
 organizations and individuals across the globe.
 
-As a response to these threats, these organizations and/or individuals began to develop techniques
-and tools to counter malicious actions. It has then, started the cat-and-mouse race between
-criminals and agents of the law. One of these techniques revolves around the analysis of what
-software adversaries develop to understand how they operate and the vulnerabilities they exploit to
-weaken or outright topple established security systems.
+As a response to these threats, these organizations and individuals began to develop techniques and
+tools to counter malicious actors. It has then, started the cat-and-mouse race between criminals
+and agents of the law. One of these techniques revolves around the analysis of what software
+adversaries develop to understand how they operate and the vulnerabilities they exploit to weaken
+or outright topple established security systems.
 
-As a basis, there are two types of analysis of software that can be made to understand any kind of
-software. These are as follows:
-\begin{itemize}
-	\item \textbf{Static Analysis}: Focuses on looking at the sequences of individual instructions on the software
-	      bytecode to identify the its characteristics, such as identification of the parameters in which the
-	      analyzed software is built upon (e.g. Operating system it executes on, processor architecture,
-	      etc), what execution paths it employs, what system calls it performs, etc. This analysis is done
-	      without running the code and it requires a lot of time and effort from the analyst.
-	\item \textbf{Dynamic Analysis}: Entails running the malware to gather runtime information such as network calls
-	      and system call execution data. This analysis is done by creating a special environment to have the
-	      analyzed software to run and gather the mentioned data.
-\end{itemize}
-
-The
+This thesis presents a research about, and creation of, a method where RAG powered LLMs are
+introduced onto to the malware static analysis workflow in order to increase efficiency on the
+analysis.
 
 \section{Definitions}
-Here are defined all of the concepts and/or tools that are mentioned on this document.
+Here are defined all of the concepts and/or tools that are mentioned.
 
 \subsection{Large Language Models}
 Large Language Models (LLMs) are a type of multi-parameter Machine Learning (ML) algorithm designed
 for natural language processing. These models that are trained on a large volume of text using a
-multitude of learning techniques such as self-supervised learning.
+multitude of learning techniques such as supervised and self-supervised learning.
 
 Generative pre-trained transformers (GPTs) are the biggest and most powerful LLMs. Current models
 can be adapted to certain tasks (via fine-tuning) or directed by prompt engineering
@@ -68,7 +54,7 @@ continuing with the normal LLM process for output generation.
 \subsection{Malware}
 Short for \textit{Malicious Software}, Malware is any program or code that is created for malicious
 purposes like exploitation of computer systems networks or users. Often created with monetary gain
-in mind, these programs activities include stealing sensitive data, damage system, disrupt
+in mind, these programs activities include stealing sensitive data, damage systems, disrupt
 operations or gain unauthorized access to systems or environments. Common types of malware include:
 \begin{itemize}
 	\item Viruses: Attach themselves to legitimate software, spreading when the software is run.
@@ -80,36 +66,46 @@ operations or gain unauthorized access to systems or environments. Common types 
 	\item Adware: Delivers unwanted advertisements, potentially slowing down or compromising systems.
 \end{itemize}
 
-\subsection{Malware analysis}
+\subsection{Malware Analysis}
+As mentioned before, the software created by malicious actors needs to be evaluated and analyzed to
+understand how it works, what exploits it takes advantage of and how these exploits can be patched.
+As a basis, there are two types of analysis of software that can be made to understand any kind of
+software. These are as follows:
+\begin{itemize}
+	\item \textbf{Static Analysis}: Focuses on looking at the sequences of individual instructions on the software
+	      bytecode to identify the its characteristics, such as identification of the parameters in which the
+	      analyzed software is built upon (e.g. Operating system it executes on, processor architecture,
+	      etc), what execution paths it employs, what system calls it performs, etc. This analysis is done
+	      without running the code and it requires a lot of time and effort from the analyst.
+	\item \textbf{Dynamic Analysis}: Entails running the potential malicious software to gather runtime information such as network calls
+	      and system call execution data which are not visible through static analysis. This analysis is done by creating a special (sandbox) environment (i.e docker container and/or a virtual machine) and running the software.
+\end{itemize}
 
-\subsection{Static Malware Analysis}
+\subsubsection{Static vs Dynamic Analysis}
 
-\vfill
-\includegraphics[width=\textwidth]{intro1.png}
-\vfill
+% \vfill
+% \includegraphics[width=\textwidth]{intro1.png}
+% \vfill
 
 \section{Research questions and objectives}
 
 \subsection{Questions}
 These are the research questions that will guide the development of this thesis.
 \begin{itemize}
-	\item How can LLMs be leveraged to enhance static malware analysis?
+	\item How LLMs can be leveraged to enhance static malware analysis?
 	\item How does a RAG-enhanced LLM compare to traditional static analysis techniques in terms of accuracy,
 	      efficiency, and interpretability?
-	\item How does RAG improve the accuracy and explainability of malware classification using static
-	      features?
-	\item Can a RAG-based LLM framework provide actionable threat intelligence insights from external malware
-	      databases?
+	\item What role does RAG play in improving LLM-driven malware classification, particularly in terms of
+	      contextual relevance and justifiability of results?
 \end{itemize}
 
 \subsection{Objectives}
 \begin{itemize}
-	\item Develop a methodology for integrating LLMs with RAG to enhance static malware analysis.
-	\item Evaluate the effectiveness of RAG-enhanced LLMs in identifying and explaining malware threats using
-	      static features (e.g., file structure, bytecode, API calls).
-	\item Compare the proposed RAG-enhanced LLM-based approach against traditional static malware analysis
-	      techniques in terms of accuracy, efficiency, and interpretability identifying challenges and
-	      potential risks (e.g. adversarial manipulation and hallucination).
+	\item Develop a method for integrating LLMs with RAG to enhance static malware analysis.
+	\item Evaluate the effectiveness of RAG-enhanced LLMs in identifying, explaining, and comparing malware
+	      threats using static features (e.g., file structure, bytecode, API calls) against traditional
+	      static malware analysis techniques in terms of accuracy, efficiency, and interpretability, while
+	      identifying challenges and potential risks (e.g., adversarial manipulation and hallucination).
 \end{itemize}
 
 % \section{Section Introduction}
