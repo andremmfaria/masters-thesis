@@ -41,11 +41,12 @@ training data [\cite{10.1162/daed_a_01905}]. Popular examples of LLMs include:
 \end{itemize}
 
 \subsection{Retrieval-Augmented Generation}
-Retrieval-Augmented Generation (RAG) is a technique that allows for LLMs to query information from
-a specific type of datastore and use it as context for the response it provides. This allows for
-adaptive learning of the models without the need of retraining (fine-tuning). It improves the
-quality of LLM output as the model does not rely solely on pre-trained knowledge but also on
-relevant information from the datastore.
+Retrieval-Augmented Generation (RAG)
+[\cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp}] is a technique that allows for
+LLMs to query information from a specific type of datastore and use it as context for the response
+it provides. This allows for adaptive learning of the models without the need of retraining
+(fine-tuning). It improves the quality of LLM output as the model does not rely solely on
+pre-trained knowledge but also on relevant information from the datastore.
 
 RAG works by having the LLM to query the datastore using vector search, embeddings or keyword
 matching (depending on the datastore type), feeding this data onto the LLM input and then
@@ -77,17 +78,34 @@ software. These are as follows:
 	      analyzed software is built upon (e.g. Operating system it executes on, processor architecture,
 	      etc), what execution paths it employs, what system calls it performs, etc. This analysis is done
 	      without running the code and it requires a lot of time and effort from the analyst.
-	\item \textbf{Dynamic Analysis}: Entails running the potential malicious software to gather runtime information such as network calls
-	      and system call execution data which are not visible through static analysis. This analysis is done by creating a special (sandbox) environment (i.e docker container and/or a virtual machine) and running the software.
+	\item \textbf{Dynamic Analysis}: Entails running the potential malicious software to gather runtime information
+	      such as network calls and system call execution data which are not visible through static analysis.
+	      This analysis is done by creating a special (sandbox) environment (i.e docker container and/or a virtual
+	      machine) and running the software.
 \end{itemize}
 
 \subsubsection{Static vs Dynamic Analysis}
+Both static and dynamic analysis have their own benefits and are important on their own right for
+understanding how malware is designed and developed. While static analysis takes advantage of its
+speed and safety where files do not need to be executed to be analyzed, dynamic analysis enables a
+more extensive analysis which might not be visible with static analysis alone.
+
+However, both have their limitations such as the increased computational cost and requirement of a
+secure environment of dynamic analysis versus the vulnerability of static analysis to obfuscation
+and encryption techniques.
 
 % \vfill
 % \includegraphics[width=\textwidth]{intro1.png}
 % \vfill
 
-\section{Research questions and objectives}
+\section{Research}
+
+\subsection{Why?}
+The reasoning behind the focus of this research is that static analysis remains to be a critical
+component of malware detection and neutralization. Security analysts are often required to analyze
+and process huge amounts of obfuscated data. By integrating RAG powered LLMs to this process we can
+make the analysis easier by tapping onto contextual knowledge from the RAG and the analysis power
+of LLMs. 
 
 \subsection{Questions}
 These are the research questions that will guide the development of this thesis.
@@ -107,6 +125,12 @@ These are the research questions that will guide the development of this thesis.
 	      static malware analysis techniques in terms of accuracy, efficiency, and interpretability, while
 	      identifying challenges and potential risks (e.g., adversarial manipulation and hallucination).
 \end{itemize}
+
+\subsection{hypothesis}
+
+
+\section{Chapter overview}
+
 
 % \section{Section Introduction}
 % %always begin a section with an introduction and end it with a summery
