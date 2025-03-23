@@ -1,8 +1,5 @@
-% Chapter 1
-
 \chapter{Introduction}
-\label{sec:introduction}
-
+\label{sec:Introduction}
 \label{Chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 
 Ever since the creation of the first computer by Charles Babbage in the 19th century, computers
@@ -21,10 +18,74 @@ This thesis presents a research about, and creation of, a method where RAG power
 introduced onto to the malware static analysis workflow in order to increase efficiency on the
 analysis.
 
-\section{Definitions}
+\section{Background and Motivation}
+% Introduce static malware analysis as a core method in cybersecurity.
+% Explain the emergence of LLMs in code and text understanding.
+% Define key concepts: static analysis, LLM, RAG, prompt engineering.
+% Motivate the relevance: Why exploring LLMs for malware analysis is timely and important.
+
+\subsection{Static Malware Analysis in Cybersecurity}
+% Define static malware analysis — Describe it as the process of examining a file's structure, code, or metadata without executing it, using techniques like disassembly, string analysis, and header inspection.
+% Highlight its importance — Explain why static analysis is critical: it's safer than dynamic analysis, allows early detection, and can be automated for large-scale scanning (e.g., in antivirus engines or intrusion detection systems).
+% Mention its limitations — Bring up common challenges like obfuscation, polymorphism, and difficulty in interpreting results without human expertise.
+Static malware analysis allows analysts to scrutinize a file's bytecode, strings, imported
+functions, and file headers to uncover malicious intent. This tried-and-true method of inspecting a
+program's structure, instructions, and information without actually running it, is still one of the
+most popular and dependable tools in the cybersecurity toolbox. It is essential in settings where
+safety, speed, and scalability are critical since it eliminates the possibility of running
+potentially dangerous code. It is the keystone in early malware identification and categorization,
+due to its automation capabilities (i.e. antivirus engines or intrusion detection systems).
+
+However, as threat actors evolve their tactics and adopt increasingly sophisticated evasion
+techniques, static analysis has begun to show its limitations. Many contemporary malware variants
+leverage obfuscation, packing, encryption, and code polymorphism to mask their functionality and
+frustrate traditional static inspection. Moreover, extracting actionable intelligence from static
+features often requires expert-level knowledge in assembly language, file formats, and API
+behavior—creating a steep barrier for automation. These challenges have shown the need for
+intelligent, context-aware tools capable of shortening the gap between low-level code patterns and
+high-level semantic understanding.
+
+\subsection{Emergence of LLMs in Code and Text Understanding}
+% Briefly introduce LLMs — Explain what Large Language Models are: deep learning models trained on massive corpora of text, capable of understanding and generating natural language and code.
+% Show their relevance to cybersecurity — Point out how LLMs are increasingly used in security applications, such as vulnerability detection, phishing detection, code summarization, and reverse engineering support.
+% Discuss LLMs' strength in reasoning and pattern recognition — Emphasize how LLMs can understand syntactic and semantic patterns in both code and text, making them well-suited to analyze features like API call patterns or embedded strings in malware.
+% Note the research opportunity — Highlight that while LLMs have been explored for general code analysis and some security tasks, their use in static malware analysis — particularly for classification and explanation — remains underexplored.
+Over the past few years, Large Language Models (LLMs) have rapidly transitioned from experimental
+research tools to foundational components across a wide range of natural language processing and
+code analysis applications. Built on transformer-based architectures and trained on vast corpora
+comprising not only natural language text but also programming languages and technical
+documentation, these models have demonstrated an impressive capacity to generate, summarize,
+translate, and reason about code and human language alike. Their success in handling structured and
+semi-structured data has opened new avenues in fields such as automated code completion, bug
+detection, documentation generation, and even code synthesis. With models like GPT, CodeBERT, and
+StarCoder pushing the limits of scale and capability, LLMs are starting to play a major part in
+determining how we interact with intricate codebases and interpret syntactic patterns that once
+required domain-specific knowledge.
+
+This increased capacity in both textual and programmatic reasoning has generated interest in
+bringing LLMs to cybersecurity, where duties such as code interpretation, vulnerability
+identification, and malware classification have historically been left for highly trained analysts.
+Unlike rule-based systems, which rely on predetermined signatures or static heuristics, LLMs may
+generalise from a variety of examples and adapt to novel or obfuscated code patterns, which is very
+valuable in malware research. Furthermore, their capacity for natural language explanation enables
+a level of interpretability that aligns well with security workflows that demand transparency and
+traceability. While LLMs have shown early promise in tasks such as vulnerability detection and
+reverse engineering assistance, their full potential in enhancing static malware
+analysis, especially through integration with contextual retrieval systems, remains a largely
+untapped area of research, presenting an opportunity to reimagine traditional security paradigms
+with the help of advanced, language-aware intelligence.
+
+\subsection{Motivation}
+The reasoning behind the focus of this research is that static analysis remains to be a critical
+component of malware detection and neutralization. Security analysts are often required to analyze
+and process huge amounts of obfuscated data. By integrating RAG powered LLMs to this process we can
+make the analysis easier by tapping onto contextual knowledge from the RAG and the analysis power
+of LLMs.
+
+\subsection{Key Concepts}
 Here are defined all of the concepts and/or tools that are mentioned.
 
-\subsection{Large Language Models}
+\subsubsection{Large Language Models}
 Large Language Models (LLMs) are a type of multi-parameter Machine Learning (ML) algorithm designed
 for natural language processing. These models that are trained on a large volume of text using a
 multitude of learning techniques such as supervised and self-supervised learning.
@@ -40,7 +101,49 @@ training data [\cite{10.1162/daed_a_01905}]. Popular examples of LLMs include:
 	\item Meta Llama series models
 \end{itemize}
 
-\subsection{Retrieval-Augmented Generation}
+\subsubsection{Prompt Engineering}
+Interactions with LLMs are made through \textit{prompts}. Those are natural language text segments
+that describe the task the AI should perform [\cite{radford2019language}]. They can be queries,
+commands or statements including context, instructions and/or relevant information.
+
+\textit{Prompt engineering} is the action of manipulating these text segments in order to optimize
+the wanted output [\cite{wahle-etal-2024-paraphrase}]. For example, providing a prompt such as "What is an
+apple?" we have this output:\\
+
+\fbox{%
+	\begin{minipage}{0.9\linewidth}
+		An apple is a round, edible fruit produced by the apple tree (Malus domestica). It typically
+		has smooth skin that can be red, green, or yellow, and a sweet to tart taste depending on
+		the variety. Apples have a firm white flesh and contain a core with small black or brown
+		seeds.
+
+		They're commonly eaten raw, but also used in cooking and baking-like in apple pies, sauces, and
+		juices. Apples are rich in fiber, vitamin C, and antioxidants, making them a popular choice for a
+		healthy snack. The saying "an apple a day keeps the doctor away" hints at their reputation for
+		promoting good health.
+
+		Want to know about their origin, symbolism, or maybe how they're grown?
+	\end{minipage}
+}\\
+
+This output is acceptable, however it can be modified with some prompt engineering, such as an ask
+to change the output formatting. Then, providing the phrase "Provide only bullet points." in
+addition ot the original we have:\\
+
+\fbox{%
+	\begin{minipage}{0.9\linewidth}
+		* Edible fruit from the apple tree (Malus domestica)\\
+		* Typically round with red, green, or yellow skin\\
+		* White, crisp flesh with a sweet to tart flavor\\
+		* Contains a core with small seeds\\
+		* Commonly eaten raw or used in cooking and baking\\
+		* Rich in fiber, vitamin C, and antioxidants\\
+		* Grown in temperate climates worldwide\\
+		* Symbol of health, knowledge, and temptation in various cultures
+	\end{minipage}
+}\\
+
+\subsubsection{Retrieval-Augmented Generation}
 Retrieval-Augmented Generation (RAG)
 [\cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp}] is a technique that allows for
 LLMs to query information from a specific type of datastore and use it as context for the response
@@ -52,22 +155,23 @@ RAG works by having the LLM to query the datastore using vector search, embeddin
 matching (depending on the datastore type), feeding this data onto the LLM input and then
 continuing with the normal LLM process for output generation.
 
-\subsection{Malware}
+\subsubsection{Malware}
 Short for \textit{Malicious Software}, Malware is any program or code that is created for malicious
 purposes like exploitation of computer systems networks or users. Often created with monetary gain
 in mind, these programs activities include stealing sensitive data, damage systems, disrupt
 operations or gain unauthorized access to systems or environments. Common types of malware include:
 \begin{itemize}
 	\item Viruses: Attach themselves to legitimate software, spreading when the software is run.
-	\item Worms: Spread automatically over networks, replicating rapidly without user intervention.
-	\item Trojans: Disguised as legitimate software, tricking users into installing them to enable
-	      unauthorized access.
+	\item Worms: Autonomous malware capable of multiplying across networks without needing human
+	      intervention. Exploit network weaknesses to infiltrate other systems without permission.
+	\item Trojans: Also known as Trojan Horses, these are disguised as genuine software to trick users into
+	      running them.
 	\item Ransomware: Encrypts or locks files, demanding payment (ransom) for restoration.
-	\item Spyware: Secretly collects sensitive information like passwords or browsing activity.
+	\item Spyware: Stealthily gathers sensitive data and user activities without the user’s consent.
 	\item Adware: Delivers unwanted advertisements, potentially slowing down or compromising systems.
 \end{itemize}
 
-\subsection{Malware Analysis}
+\subsubsection{Malware Analysis}
 As mentioned before, the software created by malicious actors needs to be evaluated and analyzed to
 understand how it works, what exploits it takes advantage of and how these exploits can be patched.
 As a basis, there are two types of analysis of software that can be made to understand any kind of
@@ -84,7 +188,7 @@ software. These are as follows:
 	      machine) and running the software.
 \end{itemize}
 
-\subsubsection{Static vs Dynamic Analysis}
+\subsubsection{Static Analysis vs Dynamic Analysis}
 Both static and dynamic analysis have their own benefits and are important on their own right for
 understanding how malware is designed and developed. While static analysis takes advantage of its
 speed and safety where files do not need to be executed to be analyzed, dynamic analysis enables a
@@ -94,28 +198,20 @@ However, both have their limitations such as the increased computational cost an
 secure environment of dynamic analysis versus the vulnerability of static analysis to obfuscation
 and encryption techniques.
 
-% \vfill
-% \includegraphics[width=\textwidth]{intro1.png}
-% \vfill
+\section{Problem Statement}
+% Identify limitations of traditional static malware analysis (e.g., limited interpretability, rule-based constraints).
+% Mention the challenges faced when scaling or adapting to new threats.
+% Explain how LLMs and RAG might address these issues—but that there is limited research on combining them effectively for malware analysis.
 
-\section{Research}
+\section{Research Aim and Objectives}
+% Aim: Clearly state the overarching goal (e.g., to enhance static malware analysis using RAG-enhanced LLMs).
+% Objectives (list in bullet form, e.g.):
+%     Develop a method for integrating LLMs with RAG.
+%     Evaluate effectiveness compared to traditional static analysis.
+%     Identify benefits and risks such as hallucinations or adversarial evasion.
 
-\subsection{Why?}
-The reasoning behind the focus of this research is that static analysis remains to be a critical
-component of malware detection and neutralization. Security analysts are often required to analyze
-and process huge amounts of obfuscated data. By integrating RAG powered LLMs to this process we can
-make the analysis easier by tapping onto contextual knowledge from the RAG and the analysis power
-of LLMs. 
-
-\subsection{Questions}
-These are the research questions that will guide the development of this thesis.
-\begin{itemize}
-	\item How LLMs can be leveraged to enhance static malware analysis?
-	\item How does a RAG-enhanced LLM compare to traditional static analysis techniques in terms of accuracy,
-	      efficiency, and interpretability?
-	\item What role does RAG play in improving LLM-driven malware classification, particularly in terms of
-	      contextual relevance and justifiability of results?
-\end{itemize}
+\subsection{Aim}
+Research the enhancement of static malware analysis using RAG-enhanced LLMs
 
 \subsection{Objectives}
 \begin{itemize}
@@ -126,69 +222,57 @@ These are the research questions that will guide the development of this thesis.
 	      identifying challenges and potential risks (e.g., adversarial manipulation and hallucination).
 \end{itemize}
 
-\subsection{hypothesis}
+\section{Research Questions and Hypothesis}
+% List your three refined research questions.
+% Optionally, include a hypothesis for each (e.g., “A RAG-enhanced LLM will outperform traditional static analysis in interpretability.”)
 
+\subsection{Objectives}
+These are the research questions that will guide the development of this thesis.
+\begin{itemize}
+	\item How LLMs can be leveraged to enhance static malware analysis?
+	\item How does a RAG-enhanced LLM compare to traditional static analysis techniques in terms of accuracy,
+	      efficiency, and interpretability?
+	\item What role does RAG play in improving LLM-driven malware classification, particularly in terms of
+	      contextual relevance and justifiability of results?
+\end{itemize}
 
-\section{Chapter overview}
+\subsection{Hypothesis}
+\begin{itemize}
+	\item Hypothesis 1: LLMs can enhance static malware analysis by accurately interpreting and classifying
+	      malware samples based on static features such as bytecode, file structure, and API calls, offering
+	      greater adaptability and insight than rule-based static tools.
+	\item Hypothesis 2: A RAG-enhanced LLM will outperform traditional static analysis techniques in terms of
+	      interpretability and contextual understanding, while maintaining comparable levels of accuracy and
+	      efficiency in malware classification.
+	\item Hypothesis 3: RAG improves LLM-driven malware classification by providing relevant contextual
+	      information during inference, leading to more justifiable and semantically grounded explanations of
+	      classification results.
+\end{itemize}
 
+\section{Methodology Overview}
+% Briefly describe the approach:
+%     Focus on static features (like bytecode, API calls).
+%     Use LLMs with prompt engineering instead of fine-tuning.
+%     Retrieve contextual info through RAG to assist malware classification.
+% Mention evaluation metrics (accuracy, interpretability, efficiency).
+% Limitations or scope (e.g., no dynamic analysis, no expert consultation).
+TODO...
 
-% \section{Section Introduction}
-% %always begin a section with an introduction and end it with a summery
-% A thesis is built up of a series of chapters that construct a substantiated and convincing response
-% to the research question(s). Typically, a thesis contains the following chapters: an introduction;
-% a literature review; a description of methodology; a report and discussion of results; and a
-% conclusion. A thesis may have five to eight chapters depending on the nature of the study, the
-% required word count and the requirements of the degree.
+\section{Contributions of the Research}
+% Explain the potential impact or novelty of your research
+% Clarify how it advances the field or addresses a specific gap
+% Discuss how your work contributes:
+%     A novel framework combining RAG + LLM for malware analysis.
+%     Empirical comparison with traditional tools.
+%     Insight into risks and limitations of AI-based approaches.
+TODO...
 
-% \subsection{About the Introduction Chapter}
-% An introduction is crucial to setting the tone of your thesis – it is the first impression you’ll
-% make on your readers (assessors). Briefly, it presents the purpose, context and scope of your
-% research. Likewise, a conclusion is just as crucial – it is the lasting impression you’ll make on
-% your readers (assessors). Not only does it give a summary of your thesis, but should provide a
-% clear, convincing answer to your research question(s).
-% \subsection{Subsection header 2}
-% After introducing your work, you should list your research questions, hypothesis, and objectives.
-
-% Always keep in mind the meaning of the word ``\textit{Thesis}''. That is: a thesis is a statement
-% or theory that is put forward as a premise to be maintained or proved. A Hypo\textit{thesis} then,
-% is a sub-thesis, or a smaller part of the overarching thesis.
-
-% All of your research questions must aim to prove or disprove your thesis.. and thus your
-% hypotheses.
-
-% See more here: \url{https://www.statconsul.com/research-questions.php}
-% \subsection{Subsection header 3}
-% The last thing you do in an Introduction Chapter is to outline the contents of your thesis, i.e., a
-% review of then literature is provided in Chapter \ref{sec:LitReview}, starting with... etc...
-% Chapter \ref{sec:Method} provides a description of the method... etc...
-
-% \section{More about the Introduction chapter}
-% The introduction allows you to orient the reader to your research project and preview the
-% organisation of your thesis. In the introduction, state what the topic is about, explain why it
-% needs to be further researched and introduce your research question(s) or hypothesis.
-
-% Whilst patterns of organisation in introductions vary, there are some common features that will
-% help you to achieve an informative and engaging introduction. Let’s identify these features:
-
-% \begin{itemize}
-% 	\item Introduce the topic
-% 	\item Define key terms and concepts
-% 	\item Give background and context for the topic (this may include a brief literature review)
-% 	\item Review and evaluate the current state of knowledge in the topic (this may include a brief
-% 	      literature review)
-% 	\item Identify any gaps, shortcomings and problems in the research to date
-% 	\item Introduce your research question(s) or hypothesis
-% 	\item Briefly describe your methodology and/or theoretical approach
-% 	\item Explain the aim of your research and what contribution it will make to the topic
-% 	\item Give an overview of the chapter outline of the thesis.
-% \end{itemize}
-
-% It’s important to note that, depending on your field of study and the faculty requirements of your
-% thesis, not all of these features will be relevant. Also, these features may occur in varied
-% orders.
-
-% Most people write many drafts of their introduction. It can be useful to write one early in the
-% research process to clarify your thinking. You will need to write a version for your confirmation
-% proposal and other milestones. As your research progresses and your ideas develop, you will need to
-% revise it. When the final draft of chapters is complete, check the introduction once more to make
-% sure that it accurately reflects what you have actually done.
+\section{Thesis Structure}
+% Provide a roadmap of the chapters in the thesis
+% Refer to chapters by number and label (e.g., Chapter~\ref{sec:LitReview})
+% Provide a chapter-by-chapter breakdown:
+%     Chapter 2 (\ref{sec:LitReview}) reviews related work.
+%     Chapter 3 (\ref{sec:Method}) details the methodology.
+%     Chapter 4 presents results and discussion.
+%     Chapter 5 concludes with key findings and future work.
+TODO...
