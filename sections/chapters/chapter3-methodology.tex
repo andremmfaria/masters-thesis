@@ -1,61 +1,107 @@
-% Chapter 3
-
 \chapter{Methodology}
 \label{sec:Method}
+\label{Chapter3} % For referencing the chapter elsewhere, use \ref{Chapter3}
 
-\label{Chapter3} % For referencing the chapter elsewhere, use \ref{Chapter3} 
+% Introduce the purpose of this chapter.
+% Reiterate your research aim: enhancing static malware analysis with LLMs and RAG.
+% Provide a brief overview of the methodology, including data sources,
+% architecture, evaluation strategy, and toolchain.
+TODO...
 
-\section{What is a Methodology?}
-Every thesis, regardless of the discipline and field of inquiry it relates to, needs to answer
-these questions:
+\section{Research Design}
+% Describe the nature of your research: exploratory, experimental, comparative.
+% Explain the reasoning for using a prototype-based implementation and evaluation.
+% Emphasize that your approach avoids LLM fine-tuning and instead relies on
+% prompt engineering and external context via RAG.
+TODO...
 
-\begin{itemize}
-	\item How did you do your research?
-	\item Why did you do it that way?
-\end{itemize}
+\section{System Architecture}
+% Provide a high-level description of your system pipeline.
+% Include a diagram (later) showing flow: malware sample → static feature extraction → retrieval → prompt generation → LLM response.
+% List major system components and their interactions.
+TODO...
 
-This covers not only the methods used to collect and analyse data, but also the theoretical
-framework that informs both the choice of methods and the approach to interpreting the data. In
-some disciplines, the approach to knowledge underpinning both the type of research questions asked
-and the methods chosen to answer them is called “methodology”, and needs to be articulated. Both
-methods and theoretical approach relate explicitly to the research question(s) addressed in the
-thesis.
+\section{Data Sources}
+% Describe where you obtain your malware samples and intelligence documents.
+% Malware sources:
+%   - MalwareBazaar for static binaries and metadata.
+%   - VirusTotal (optional, via API) for reports and behavior data.
+%     Detail any preprocessing steps: parsing PE headers, extracting bytecode,
+%     API call strings, etc.
+TODO...
 
-You may need to summarise available methods and theoretical approaches for your research topic; you
-will certainly need to justify your choice of method(s). If you apply a combination of methods
-you’ll need to justify why you chose such an approach. Your explanation should also indicate any
-reliability or validity issues concerning the data, and discuss any ethical considerations that
-arise from your choices.
+\section{Retrieval-Augmented Generation (RAG) Pipeline}
+% Explain how RAG is constructed using Haystack and pgvector.
+% Describe:
+%   - Embedding model used to vectorize documents.
+%   - How documents (e.g., malware reports) are stored in PostgreSQL.
+%   - How semantic retrieval is performed and injected into the LLM prompt.
+%     Clarify how this improves contextual relevance and grounding in known
+%     threat data.
+TODO...
 
-Whilst patterns of organisation in a methods chapter may vary, there are some common elements that
-you’ll need to include to achieve an informative chapter. Let’s identify these features:
+\section{Prompt Engineering}
+% Discuss how you craft prompts for different tasks: classification, explanation, and comparison.
+% Include examples of how static features and retrieved context are structured in the prompt.
+% Explain the decision to use GPT-4 and/or DeepSeek-R1 in inference-only mode.
+TODO...
 
-\begin{itemize}
-	\item place or setting of the research
-	\item duration of the study and other time related factors
-	\item study design – e.g. an outline of the research stages including instruments and techniques
-	\item specifics of the participants, materials, etc.
-	\item sampling frameworks (e.g. criteria, size, scope, etc.)
-	\item any inclusions/exclusions
-	\item outcome measurement procedures (e.g. statistical tests, comparisons, etc.)
-	\item consent and ethics committee approval
-	\item theoretical basis of the research
-	\item data management
-\end{itemize}
+\section{Toolchain}
+This section outlines the used tooling for the experiments and some discussion
+on why they were chosen.
 
-While most of these elements will be relevant to your methods chapter, you’ll find that there are
-discipline specific elements and requirements. The detail and emphasis of what is covered in a
-discussion of methods/methodology will be different in different disciplines.
+\subsection{Programming Language and Environment}
+% Python is used for implementation.
+% PDM (Python Development Master) manages dependencies and virtual environments.
+TODO...
 
-\subsection{STEM specific Method Chapter}
-Key features of method descriptions in STEM disciplines include:
+\subsection{Language Models}
+% GPT-4 (via OpenAI API) and/or DeepSeek-R1 are used for inference.
+% Models are not fine-tuned; they rely on prompt engineering and external
+% retrieval for task performance.
+TODO...
 
-\begin{itemize}
-	\item demonstration of fit between methods chosen and research question(s)
-	\item rationale for choosing materials, methods and procedures
-	\item details of materials, equipment and procedures that will allow others to:
-	      \begin{itemize}
-		      \item replicate experiments
-		      \item understand and implement technical solutions
-	      \end{itemize}
-\end{itemize}
+\subsection{RAG Framework and Storage}
+% Haystack is used to build the retrieval pipeline.
+% PostgreSQL with pgvector is used to store and query vector embeddings of
+% malware-related documents.
+TODO...
+
+\subsection{Malware Intelligence Sources}
+% MalwareBazaar is used to obtain real-world malware samples and metadata.
+% VirusTotal may be used (via API) to enrich data with threat reports and
+% behavioral indicators.
+TODO...
+
+\subsection{Evaluation and Visualization}
+% Scikit-learn is used to compute performance metrics (e.g., accuracy, F1 score).
+% Pandas and Matplotlib are used for data handling and visualization.
+% All experiments are version-controlled and reproducible via PDM.
+TODO...
+
+\section{Evaluation Framework}
+% Define your evaluation metrics: accuracy, efficiency, interpretability.
+% Describe baseline comparisons against traditional static malware classifiers (if applicable).
+% Discuss any human-in-the-loop components for evaluating explanation quality.
+TODO...
+
+\section{Reliability, Validity, and Limitations}
+% Discuss how reproducibility is ensured via version control, fixed seeds, and public datasets.
+% Address limitations:
+%   - Limited to static analysis.
+%   - Dependent on retrieval quality and LLM reliability.
+%   - No user-study or adversarial robustness testing (unless planned).
+TODO...
+
+\section{Ethical Considerations}
+% Ensure ethical use of malware datasets.
+% Describe safety protocols: no execution of live malware, all samples are statically analyzed.
+% Highlight responsible use of LLMs and privacy-conscious data handling if using
+% VirusTotal.
+TODO...
+
+\section{Summary}
+% Recap the methodology structure and justify how it addresses your research questions.
+% Set up the transition into the next chapter, where implementation details or
+% results will follow.
+TODO...
