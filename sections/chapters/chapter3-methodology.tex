@@ -19,7 +19,63 @@ TODO...
 % Provide a high-level description of your system pipeline.
 % Include a diagram (later) showing flow: malware sample → static feature extraction → retrieval → prompt generation → LLM response.
 % List major system components and their interactions.
-TODO...
+
+This section outlines the overview of the pipeline architecture. These steps have been designed to
+modularize the analysis, ensure reproducibility and allow for algorithmic changes whenever needed.
+Below, the diagram of the pipeline elements is displayed along with an overview on each of them.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{pipeline-diagram.png}
+    \caption{System Pipeline Diagram}
+    \label{fig:pipeline_diagram}
+\end{figure}
+
+\FloatBarrier
+
+\begin{enumerate}
+    \item \textbf{Malware Sample Ingestion:} Raw malware binaries (e.g., PE files) are sourced from public repositories such as MalwareBazaar or accessed via API from VirusTotal. Each file is stored with a unique identifier (e.g., SHA256 hash).
+
+    \item \textbf{Static Feature Extraction:} Using tools such as \texttt{pefile}, the system extracts static attributes from the malware, including:
+          \begin{itemize}
+              \item PE header metadata
+              \item Imported API calls
+              \item Section structure and entropy
+              \item Printable strings
+          \end{itemize}
+
+    \item \textbf{Log Feature Extraction:} All extracted features are logged with timestamps, sample identifiers, and summary statistics.
+
+    \item \textbf{Feature-Based Retrieval Query:} The extracted static features are embedded into vector representations (if needed) and used as queries to a semantic search index.
+
+    \item \textbf{Document Retrieval:} Relevant documents (e.g., threat reports,
+          malware family descriptions) are retrieved from an external datastore to be
+          provided as context.
+
+    \item \textbf{Log Retrieval Step:} Retrieval activity is logged, including query terms, matching document IDs, retrieval time, and the data source used (e.g., VirusTotal vs. local data).
+
+    \item \textbf{Prompt Construction:} Retrieved documents and extracted features are formatted into structured prompts. Templates are used to ensure consistent formatting across LLM queries.
+
+    \item \textbf{Compliance Check Module:} Before sending prompts to the LLM, a filtering mechanism ensures that no disallowed content (e.g., malware payloads, sensitive data, proprietary code) is included.
+
+    \item \textbf{LLM Inference (GPT-4 / DeepSeek-R1):} The prompt is passed to a large language model (either GPT-4 or DeepSeek-R1) to generate:
+          \begin{itemize}
+              \item Malware family classification
+              \item Explanation or justification of the classification
+              \item Comparative analysis against known malware types
+          \end{itemize}
+
+    \item \textbf{Log API Call:} Each API interaction is logged, including:
+          \begin{itemize}
+              \item Model version and endpoint
+              \item Prompt metadata (not full text for privacy)
+              \item Token usage, latency, and return timestamp
+          \end{itemize}
+
+    \item \textbf{Output Generation:} The model output (classification + explanation) is presented to the user or stored for evaluation.
+
+    \item \textbf{Results Logging and Storage:} Final outputs, along with model metadata and hash references, are stored for downstream analysis or human review.
+\end{enumerate}
 
 \section{Data Sources}
 % Describe where you obtain your malware samples and intelligence documents.
@@ -47,8 +103,8 @@ TODO...
 TODO...
 
 \section{Toolchain}
-This section outlines the used tooling for the experiments and some discussion
-on why they were chosen.
+This section outlines the used tooling for the experiments and some discussion on why they were
+chosen.
 
 \subsection{Programming Language and Environment}
 % Python is used for implementation.
