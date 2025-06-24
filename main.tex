@@ -23,7 +23,7 @@ headsepline, % Uncomment to get a line under the header
 
 \usepackage{mathpazo} % Use the Palatino font by default
 
-\usepackage[backend=bibtex,style=authoryear,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
+\usepackage[backend=bibtex,style=numeric,natbib=true]{biblatex} % Use the bibtex backend with the authoryear citation style (which resembles APA)
 
 \addbibresource{./misc/bibliography.bib} % The filename of the bibliography
 
@@ -34,6 +34,9 @@ headsepline, % Uncomment to get a line under the header
 \usepackage[none]{hyphenat} % Disable hyphenation
 
 \usepackage{placeins}
+
+\usepackage[acronym]{glossaries-extra}
+\makeglossaries
 
 \sloppy % Aggressively justify text
 
@@ -269,18 +272,6 @@ headsepline, % Uncomment to get a line under the header
 \listoftables % Prints the list of tables
 
 %----------------------------------------------------------------------------------------
-%	ABBREVIATIONS
-%----------------------------------------------------------------------------------------
-
-\begin{abbreviations}{ll} % Include a list of abbreviations (a table of two columns)
-
-	\textbf{AI} & \textbf{A}rtificial \textbf{I}ntelligence\\
-	\textbf{LLM} & \textbf{L}arge \textbf{L}anguage \textbf{M}odel(s)\\
-	\textbf{RAG} & \textbf{R}etrieval-\textbf{A}ugmented \textbf{G}eneration\\
-
-\end{abbreviations}
-
-%----------------------------------------------------------------------------------------
 %	PHYSICAL CONSTANTS/OTHER DEFINITIONS
 %----------------------------------------------------------------------------------------
 
@@ -331,6 +322,10 @@ headsepline, % Uncomment to get a line under the header
 
 %----------------------------------------------------------------------------------------
 
+% Include the glossary file
+\include{./misc/glossaries-and-abbreviations}
+
+% Include chapters
 \include{./sections/chapters/chapter1-introduction-and-background}
 \include{./sections/chapters/chapter2-literature-review}
 \include{./sections/chapters/chapter3-methodology}
@@ -345,8 +340,13 @@ headsepline, % Uncomment to get a line under the header
 
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
-
 \include{./sections/appendices/appendix1-faq}
+
+%----------------------------------------------------------------------------------------
+%	GLOSSARY
+%----------------------------------------------------------------------------------------
+
+\printunsrtglossaries
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
