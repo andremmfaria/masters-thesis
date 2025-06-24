@@ -6,14 +6,62 @@
 % Reiterate your research aim: enhancing static malware analysis with LLMs and RAG.
 % Provide a brief overview of the methodology, including data sources,
 % architecture, evaluation strategy, and toolchain.
-TODO...
+This chapter outlines the methodology and experimentation applied for this thesis. The research
+adopts and experimental and comparative approach to examine how \gls{rag}-enabled large language
+models \gls{llm}s can improve static malware analysis. Due to the relative novelty of using
+\gls{rag} in this field, the work is both exploratory and experimental, involving the deployment
+and assessment of a functional prototype. In order to enable practical comparison with conventional
+static analysis techniques, it integrates a prototype-based implementation and assessment.
 
 \section{Research Design}
 % Describe the nature of your research: exploratory, experimental, comparative.
 % Explain the reasoning for using a prototype-based implementation and evaluation.
 % Emphasize that your approach avoids LLM fine-tuning and instead relies on
 % prompt engineering and external context via RAG.
-TODO...
+The research will be focusing on two core analysis manners that will enable a direct comparison
+between the traditional static approach and the modern AI-assisted method. Those are:
+
+\begin{itemize}
+    \item \textbf{Traditional Static Analysis}: Malware samples are analysed
+          using established static analysis techniques, including feature extraction
+          (e.g., strings, byte entropy, imported functions, PE structure) and
+          signature, or heuristic, based classification. Tools such as
+          \gls{peframe} or existing \gls{virustotal} metadata will serve as the
+          baseline for labeling and behaviour inference.
+    \item \textbf{LLM + RAG-Assisted Analysis}: A \gls{rag} pipeline is
+          implemented using Haystack and a vector database (\gls{postgresql} with
+          \gls{pgvector}).Static features from malware samples are used to query a
+          pre-built knowledge base containing labelled malware data,
+          technical documentation, and behavioural summaries. Retrieved documents are
+          injected into prompts and passed to a general-purpose \gls{llm} (e.g.,
+          \gls{gpt4o} or\gls{deepseek-r1}), which is tasked with classifying the
+          sample, explaining its reasoning, and providing relevant threat context.
+\end{itemize}
+
+By using this method,
+
+\subsection{Experimental Workflow}
+
+Each malware sample will undergo:
+\begin{itemize}
+    \item \textbf{Feature Extraction}: Using tools or scripts to extract static features (e.g., strings, API calls,
+          file structure).
+
+    \item \textbf{Baseline Analysis}: Classification and interpretation using traditional techniques or metadata.
+
+    \item \textbf{LLM + RAG Analysis}: Feature-based queries retrieve contextual documents, which are embedded into
+          LLM prompts. The model then classifies the sample and provides reasoning.
+\end{itemize}
+
+Results from both configurations will be logged and evaluated using:
+
+\begin{itemize}
+    \item \textbf{Quantitative metrics}: Accuracy, precision/recall, inference time.
+
+    \item \textbf{Qualitative measures}: Interpretability, contextual relevance, and reliability of LLM outputs.
+\end{itemize}
+
+All prompt templates, retrieval settings, and evaluation criteria will be documented.
 
 \section{System Architecture}
 % Provide a high-level description of your system pipeline.

@@ -6,13 +6,17 @@ Ever since the creation of the first computer by Charles Babbage in the 19th cen
 have been evolving at a rapid pace performing more and more tasks as the time passes. With this
 evolution, malicious actors began to notice manners in which to subvert established systems. These
 individuals, by force of belief or personal gain, have caused losses in the trillions to
-organizations and individuals across the globe.
+organisations and individuals across the globe.
 
-As a response to these threats, these organizations and individuals began to develop techniques and
-tools to counter malicious actors. It has then, started the cat-and-mouse race between criminals
-and agents of the law. One of these techniques revolves around the analysis of what software
-adversaries develop to understand how they operate and the vulnerabilities they exploit to weaken
-or outright topple established security systems.
+As a response to these threats, these organisations and individuals began to develop techniques and
+tools to counter malicious actors. Some of these techniques revolve around the analysis of what
+software adversaries develop. The analysis of such malicious software is important in order to
+study and understand how they operate and the vulnerabilities they exploit to weaken, or outright
+topple, established security systems.
+
+This research presents a the development of a methodology to analyse malicious software using
+artificial intelligence (\gls{ai}) tools to enhance analysis quality and speed. This tools will be
+discusses toughly on \ref{Chapter3}.
 
 This thesis presents a research about, and creation of, a method where RAG powered LLMs are
 introduced onto to the malware static analysis workflow in order to increase efficiency on the
@@ -23,26 +27,27 @@ analysis.
 % Explain the emergence of LLMs in code and text understanding.
 % Define key concepts: static analysis, LLM, RAG, prompt engineering.
 % Motivate the relevance: Why exploring LLMs for malware analysis is timely and important.
-TODO...
 
 \subsection{Static Malware Analysis in Cybersecurity}
 % Define static malware analysis — Describe it as the process of examining a file's structure, code, or metadata without executing it, using techniques like disassembly, string analysis, and header inspection.
 % Highlight its importance — Explain why static analysis is critical: it's safer than dynamic analysis, allows early detection, and can be automated for large-scale scanning (e.g., in antivirus engines or intrusion detection systems).
 % Mention its limitations — Bring up common challenges like obfuscation, polymorphism, and difficulty in interpreting results without human expertise.
-Static malware analysis allows analysts to scrutinize a file's bytecode, strings, imported
-functions, and file headers to uncover malicious intent. This tried-and-true method of inspecting a
-program's structure, instructions, and information without actually running it, is still one of the
-most popular and dependable tools in the cybersecurity toolbox. It is essential in settings where
-safety, speed, and scalability are critical since it eliminates the possibility of running
-potentially dangerous code. It is the keystone in early malware identification and categorization,
-due to its automation capabilities (i.e. antivirus engines or intrusion detection systems).
+These software artifacts created by malicious actors are called \gls{malware}. Static malware
+analysis focus specifically on techniques that decompose, or \gls{decompile}, target \gls{malware}
+down to its most basic bytecode elements. These are then scrutinized to uncover malicious intent.
+This method of inspecting a program's structure, instructions, and information without actually
+running it, is one of the most popular and dependable tools in the cybersecurity toolbox. It
+is essential in settings where safety, speed, and scalability are critical since it eliminates the
+possibility of running potentially dangerous code. It is the keystone in early malware
+identification and categorization, due to its automation capabilities (i.e. antivirus engines or
+intrusion detection systems).
 
 However, as threat actors evolve their tactics and adopt increasingly sophisticated evasion
 techniques, static analysis has begun to show its limitations. Many contemporary malware variants
 leverage obfuscation, packing, encryption, and code polymorphism to mask their functionality and
 frustrate traditional static inspection. Moreover, extracting actionable intelligence from static
 features often requires expert-level knowledge in assembly language, file formats, and API
-behavior—creating a steep barrier for automation. These challenges have shown the need for
+behaviour—creating a steep barrier for automation. These challenges have shown the need for
 intelligent, context-aware tools capable of shortening the gap between low-level code patterns and
 high-level semantic understanding.
 
@@ -51,10 +56,10 @@ high-level semantic understanding.
 % Show their relevance to cybersecurity — Point out how LLMs are increasingly used in security applications, such as vulnerability detection, phishing detection, code summarization, and reverse engineering support.
 % Discuss LLMs' strength in reasoning and pattern recognition — Emphasize how LLMs can understand syntactic and semantic patterns in both code and text, making them well-suited to analyze features like API call patterns or embedded strings in malware.
 % Note the research opportunity — Highlight that while LLMs have been explored for general code analysis and some security tasks, their use in static malware analysis — particularly for classification and explanation — remains underexplored.
-Over the past few years, Large Language Models (LLMs) have rapidly transitioned from experimental
-research tools to foundational components across a wide range of natural language processing and
-code analysis applications. Built on transformer-based architectures and trained on vast corpora
-comprising not only natural language text but also programming languages and technical
+Over the past few years, Large Language Models (\gls{llm}) have rapidly transitioned from
+experimental research tools to foundational components across a wide range of natural language
+processing and code analysis applications. Built on transformer-based architectures and trained on
+vast corpora comprising not only natural language text but also programming languages and technical
 documentation, these models have demonstrated an impressive capacity to generate, summarize,
 translate, and reason about code and human language alike. Their success in handling structured and
 semi-structured data has opened new avenues in fields such as automated code completion, bug
@@ -71,10 +76,10 @@ generalise from a variety of examples and adapt to novel or obfuscated code patt
 valuable in malware research. Furthermore, their capacity for natural language explanation enables
 a level of interpretability that aligns well with security workflows that demand transparency and
 traceability. While LLMs have shown early promise in tasks such as vulnerability detection and
-reverse engineering assistance, their full potential in enhancing static malware
-analysis, especially through integration with contextual retrieval systems, remains a largely
-untapped area of research, presenting an opportunity to reimagine traditional security paradigms
-with the help of advanced, language-aware intelligence.
+reverse engineering assistance, their full potential in enhancing static malware analysis,
+especially through integration with contextual retrieval systems, remains a largely untapped area
+of research, presenting an opportunity to reimagine traditional security paradigms with the help of
+advanced, language-aware intelligence.
 
 \subsection{Motivation}
 The reasoning behind the focus of this research is that static analysis remains to be a critical
@@ -211,7 +216,6 @@ TODO...
 %     Develop a method for integrating LLMs with RAG.
 %     Evaluate effectiveness compared to traditional static analysis.
 %     Identify benefits and risks such as hallucinations or adversarial evasion.
-TODO...
 
 \subsection{Aim}
 Research the enhancement of static malware analysis using RAG-enhanced LLMs
@@ -229,7 +233,7 @@ Research the enhancement of static malware analysis using RAG-enhanced LLMs
 % List your three refined research questions.
 % Optionally, include a hypothesis for each (e.g., “A RAG-enhanced LLM will outperform traditional static analysis in interpretability.”)
 
-\subsection{Objectives}
+\subsection{Questions}
 These are the research questions that will guide the development of this thesis.
 \begin{itemize}
 	\item How LLMs can be leveraged to enhance static malware analysis?
