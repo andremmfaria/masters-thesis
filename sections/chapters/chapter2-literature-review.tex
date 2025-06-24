@@ -162,7 +162,8 @@ automation for tasks such as malware detection, vulnerability analysis, code aud
 summarization, and threat intelligence extraction. Built on transformer architectures and
 pre-trained on diverse code and text, LLMs like \texttt{GPT}, \texttt{BERT}, \texttt{CodeBERT} and
 \texttt{Codex} show impressive generalization and reasoning over both structured and unstructured
-data \cite{nourmohammadzadeh2024llmsurvey, sahoo2024systematic, ferrag2024allinsights}.
+data \cite{nourmohammadzadeh2024llmsurvey, sahoo2024systematic, ferrag2024allinsights,
+    metta2024generativeai}.
 
 In the domain of malware analysis, LLMs are particularly useful for interpreting decompiled or
 disassembled functions and generating natural-language summaries. Fujii and Yamagishi
@@ -171,21 +172,26 @@ appropriately—especially using role-based prompts such as “You are a malware
 highlights the importance of Model-Centric Prompting (MCP), where prompts are tailored to align
 with model reasoning behavior rather than merely input format \cite{sahoo2024systematic}.
 
-Nourmohammadzadeh Motlagh et al. (2024) \cite{nourmohammadzadeh2024llmsurvey} provide a
-comprehensive survey of LLM applications in cybersecurity. They categorize LLM use cases into:
-\begin{enumerate}
-    \item \textbf{Defensive analysis:} assisting analysts in interpreting malware, extracting Indicators of Compromise (IOCs), and analyzing static code.
-    \item \textbf{Secure code reasoning:} detecting software vulnerabilities and insecure coding patterns.
-    \item \textbf{Threat intelligence and automation:} drafting incident reports, summarizing alerts, and supporting triage.
-\end{enumerate}
+Recent surveys such as Nourmohammadzadeh et al. \cite{nourmohammadzadeh2024llmsurvey} and Ferrag et
+al. \cite{ferrag2024allinsights} show growing interest in applying LLMs to cybersecurity, but also
+emphasize that these models require adaptation to operate on binary code, disassembled structures,
+and malicious behavior patterns. The research by Metta et al. \cite{metta2024generativeai} provides
+a comprehensive risk-centric perspective, highlighting both defensive and offensive uses of
+LLMs—from malware analysis and reverse engineering to code generation for adversarial purposes.
 
-These capabilities underscore LLMs’ value in making complex malware analysis workflows more
-efficient — especially in early triage phases — and adaptable to novel or obfuscated threats that
-evade traditional signature-based detection. Nevertheless, several limitations persist:
+Key benefits of LLMs in cybersecurity include:
 \begin{itemize}
-    \item \textbf{Hallucination:} LLMs may produce plausible but incorrect or fabricated conclusions in ambiguous cases.
-    \item \textbf{Lack of grounding:} Without supporting context, LLMs can misinterpret low-level code or API calls.
-    \item \textbf{Prompt sensitivity:} Response quality can vary significantly based on how tasks are phrased or formatted \cite{sahoo2024systematic}.
+    \item \textbf{Automated explanation and triage:} translating complex code into natural language.
+    \item \textbf{IOC and pattern extraction:} identifying suspicious API calls, encoded payloads, or unusual imports.
+    \item \textbf{Augmenting human analysts:} supporting SOC workflows through summarization and prioritization.
+\end{itemize}
+
+However, several limitations persist:
+\begin{itemize}
+    \item \textbf{Hallucination and trust:} LLMs may confidently produce incorrect or fabricated information, especially without sufficient context.
+    \item \textbf{Prompt sensitivity:} output quality varies based on structure and phrasing \cite{sahoo2024systematic}.
+    \item \textbf{Black-box reasoning:} difficulty auditing or interpreting why a model made a specific decision \cite{metta2024generativeai}.
+    \item \textbf{Security concerns:} models may be vulnerable to prompt injection, adversarial inputs, or training data poisoning.
     \item \textbf{Opacity:} The internal reasoning of LLMs remains a “black box,” limiting trust and auditability \cite{nourmohammadzadeh2024llmsurvey}.
 \end{itemize}
 
@@ -326,44 +332,40 @@ technical and methodological—that motivate this research.
 
 While Retrieval-Augmented Generation (RAG) has demonstrated success in natural language tasks such
 as question answering and summarization \cite{lewis2020retrieval, gao2023retrieval}, its
-application in malware analysis—particularly static workflows—remains largely unexplored. Existing
-research treats LLMs and static analysis separately, with limited efforts to bridge contextual
-retrieval and code reasoning in a cybersecurity context. No known studies apply RAG techniques to
-the domain-specific problem of binary malware classification or decompilation interpretation.
+application in malware analysis—particularly static workflows—remains largely unexplored. No
+current work bridges LLM-driven reasoning with contextual retrieval of prior malware samples,
+reports, or IOC patterns, despite its strong theoretical fit.
 
 \subsection{LLM Use is Largely Exploratory and Unbenchmarked}
 
-Research such as the one done by Fujii and Yamagishi \cite{fujii2024llm}, explore the feasibility
-of using LLMs (like GPT-4) for static malware analysis. However, these experiments remain
-qualitative, lacking standardized benchmarks, reproducible pipelines, or comparisons with
-traditional static analysis tools (e.g., YARA, ClamAV, Ghidra output, ML classifiers). As a result,
-the extent to which LLMs offer practical improvements in accuracy, efficiency, or interpretability
-remains unclear.
+LLM-based research in static analysis is still in its infancy. Studies like Fujii and Yamagishi
+\cite{fujii2024llm} provide qualitative results demonstrating feasibility, but there is a lack of
+standardized benchmarks, evaluation frameworks, or comparative studies with traditional tools such
+as YARA or ML classifiers. The GenAI in Cybersecurity report \cite{metta2024generativeai} also
+notes the scarcity of domain-specific evaluation methods that account for explainability and
+analyst trust.
 
-\subsection{Insufficient Emphasis on Explainability and Analyst Support}
+\subsection{Explainability, Auditability, and Analyst Trust Are Underserved}
 
-Many studies evaluating malware classifiers focus on accuracy or F1 score, but overlook
-interpretability—a crucial requirement for malware analysts \cite{wong2021practice,
-    cassanova2022systematic}. Traditional ML models and many LLM-based approaches fail to provide
-traceable reasoning or grounded justifications for their outputs. This lack of transparency limits
-real-world applicability in high-stakes or audit-driven environments.
+Interpretability is essential for analysts making high-stakes security decisions
+\cite{wong2021practice}. However, most AI-driven malware analysis models—including LLMs—fail to
+provide transparent reasoning or traceable justifications. This issue is compounded by
+hallucinations and black-box behaviors, limiting practical adoption \cite{metta2024generativeai,
+    sahoo2024systematic}.
 
-\subsection{Limited Use of Prompt Engineering Methodologies}
+\subsection{Underutilization of Prompt Engineering and Interaction Protocols}
 
-The effectiveness of LLM-based tools is highly dependent on prompt design. Yet, only a few studies
-discuss systematic prompt engineering or structured interaction protocols. Concepts like
-Model-Centric Prompting (MCP), which aim to formalize interaction with LLMs based on task-specific
-behaviors and expected outputs, are underutilized in cybersecurity literature
-\cite{sahoo2024systematic}. Similarly, there is little attention paid to model behavior calibration
-or role conditioning to enhance output reliability.
+Effective use of LLMs requires structured prompt design. Yet, most cybersecurity applications
+ignore prompt engineering methodologies like Model-Centric Prompting (MCP), which are shown to
+improve output reliability and task alignment \cite{sahoo2024systematic}. A lack of formalized
+interaction strategies hinders reproducibility and evaluation.
 
-\subsection{Security and Trust Risks in RAG-based Systems}
+\subsection{Emerging Security Risks in AI-Augmented Pipelines}
 
-Emerging research like PoisonedRAG \cite{zou2024poisonedrag} highlights how RAG systems are
-susceptible to targeted corruption of their retrieval index. This presents unique challenges when
-applying RAG to security workflows, where retrieved context must be not only relevant but also
-trustworthy. No current work addresses this issue in the context of malware classification or
-triage.
+As outlined by Zou et al. \cite{zou2024poisonedrag} and echoed in the generative AI security report
+\cite{metta2024generativeai}, RAG-based and LLM-powered systems face risks such as data poisoning,
+prompt injection, and misinformation amplification. None of the surveyed malware analysis
+frameworks account for these threats, indicating a serious oversight in current literature.
 
 By addressing these gaps, this research seeks to develop a reproducible framework that combines
 RAG, LLMs, and structured prompts to enhance static malware analysis.
