@@ -34,6 +34,19 @@
     see=[acronym:]{deepseekr1}
 }
 
+% --- API and aliases ---
+\newacronym{api}{API}{Application Programming Interface}
+\newglossaryentry{application-programming-interface}{
+    name={Application Programming Interface},
+    description={A set of protocols and tools that allows different software applications to communicate and interact with each other},
+    see=[acronym:]{api}
+}
+\newglossaryentry{api-entry}{
+    name={API},
+    description={See \gls{application-programming-interface}},
+    see=[main entry:]{application-programming-interface}
+}
+
 % --- RAG and aliases ---
 \newacronym{rag}{RAG}{Retrieval-Augmented Generation}
 \newglossaryentry{retrieval-augmented-generation}{
@@ -165,6 +178,17 @@
     see=[main entry:]{pgvector}
 }
 
+% --- Ghidra and aliases ---
+\newglossaryentry{ghidra}{
+    name={Ghidra},
+    description={An open-source software reverse engineering (SRE) suite developed by the NSA, used for analyzing compiled code, decompilation, and malware analysis}
+}
+\newglossaryentry{ghydra}{
+    name={Ghydra},
+    description={See \gls{ghidra}},
+    see=[main entry:]{ghidra}
+}
+
 % --- peframe and aliases ---
 \newglossaryentry{peframe}{
     name={PEFrame},
@@ -174,6 +198,26 @@
     name={PE frame},
     description={See \gls{peframe}},
     see=[main entry:]{peframe}
+}
+
+% --- PE file and aliases ---
+\newglossaryentry{pe-file}{
+    name={PE file},
+    description={A Portable Executable (PE) file, the standard file format for executables, object code, and DLLs in 32-bit and 64-bit versions of Windows operating systems}
+}
+\newglossaryentry{portable-executable}{
+    name={Portable Executable},
+    description={See \gls{pe-file}},
+    see=[main entry:]{pe-file}
+}
+\newglossaryentry{pe-files}{
+    name={PE files},
+    description={See \gls{pe-file}},
+    see=[main entry:]{pe-file}
+}
+\newglossaryentry{pe}{
+    name={PE format},
+    description={The file format specification for Portable Executable (PE) files used in Windows operating systems; defines the structure and layout of executable files, object code, and DLLs}
 }
 
 % --- VirusTotal ---
