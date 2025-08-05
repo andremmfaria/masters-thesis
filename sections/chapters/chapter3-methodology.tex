@@ -153,9 +153,9 @@ sample and generate classification outputs along with contextual metadata.
 \subsection{Malware Sample Ingestion}\label{subsec:MalwareSampleIngestion}
 The system accepts samples in \gls{pe} format, including '.exe', '.dll', and '.sys' binaries, which
 are commonly used by malware on the Windows platform. The decision to focus on \gls{pe} files is
-grounded in both practical and research-driven considerations. PE files represent the dominant
-binary format for Windows-based malware, which remains the most targeted operating system by
-malicious actors worldwide. Their structure is well-documented and rich in analyzable metadata,
+grounded in both practical and research-driven considerations.\ \gls{pe} files represent the
+dominant binary format for Windows-based malware, which remains the most targeted operating system
+by malicious actors worldwide. Their structure is well-documented and rich in analyzable metadata,
 including headers, sections, and import tables. Another reason is that numerous tools such as
 \texttt{pefile}, \texttt{peframe}, and \gls{ghidra} provide strong support for static feature
 extraction from PE files. As noted by Fujii and Yamagishi~\cite{fujii2024llm}, static analysis of
@@ -182,58 +182,18 @@ both pipelines. The use of Ghidra ensures consistency across samples and
 provides a deep view into malware internals, even in the absence of obfuscation~\cite{fujii2024llm}.
 
 \subsection{Pipeline A --~Static Tag-Based Classification (Baseline)}\label{subsec:StaticTagBasedClassification}
-The baseline pipeline mirrors traditional analyst workflows as described by Wong et
-al.~\cite{wong2021practice}. It uses static features to infer the malware family using two main
-strategies:
-\begin{itemize}
-    \item \textbf{Heuristic Rule Matching}: Flags based on imported API patterns (e.g., \texttt{VirtualAlloc}, \texttt{WriteProcessMemory}), entropy thresholds for packed sections, and known indicators such as the presence of suspicious strings (e.g., PowerShell commands).
-    \item \textbf{Tag Mapping from VirusTotal}: If VirusTotal metadata is available, its tags (e.g., \texttt{trojan.downloader}, \texttt{ransomware.wannaCry}) are mapped to one of the pre-defined malware families. This creates a lightweight labeling proxy without requiring manual annotation.
-\end{itemize}
-The results of this pipeline include a family label (if matched), triggered heuristic rules, and any tags retrieved from VirusTotal.
+The baseline pipeline uses static features and VirusTotal tags to classify malware samples,
+following standard analyst workflows. It combines heuristic rule matching (e.g., suspicious API
+imports, entropy checks) with tag mapping from VirusTotal to assign malware family labels. For a
+detailed description of this process, see Section~\ref{subsec:BaselinePipeline}.
 
 \subsection{Pipeline B --~LLM + RAG-Based Classification}\label{subsec:RAGBasedClassification}
-The second pipeline enhances traditional static analysis with \gls{rag} and \glspl{llm}. Its
-purpose is to contextualize static features with background knowledge retrieved from threat
-databases. It comprises the following components:
-
-\begin{itemize}
-    \item \textbf{Vector Database (PostgreSQL + pgvector):} The system uses
-          \gls{postgresql} enhanced with the \gls{pgvector} extension to store and
-          query embedded documents. Each document (e.g., malware family reports,
-          technical documentation, annotated disassemblies) is vectorized using an
-          embedding model (e.g., OpenAI's \texttt{text-embedding-3-small}) and stored
-          along with its metadata. Indexing is performed using cosine similarity.
-    \item \textbf{Semantic Retrieval with Haystack:} Using the \gls{haystacks}
-          framework, extracted features from the malware sample (e.g., top 20
-          printable strings, decompiled imports) are concatenated into a natural
-          language query. Haystack performs a semantic similarity search on the
-          vector index, retrieving the top $k$ most relevant documents. Retrieval logs include:
-          \begin{itemize}
-              \item Query terms
-              \item Retrieved document IDs and similarity scores
-              \item Retrieval latency and embedding version
-          \end{itemize}
-          This approach aligns with Gao et al.'s findings~\cite{gao2023retrieval} that RAG
-          significantly improves task performance by grounding LLM responses in structured, external knowledge.
-    \item \textbf{Prompt Construction and Compliance Filtering:} A structured prompt template combines:
-          \begin{itemize}
-              \item Static features extracted from Ghidra
-              \item Summarized retrieved documents
-              \item Instruction template requesting classification, explanation, and comparison
-          \end{itemize}
-          Before sending to the \gls{llm}, the prompt is passed through a
-          compliance module that filters disallowed content (e.g., hex dumps,
-          shellcode, internal IPs), as recommended by Zou et
-          al.~\cite{zou2024poisonedrag} to prevent injection or hallucination based on corrupted data.
-    \item \textbf{Inference with LLMs:} The final prompt is sent to an \gls{llm}
-          (e.g., \gls{gpt4o} via OpenAI API or \gls{deepseek-r1} via DeepSeek API). The model returns:
-          \begin{itemize}
-              \item Malware family classification
-              \item Justification for the classification based on retrieved documents
-              \item Comparison with known malware behaviors
-          \end{itemize}
-          Prompt metadata, token usage, model ID, and inference latency are logged for later analysis.
-\end{itemize}
+This pipeline enhances static analysis by integrating \gls{rag} and \gls{llm}. It uses a vector
+database (\gls{postgresql} + \gls{pgvector}) to store embedded threat intelligence documents, and
+the Haystack framework to retrieve relevant context based on extracted static features. Retrieved
+documents and features are combined into a structured prompt, filtered for compliance, and
+submitted to an LLM (e.g., \gls{gpt4o} or \gls{deepseek-r1}) for classification and explanation.
+For full technical details, see Section~\ref{subsec:LLMRAGPipeline}.
 
 \subsection{Logging and Result Storage}\label{subsec:LoggingAndResult}
 Both pipelines store their outputs in a structured format with fields for:
@@ -255,12 +215,11 @@ As shown in the System Architecture diagram (Figure~\ref{fig:system_architecture
 begins with \gls{malware} samples and diverges into two paths—one leveraging rule-based static
 classification, and the other combining feature-based semantic querying with \gls{llm} inference.
 
-\subsection{Malware Samples (PE Files)}\label{subsec:MalwareSamples}
-
-The primary input to the system is a corpus of Portable Executable (PE) files. This file format,
-standard for Windows executables (e.g., \texttt{.exe}, \texttt{.dll}), is widely used in static
-\gls{malware} analysis due to its rich structural features such as headers, import/export tables,
-and embedded strings\cite{fedak2020fundamentals}.
+\subsection{Malware Samples Sourcing}\label{subsec:MalwareSamplesSourcing}
+The primary input to the system is a corpus of \gls{pe} files. This file format, standard for
+Windows executables (e.g., \texttt{.exe}, \texttt{.dll}), is widely used in static \gls{malware}
+analysis due to its rich structural features such as headers, import/export tables, and embedded
+strings\cite{fedak2020fundamentals}.
 
 Feature extraction will be performed using \gls{ghidra}, a reverse engineering tool capable of
 decompilation and structural analysis. Automation is handled through
@@ -270,21 +229,24 @@ artifacts for both pipelines.
 
 Malware samples are sourced from:
 \begin{itemize}
-    \item \textbf{\gls{malwarebazaar}}: An open repository maintained by abuse.ch that provides recent PE malware samples for research purposes.
-    \item \textbf{\gls{virustotal}}: A commercial platform offering API-based access to \gls{malware} samples, including scan metadata and tags.
+    \item \textbf{\gls{malwarebazaar}}: An open repository maintained by
+          abuse.ch that provides recent PE malware samples for research purposes.
+    \item \textbf{\gls{virustotal}}: A commercial platform offering API-based
+          access to \gls{malware} samples, including scan metadata and tags.
 \end{itemize}
 
 These PE files are stored and catalogued with timestamp and hash-based identifiers.
 
 \subsection{Baseline Metadata Sources}\label{subsec:BaselineSources}
-
 For the baseline classification pipeline, a hybrid strategy combining heuristics and third-party
 metadata is employed. The idea is to provide a deterministic classification model that does not
 rely on \gls{llm} capabilities, offering a contrast point for evaluation.
 
 \begin{itemize}
-    \item \textbf{Rule-Based Heuristics}: Static rules are applied using tools such as \gls{peframe} and \texttt{pefile}.
-          These extract and match against known patterns (e.g., suspicious section names, use of packers, API imports).
+    \item \textbf{Rule-Based Heuristics}: Static rules are applied using tools
+          such as \gls{peframe} and \texttt{pefile}. These extract and match against
+          known patterns (e.g., suspicious section names, use of packers, API
+          imports).
     \item \textbf{VirusTotal Tag Mapping}: Labels and family tags from
           VirusTotal scans are queried via the public API and mapped to categories
           such as ransomware, trojan, downloader, or dropper, following established
@@ -299,8 +261,10 @@ justifications and assign threat categories without any inference-based reasonin
 To support the \gls{rag} pipeline, a dedicated corpus is constructed to supply contextual documents
 during inference. This corpus is not retrieved from a pre-existing vector database but instead
 populated manually using relevant, high-quality sources. The goal is to include rich semantic
-context that can support static malware classification and interpretation.
+context that can support static malware classification and interpretation. This corpus is creation
+is done via a data ingestion pipeline, described on section~~\ref{subsec:RAGIngestionPipeline}.
 
+\vspace{0.5em}
 \textbf{Corpus Sources}: The following publicly available sources are used to gather data for embedding:
 
 \begin{itemize}
@@ -368,17 +332,16 @@ malware techniques, as noted in recent cybersecurity reviews \cite{ferrag2024all
     metta2024generativeai}.
 
 \subsection{Ground Truth and Labeling}\label{subsec:Labeling}
-
 For evaluation purposes, all samples are annotated using VirusTotal metadata and matched against
 open-source labeling conventions where available. While this does not represent a perfect ground
 truth, it provides a consistent benchmark to compare classification accuracy and explainability
 across both pipelines.
 
-\section{Workflow Environment and Details}\label{sec:WorkflowEnvironmentDetails}
+\section{Environment, Workflows and Details}\label{sec:WorkflowEnvironmentDetails}
 This section provides a comprehensive explanation of the implementation environment, supporting
 tools, and the internal workings of each pipeline designed for the experiment. It justifies tool
 choices, explains how different components interact, and ensures clarity and reproducibility across
-the baseline, LLM+RAG, and RAG ingestion pipelines.
+the baseline, LLM+RAG, and data ingestion pipelines.
 
 \subsection{Environment}\label{subsec:Environment}
 % Describes the Python-based toolchain used across the project:
@@ -390,6 +353,77 @@ the baseline, LLM+RAG, and RAG ingestion pipelines.
 % - **OpenAI and DeepSeek-R1 APIs** for LLM inference.
 % - **VirusTotal and MalwareBazaar APIs** for metadata enrichment.
 % - Versioning and reproducibility strategies.
+The experimental environment supporting this research was developed using widely adopted,
+open-source tools and methods. The overall architecture emphasizes modular components,
+API-driven \glspl{llm} integration, and transparent, reproducible analysis workflows.
+
+\vspace{1em}
+\noindent The core tools and libraries used in this environment are:
+
+\begin{itemize}
+    \item \textbf{\gls{python}} --~Primary language for all implementations and
+          orchestration logic. Its versatility, rich library ecosystem, and strong
+          support for both cybersecurity tooling and \gls{machine-learning}
+          applications made it a natural
+          choice.\footnote{\url{https://www.python.org}}
+
+    \item \textbf{PDM (Python Development Master)} --~Manages \gls{python}
+          dependencies, virtual environments, and execution workflows. It ensures
+          consistent runtime environments and facilitates container-based
+          reproducibility.\footnote{\url{https://pdm-project.org}}
+
+    \item \textbf{\gls{postgresql} + \gls{pgvector}} --~A robust relational
+          database enhanced with the \texttt{pgvector} extension to support vector
+          similarity search for embeddings. Acts as the vector store backing the
+          retrieval component of the \gls{rag}
+          pipeline.\footnote{\url{https://www.postgresql.org},
+              \url{https://github.com/pgvector/pgvector}}
+
+    \item \textbf{\gls{haystack}} --~Orchestrates the \gls{rag} workflow,
+          including document ingestion, chunking, embedding, and semantic retrieval.
+          Offers modular pipelines and seamless \gls{llm}
+          integration.\footnote{\url{https://haystack.deepset.ai}}
+
+    \item \textbf{\glspl{llm}} (used in inference-only mode) --~No fine-tuning
+          is performed. Instead, these models rely on context injection via retrieval:
+          \begin{itemize}
+              \item \textbf{\gls{gpt4o} via OpenAI API} --~Handles deep
+                    contextual reasoning and structured analysis of static
+                    features.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
+              \item \textbf{DeepSeek-R1 via API} --~An open-source alternative
+                    to \gls{gpt4o} that validates outputs and introduces inference
+                    diversity.\footnote{\url{https://api-docs.deepseek.com/}}
+          \end{itemize}
+
+    \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} is used as the
+          decompiler and static feature extractor for \gls{pe} malware samples, with
+          PyGhidra enabling automation of decompilation, symbol extraction, and
+          byte-level
+          analysis.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra},
+              \url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
+
+    \item \textbf{\gls{malwarebazaar} API} --~Provides access to real-world
+          malware samples, hashes, tags, and static metadata used in classification
+          and enrichment.\footnote{\url{https://bazaar.abuse.ch/api/}}
+
+    \item \textbf{\gls{virustotal} API} --~Augments samples with antivirus
+          classification tags, behavioral indicators, and vendor-specific labels.
+          Supports the baseline heuristic
+          classifier.\footnote{\url{https://developers.virustotal.com/reference}}
+
+    \item \textbf{Pandas} --~Used for data manipulation, tabular exploration of
+          classification results, filtering, and metric aggregation during
+          experimentation.\footnote{\url{https://pandas.pydata.org}}
+
+    \item \textbf{Matplotlib} --~Generates bar charts, line plots, and confusion
+          matrices used to visualize and compare pipeline
+          performance.\footnote{\url{https://matplotlib.org}}
+
+    \item \textbf{Scikit-learn} --~Provides evaluation metrics such as accuracy,
+          precision, recall, and F1-score. Also supports simple rule-based baselines
+          and their evaluation.\footnote{\url{https://scikit-learn.org}}
+
+\end{itemize}
 
 \subsection{Baseline Pipeline}\label{subsec:BaselinePipeline}
 % Covers the non-LLM static pipeline:
@@ -401,6 +435,83 @@ the baseline, LLM+RAG, and RAG ingestion pipelines.
 %   - **VirusTotal**: Tag correlation and family mapping.
 % - Output classification format.
 % - Technologies: PyGhidra, Pandas, custom heuristics, VirusTotal API.
+The baseline pipeline represents a traditional static malware classification process that does not
+rely on \glspl{llm}. It is designed to provide a deterministic, explainable benchmark against which
+the \gls{rag}-enhanced pipeline can be compared. This pipeline processes \gls{pe} files and
+produces a static classification label using a hybrid method combining custom heuristics with
+VirusTotal's family tags.
+
+\vspace{0.5em}
+\noindent\textbf{Input Format:} The pipeline operates exclusively on \glspl{pe},
+the standard format for executables in Windows environments. These files were
+selected due to their structural regularity and prevalence in real-world malware
+datasets, which allows for consistent feature extraction and rule-based
+analysis~\cite{fedak2020fundamentals}.
+
+\vspace{0.5em}
+\noindent\textbf{Feature Extraction:} Using \gls{ghidra} and its Python
+automation layer \texttt{PyGhidra}, key static features are extracted from each
+binary~\cite{fedak2020fundamentals, fujii2024llm}. These features include:
+\begin{itemize}
+    \item Extracted \texttt{.text}, \texttt{.data}, and \texttt{.rsrc} sections
+    \item Strings and entropy calculations
+    \item Imported function calls and dynamic-link library (DLL) names
+    \item Entry point location and PE header metadata
+\end{itemize}
+
+These features are logged into structured \texttt{pandas} dataframes for downstream processing.
+
+\vspace{0.5em}
+\noindent\textbf{Preprocessing and Logging:} Extracted values are normalized,
+deduplicated, and serialized into tabular form for processing. The logs are kept
+both for auditability and reproducibility, and serve as inputs to the
+classification stage.
+
+\vspace{0.5em}
+\noindent\textbf{Hybrid Classification Strategy:} The core classification step
+is composed of two components:
+
+\begin{itemize}
+    \item \textbf{Rule-Based Heuristics:} A set of hand-crafted rules assess static indicators, such as:
+          \begin{itemize}
+              \item Specific API imports (e.g., \texttt{CreateRemoteThread}, \texttt{VirtualAllocEx})
+              \item High entropy in packed sections
+              \item Presence of suspicious strings or obfuscation markers
+          \end{itemize}
+          Based on these features, heuristic labels (e.g., ``ransomware-like'',
+          ``downloader'') are assigned.~\cite{gaber2024malware,
+              cassanova2022systematic}.
+
+    \item \textbf{VirusTotal Tag Mapping:} For each file, the \gls{virustotal}
+          API is queried using its SHA-256 hash. Family tags (e.g., \texttt{Emotet},
+          \texttt{AgentTesla}) and antivirus engine classifications are retrieved. A
+          mapping layer harmonizes divergent vendor names into canonical families,
+          based on predefined normalization rules.~\cite{wong2021practice}.
+\end{itemize}
+
+The final label is determined by reconciling both sources: if heuristic and \gls{virustotal} tags
+align, the label is accepted as-is; if they differ, precedence is given to the VirusTotal tag
+unless the heuristic confidence exceeds a defined threshold.
+
+\vspace{0.5em}
+\noindent\textbf{Output Format:} The resulting classification includes:
+\begin{itemize}
+    \item Canonical family label (e.g., \texttt{LokiBot})
+    \item Confidence score (from heuristic analysis)
+    \item Relevant rules triggered
+    \item VirusTotal engine match count
+\end{itemize}
+
+This format is structured to facilitate side-by-side comparison with the \gls{llm} pipeline output.
+
+\vspace{0.5em}
+\noindent\textbf{Technologies Used:} The baseline pipeline is implemented using:
+\begin{itemize}
+    \item \textbf{PyGhidra} --~Automates static feature extraction within \gls{ghidra}
+    \item \textbf{Pandas} --~For structured tabular logging and feature processing
+    \item \textbf{Heuristic Engine} --~Rule-based decision logic written for this experiment
+    \item \textbf{VirusTotal API} --~External enrichment with malware family tags and detections
+\end{itemize}
 
 \subsection{LLM+RAG Pipeline}\label{subsec:LLMRAGPipeline}
 % Details the enhanced pipeline:
@@ -408,9 +519,96 @@ the baseline, LLM+RAG, and RAG ingestion pipelines.
 % - **Semantic query** creation via Haystack.
 % - **Contextual document retrieval** from pgvector vector store.
 % - **Prompt construction** via template builder + compliance filter.
-% - **Inference** using OpenAI’s GPT-4 or DeepSeek-R1 APIs.
+% - **Inference** using OpenAI's GPT-4 or DeepSeek-R1 APIs.
 % - Justification for not fine-tuning (focus on zero-shot generalization and reproducibility).
 % - Output handling and logging.
+The LLM+RAG pipeline integrates large language models with retrieval-augmented generation to
+enhance static malware classification. Unlike the baseline pipeline, it leverages semantic
+retrieval over a curated threat corpus to provide context-aware inference, enabling explainable and
+more flexible analysis. This method focuses on inference-time reasoning rather than learned
+classification logic, facilitating zero-shot generalization and reducing the need for fine-tuning.
+
+\vspace{0.5em}
+\noindent\textbf{Input Format and Feature Extraction:} The pipeline begins
+identically to the baseline.\ \gls{pe} file is processed using \gls{ghidra} and
+\texttt{PyGhidra} to extract static features such as:
+\begin{itemize}
+    \item Imported APIs and DLLs
+    \item Decompiled string literals
+    \item Entropy and section metadata
+\end{itemize}
+These features are logged and preprocessed using \texttt{pandas} and serialized
+for semantic use in query generation.
+
+\vspace{0.5em}
+\noindent\textbf{Semantic Query Generation:} Using \gls{haystacks}, key
+extracted features are concatenated into a structured natural language query.
+For example, imported APIs and extracted strings are transformed into a
+sentence-level description of behavior (e.g., “This binary uses networking and
+injection-related APIs and contains obfuscated payload strings.”). This query
+serves as the basis for semantic search.
+
+\vspace{0.5em}
+\noindent\textbf{Contextual Document Retrieval:} A retrieval component searches
+a pre-built vector store implemented using \gls{postgresql} and the
+\texttt{pgvector} extension. The vector store is populated with curated
+malware-related documents such as technical APT reports, annotated
+disassemblies, and malware family descriptions. Documents are embedded using
+models such as \texttt{text-embedding-3-small}, and indexed via cosine
+similarity. The top-$k$ semantically similar documents are retrieved and logged
+alongside their similarity scores, latency, and embedding metadata. This
+retrieval mechanism is consistent with findings by Gao et
+al.~\cite{gao2023retrieval}, which demonstrate the effectiveness of grounding
+\glspl{llm} in external structured knowledge.
+
+\vspace{0.5em}
+\noindent\textbf{Prompt Construction and Compliance Filtering:} Retrieved
+documents are summarized and embedded into a structured prompt template
+alongside the extracted static features. The prompt template instructs the model
+to:
+\begin{itemize}
+    \item Classify the sample into a known malware family
+    \item Justify the classification using contextual evidence
+    \item Compare with similar malware if applicable
+\end{itemize}
+Prior to submission, the prompt is filtered through a compliance layer that
+removes hex dumps, shellcode fragments, and sensitive indicators. This step
+follows best practices to mitigate prompt injection and hallucination as
+discussed by Zou et al.~\cite{zou2024poisonedrag}.
+
+\vspace{0.5em}
+\noindent\textbf{LLM Inference and Response Handling:} The filtered prompt is
+submitted to either \gls{gpt4o} via the OpenAI API or \gls{deepseek-r1} via the
+DeepSeek API. Models are used strictly in inference mode—no fine-tuning is
+applied—emphasizing prompt-based generalization for flexible classification. The
+output includes:
+\begin{itemize}
+    \item A proposed malware family label (e.g., \texttt{RedLine}, \texttt{CobaltStrike})
+    \item Explanation of how retrieved documents support the classification
+    \item Optional comparison with known samples or behaviors
+\end{itemize}
+
+Prompt metadata, model identifiers, latency, and token usage are logged for reproducibility and
+performance analysis.
+
+\vspace{0.5em}
+\noindent\textbf{Output Format:} The output is formatted in parallel to the baseline, including:
+\begin{itemize}
+    \item Family label and supporting rationale
+    \item Retrieved documents (IDs and titles)
+    \item Token usage and model identifier
+\end{itemize}
+This structure ensures alignment with the baseline for comparative evaluation.
+
+\vspace{0.5em}
+\noindent\textbf{Technologies Used:}
+\begin{itemize}
+    \item \textbf{Ghidra + PyGhidra} --~Static feature extraction
+    \item \textbf{Haystack} --~Semantic query orchestration and vector search
+    \item \textbf{PostgreSQL + pgvector} --~Retrieval backend and document index
+    \item \textbf{OpenAI API / DeepSeek API} --~Inference endpoint for \glspl{llm}
+    \item \textbf{Pandas} --~Preprocessing, prompt serialization, and logging
+\end{itemize}
 
 \subsection{RAG Ingestion Pipeline}\label{subsec:RAGIngestionPipeline}
 % Describes how the vector database is constructed:
@@ -421,18 +619,257 @@ the baseline, LLM+RAG, and RAG ingestion pipelines.
 % - Insertion into PostgreSQL + pgvector via Haystack.
 % - Tools and scripts used.
 % - Rationale: improves contextual grounding and mitigates hallucination.
+To support contextual retrieval in the \gls{rag}-enabled classification pipeline, a dedicated
+ingestion workflow is implemented to populate the underlying vector store with structured,
+semantically rich documents. This ingestion pipeline is responsible for fetching, cleaning,
+embedding, and storing contextual data from multiple threat intelligence sources.
+
+\vspace{0.5em}
+\noindent\textbf{Input Data Sources:} Four primary sources are used to build the
+corpus:
+
+\begin{itemize}
+    \item \textbf{VX-Underground APT Writeups} --~Public APT reports containing
+          adversary TTPs, binary structure notes, and malware reverse engineering
+          documentation.
+    \item \textbf{Malpedia Documentation} --~Structured malware family
+          descriptions and behavioral summaries.
+    \item \textbf{MalwareBazaar Metadata} --~Tag-based and hash-level metadata
+          for malware samples submitted by the research community.
+    \item \textbf{VirusTotal Metadata} --~Retrieved via API, including antivirus
+          family tags, behavioral signatures, and heuristic detections.
+\end{itemize}
+
+These documents are collected using custom Python scripts or RESTful API queries and stored
+temporarily in JSON format prior to preprocessing.
+
+\vspace{0.5em}
+\noindent\textbf{Preprocessing and Cleaning:} All raw documents undergo the
+following transformations:
+\begin{itemize}
+    \item Language normalization (UTF-8 encoding, newline/whitespace trimming)
+    \item Removal of duplicate entries and empty content blocks
+    \item Anonymization of private data such as internal IP addresses or analyst handles
+    \item Document type and source labeling via metadata fields
+\end{itemize}
+
+Structured metadata is appended to each document, including the document source, timestamp, family
+label (if known), and threat category (e.g., info-stealer, loader, trojan).
+
+\vspace{0.5em}
+\noindent\textbf{Chunking Strategy:} Once cleaned, each document is split into
+semantically coherent chunks using Haystack's \texttt{TextSplitter}. This
+ensures each chunk remains within the token limit of the embedding model and
+preserves context. The chunking parameters are:
+\begin{itemize}
+    \item Maximum chunk size: 512 tokens
+    \item Overlap: 20--50 tokens to preserve semantic continuity
+    \item Chunk granularity: sentence-level where possible
+\end{itemize}
+
+\vspace{0.5em}
+\noindent\textbf{Embedding and Vectorization:} Chunks are encoded using the
+embedding model selected for the project. The primary model is:
+\begin{itemize}
+    \item \textbf{OpenAI \texttt{text-embedding-3-small}} --~Embedding model
+          used via OpenAI API for generating high-dimensional vectors suited for
+          semantic retrieval. Alternatives such as DeepSeek or sentence-transformers
+          may be used for ablation studies.
+\end{itemize}
+Each embedding is paired with its corresponding metadata and stored for vector
+search.
+
+\vspace{0.5em}
+\noindent\textbf{Database Insertion:} Embedded chunks and metadata are stored in
+\gls{postgresql} using the \texttt{pgvector} extension, which enables fast
+cosine similarity search. Haystack's document store integration handles
+insertion, index creation, and metadata filtering. Each entry contains:
+\begin{itemize}
+    \item Vector representation
+    \item Original text chunk
+    \item Source metadata (e.g., filename, label, source URL)
+    \item Embedding version and timestamp
+\end{itemize}
+
+\vspace{0.5em}
+\noindent\textbf{Tools and Orchestration:} The ingestion pipeline is implemented
+in Python using the following components:
+\begin{itemize}
+    \item \textbf{Haystack Framework} --~For chunking, embedding, and insertion
+    \item \textbf{OpenAI API} --~For embedding generation
+    \item \textbf{Custom Scripts} --~For source collection, normalization, and format conversion
+    \item \textbf{PDM} --~For environment management and reproducibility
+\end{itemize}
 
 \section{Prompt Engineering}\label{sec:PromptEngineering}
 % Discuss how you craft prompts for different tasks: classification, explanation, and comparison.
 % Include examples of how static features and retrieved context are structured in the prompt.
 % Explain the decision to use GPT-4 and/or DeepSeek-R1 in inference-only mode.
-TODO...
+The design of effective prompts is central to the performance of the \gls{rag}-enhanced pipeline.
+This section outlines the prompt construction methodology used throughout the study, including the
+integration of retrieved documents, static features, and classification instructions. The goal is
+to transform raw malware data and semantic context into a structured input format that maximizes
+interpretability, consistency, and task relevance during inference.
+
+Unlike traditional fine-tuning approaches, this study adopts a zero-shot generalization strategy.
+All prompts are crafted manually or via templates and submitted to hosted \glspl{llm} in
+inference-only mode. This design promotes reproducibility and avoids training-induced biases,
+aligning with the research goal of evaluating LLM reasoning under minimal assumptions.
+
+\subsection{Prompt Structure}\label{subsec:PromptStructure}
+Prompts are built using a modular template system, which concatenates static features, retrieved
+documents, and task instructions into a unified prompt. The structure follows a three-part format:
+
+\begin{enumerate}
+    \item \textbf{Context Section}: Includes extracted static features (e.g.,
+          imported API calls, entropy indicators, detected packers) presented as
+          natural language bullet points. This is followed by a set of up to $k=3$
+          summarized documents retrieved via the \gls{haystacks} semantic search
+          module. Each document is labeled with its source and a short
+          system-generated summary.
+
+    \item \textbf{Instruction Block}: A fixed instruction prompt requests three
+          outputs: (1) malware family classification, (2) justification based on
+          features and retrieved context, and (3) a comparison with known malware
+          behaviors or tactics.
+
+    \item \textbf{Metadata Footer}: A short metadata footer is appended,
+          including model ID placeholder, timestamp, and token count estimate. This
+          block is not sent to the model but used internally for audit and
+          reproducibility purposes.
+\end{enumerate}
+
+An example prompt excerpt is shown below:
+
+\begin{quote}
+    \texttt{Context:}
+    - The file imports \texttt{CreateRemoteThread}, \texttt{VirtualAllocEx}, and \texttt{WriteProcessMemory}.
+    - High entropy detected in \texttt{.text} section.
+    - Strings include URLs and encoded PowerShell commands.
+
+    \texttt{Retrieved Document [Malpedia: AgentTesla]}: \emph{'AgentTesla often
+        uses process injection via RemoteThread API and obfuscates its communication
+        channels through encoded PowerShell'}
+
+    \texttt{Task:}
+    Based on the static features and retrieved documentation, classify the malware into a known family.
+    Justify your classification and explain how it aligns or diverges from similar threats.
+\end{quote}
+
+\subsection{Prompt Filtering and Safety Checks}\label{subsec:PromptFiltering}
+Before submission to the LLM, the prompt is passed through a compliance module. This ensures:
+
+\begin{itemize}
+    \item No raw hex dumps or disassembly snippets are embedded directly
+    \item No private information (e.g., internal IPs, analyst notes) is leaked
+    \item Token length does not exceed the model's maximum context window
+\end{itemize}
+
+This is particularly important for mitigating hallucination and injection risks, as highlighted in
+PoisonedRAG~\cite{zou2024poisonedrag}.
+
+\subsection{Model Selection and Inference Mode}\label{subsec:InferenceMode}
+Prompts are submitted in inference-only mode to two different models for comparative analysis:
+
+\begin{itemize}
+    \item \textbf{GPT-4o via OpenAI API}: Provides strong generalization,
+          reasoning, and explanation capabilities. Used as the primary evaluation model.
+    \item \textbf{DeepSeek-R1 via API}: Offers a strong open-weight baseline,
+          used to evaluate model consistency and dependency on proprietary tuning.
+\end{itemize}
+
+Both models are used without fine-tuning, relying solely on the richness and clarity of the prompt
+to drive classification behavior. Prompt-response pairs are logged for post-analysis, including
+model temperature, latency, and token usage.
+
+\subsection{Task Types}\label{subsec:TaskTypes}
+Three main task templates are implemented:
+
+\begin{enumerate}
+    \item \textbf{Classification-Only}: For determining the most probable
+          malware family based on feature and document alignment.
+    \item \textbf{Classification + Justification}: Adds reasoning requirements,
+          forcing the model to cite evidence from retrieved sources or static
+          features.
+    \item \textbf{Classification + Comparison}: Requests explanation of how the
+          input sample compares with known variants, useful for script-based or
+          ambiguous binaries.
+\end{enumerate}
+
+This multi-template design allows a fine-grained analysis of LLM behavior across different
+cognitive demands.
+
+\subsection{Reproducibility and Prompt Versioning}\label{subsec:PromptVersioning}
+All prompts are versioned using a hash-based identifier computed from the static feature set and
+retrieved document IDs. This ensures that any inference result can be reproduced precisely, even if
+the underlying documents or model APIs are updated. Prompt versions are stored alongside inference
+results and used during evaluation (Section~\ref{sec:EvaluationFramework}).
 
 \section{Evaluation Framework}\label{sec:EvaluationFramework}
 % Define your evaluation metrics: accuracy, efficiency, interpretability.
 % Describe baseline comparisons against traditional static malware classifiers (if applicable).
 % Discuss any human-in-the-loop components for evaluating explanation quality.
-TODO...
+This section defines the evaluation framework used to compare the baseline and \gls{rag}-enhanced
+pipelines. The evaluation focuses on three axes: classification accuracy, processing efficiency,
+and interpretability of the results. Both quantitative and qualitative metrics are employed to
+assess how well each pipeline performs in realistic analysis scenarios.
+
+\subsection{Evaluation Criteria}\label{subsec:EvaluationCriteria}
+The following core dimensions are used to evaluate pipeline outputs:
+
+\begin{itemize}
+    \item \textbf{Accuracy}: Measures the correctness of malware family
+          classification. Ground truth is derived from VirusTotal consensus labels,
+          harmonized via a mapping layer to canonical family names. This is used as a
+          benchmark label for each sample.
+
+    \item \textbf{Efficiency}: Assessed by measuring average processing time per
+          sample, from ingestion to classification. For the \gls{llm} pipeline, this
+          includes embedding, retrieval, prompt construction, and inference latency.
+          For the baseline, it includes decompilation, feature logging, heuristic
+          evaluation, and API enrichment.
+
+    \item \textbf{Interpretability}: Evaluated through the presence, structure,
+          and relevance of classification justifications. The \gls{llm} pipeline is
+          expected to produce natural language rationales, while the baseline outputs
+          triggered rules and matched tags. Interpretability is quantified using
+          metrics inspired by Wong et al.~\cite{wong2021practice} and Sahoo et
+          al.~\cite{sahoo2024systematic}, including:
+          \begin{itemize}
+              \item Explanation coverage (fraction of samples with generated explanation)
+              \item Contextual grounding (presence of retrieved document citations)
+              \item Rule-reference matching (for baseline heuristics)
+          \end{itemize}
+\end{itemize}
+
+\subsection{Pipeline Output Comparison}\label{subsec:OutputComparison}
+All pipeline outputs are stored in a unified format including:
+\begin{itemize}
+    \item Classification label
+    \item Confidence score or LLM certainty expression
+    \item Explanation content (if available)
+    \item Processing time and component-level latency
+\end{itemize}
+
+This structure allows direct comparison between the baseline and the LLM-based results, aligned by
+sample ID making it easy to spot divergencies.
+
+\subsection{Baseline Alignment and Heuristic Audit}\label{subsec:HeuristicAudit}
+To assess the internal validity of the baseline pipeline, its rule set is evaluated independently
+on a manually curated subset of samples. Labels and triggered rules are reviewed for semantic
+consistency and overlap. Samples with ambiguous or conflicting tags are excluded from accuracy
+scoring but retained for interpretability analysis.
+
+\subsection{Limitations of Evaluation}\label{subsec:EvalLimitations}
+While the framework aims for reproducibility and objectivity, it is subject to limitations:
+\begin{itemize}
+    \item Ground truth labels rely on VirusTotal consensus, which may be incomplete or inconsistent across
+          vendors.
+    \item No human annotation or adversarial robustness testing is performed.
+    \item Explanation interpretability metrics are based on surface-level patterns and not semantic accuracy.
+\end{itemize}
+
+These limitations are discussed further in Section~\ref{sec:ReliabilityValidityLimitations}.
 
 \section{Reliability, Validity, and Limitations}\label{sec:ReliabilityValidityLimitations}
 % Discuss how reproducibility is ensured via version control, fixed seeds, and public datasets.
@@ -440,17 +877,131 @@ TODO...
 %   - Limited to static analysis.
 %   - Dependent on retrieval quality and LLM reliability.
 %   - No user-study or adversarial robustness testing (unless planned).
-TODO...
+This section outlines the steps taken to ensure experimental reproducibility, addresses internal
+and external validity, and describes the primary limitations of the study.
+
+\subsection{Reproducibility}\label{subsec:Reproducibility}
+Reproducibility is ensured through the following strategies:
+
+\begin{itemize}
+    \item \textbf{Version-Controlled Codebase}: All pipeline code, configuration
+          files, and documentation are maintained in a public Git
+          repository.\footnote{\url{https://github.com/andremmfaria/rexis}}
+    \item \textbf{Fixed Random Seeds}: Where applicable (e.g., document
+          shuffling, API sampling), fixed seeds are applied to reduce stochastic
+          variance.
+    \item \textbf{Containerized Environment}: All software dependencie s are
+          managed via \texttt{pdm} and deployed in Docker-based containers, allowing
+          identical execution across systems.
+    \item \textbf{Explicit API Versions}: External services such as OpenAI and
+          DeepSeek are called using versioned API endpoints and documented model
+          identifiers (e.g., \texttt{gpt-4o}, \texttt{deepseek-coder}).
+    \item \textbf{Metadata Logging}: All pipeline executions produce structured
+          logs with timestamps, sample IDs, tool versions, and model metadata.
+\end{itemize}
+
+\subsection{Internal Validity}\label{subsec:InternalValidity}
+Internal validity is maintained by isolating experimental variables and using consistent input
+samples across pipelines. Static features are extracted using a shared Ghidra backend. Document
+retrieval, prompt templates, and embedding models are fixed during experimentation. No manual
+intervention occurs in classification workflows.
+
+Potential threats include:
+\begin{itemize}
+    \item \textbf{Heuristic Bias}: Rule-based logic may overfit known patterns
+          and underperform on obfuscated or novel samples.
+    \item \textbf{Retrieval Drift}: Embedding-based retrieval may vary with
+          changes in the document corpus or chunking strategy.
+\end{itemize}
+
+\subsection{External Validity}\label{subsec:ExternalValidity}
+Findings are limited to \gls{pe}-based malware and static analysis contexts. Results may not
+generalize to dynamic behavior-based classification, fileless malware, or non-Windows platforms.
+The use of inference-only LLMs avoids fine-tuning, which may affect performance in real-world
+analyst environments.
+
+\subsection{Study Limitations}\label{subsec:StudyLimitations}
+Several constraints impact the scope of the study. These limitations are considered when
+interpreting results in the final evaluation.
+
+\begin{itemize}
+    \item \textbf{Static Analysis Only}: No dynamic or hybrid analysis is
+          performed. Obfuscated or packed binaries may yield incomplete features.
+    \item \textbf{LLM Limitations}: Model responses may include hallucinated or
+          overconfident statements~\cite{zou2024poisonedrag, ferrag2024allinsights}.
+          Prompts are filtered but not adversarially tested.
+    \item \textbf{Dataset Scale}: Sample sizes are constrained by API quotas and
+          corpus curation effort. This limits statistical power and coverage of edge
+          cases.
+    \item \textbf{No Adversarial Robustness}: The system is not evaluated
+          against prompt injection, retrieval poisoning, or obfuscation-specific
+          evasion~\cite{zou2024poisonedrag}.
+\end{itemize}
 
 \section{Ethical Considerations}\label{sec:EthicalConsiderations}
 % Ensure ethical use of malware datasets.
 % Describe safety protocols: no execution of live malware, all samples are statically analyzed.
 % Highlight responsible use of LLMs and privacy-conscious data handling if using
 % VirusTotal.
-TODO...
+The research presented in this study involves the use of malware samples, static code artifacts,
+and third-party threat intelligence sources. Several precautions are taken to ensure that the study
+adheres to ethical standards in cybersecurity research.
+
+\subsection{Safe Handling of Malware Samples}
+All malware samples are statically analyzed without execution. No sandboxing or dynamic behavior
+monitoring is performed. Samples are stored in a secure, isolated environment with no network
+access or file execution permissions. The analysis pipeline operates solely on extracted features
+(e.g., strings, imports, entropy) and decompiled code sections.
+
+Samples are sourced from public research repositories such as \gls{malwarebazaar} and
+\gls{virustotal}, which provide malware binaries and metadata specifically for research and
+detection engineering purposes. No private or unknown-origin malware is introduced into the
+dataset.
+
+\subsection{Use of Public and Licensed APIs}
+All external APIs (OpenAI, DeepSeek, VirusTotal, MalwareBazaar) are accessed through official
+channels with proper authentication and rate limits. API usage complies with the respective Terms
+of Service, and no bulk data scraping or unauthorized reverse engineering is conducted.
+
+VirusTotal’s API is used strictly for metadata enrichment and tagging. No personal data,
+user-uploaded files, or proprietary content is accessed or stored.
+
+\subsection{Privacy and Data Anonymity}
+No personal, user-identifiable, or system-specific data is involved in the research. All data used
+is either public (e.g., APT reports) or anonymized (e.g., sample hashes). Retrieved documents are
+cleaned to remove IP addresses, hostnames, or other sensitive references prior to embedding.
+
+\subsection{Responsible Use of LLMs}
+The use of \glspl{llm} in this study is limited to inference-only interactions. No fine-tuning is
+performed. The prompts are explicitly filtered to exclude shellcode, network addresses, or exploit
+payloads. The system is designed for classification and explanation, not for generating or
+manipulating malware.
+
+To prevent propagation of misleading or unsafe content, all generated responses are stored and
+reviewed offline. In alignment with recommendations from recent LLM safety
+surveys~\cite{ferrag2024allinsights, metta2024generativeai}, the system avoids code synthesis and
+adheres to a read-only analysis posture.
 
 \section{Summary}\label{sec:MethodologySummary}
 % Recap the methodology structure and justify how it addresses your research questions.
 % Set up the transition into the next chapter, where implementation details or
 % results will follow.
-TODO...
+This chapter described the methodological framework adopted to evaluate the use of
+retrieval-augmented \glspl{llm} for static malware analysis. The research design follows an
+experimental, prototype-based approach that compares a traditional static classification pipeline
+against a semantically enriched \gls{llm}-driven alternative.
+
+Two parallel pipelines were detailed: a heuristic+VirusTotal-based baseline, and an enhanced
+pipeline that uses semantic retrieval and structured prompt construction for \gls{llm} inference. Both
+pipelines operate on the same \gls{pe} samples and use \gls{ghidra}-based feature extraction to
+ensure consistency. An ingestion pipeline was presented to populate a vectorized corpus of threat
+intelligence documents, enabling semantically grounded inference.
+
+The environment is implemented in Python using modular, reproducible tooling. Prompt engineering
+strategies, evaluation metrics, and ethical safeguards were also outlined. All experiments are
+version-controlled and designed to support reproducibility and interpretability.
+
+This methodology enables the research questions to be addressed from both a technical and
+analytical perspective, supporting comparison across accuracy, explanation quality, and pipeline
+adaptability. The next chapter presents the implementation details and experimental results derived
+from executing this methodology.

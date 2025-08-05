@@ -1,7 +1,4 @@
-\chapter{Introduction}
-\label{sec:Introduction}
-\label{Chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1} 
-
+\chapter{Introduction}\label{sec:Introduction}\label{Chapter1} % For referencing the chapter elsewhere, use \ref{Chapter1} 
 Ever since the creation of the first computer by Charles Babbage in the 19th century, computers
 have been evolving at a rapid pace performing more and more tasks as the time passes. With this
 evolution, malicious actors began to notice manners in which to subvert established systems. These
@@ -16,7 +13,7 @@ topple, established security systems.
 
 This research presents a the development of a methodology to analyse malicious software using
 artificial intelligence (\gls{ai}) tools to enhance analysis quality and speed. This tools will be
-discusses toughly on \ref{Chapter3}.
+discusses toughly on~\ref{Chapter3}.
 
 This thesis presents a research about, and creation of, a method where RAG powered LLMs are
 introduced onto to the malware static analysis workflow in order to increase efficiency on the
@@ -36,10 +33,10 @@ These software artifacts created by malicious actors are called \gls{malware}. S
 analysis focus specifically on techniques that decompose, or \gls{decompile}, target \gls{malware}
 down to its most basic bytecode elements. These are then scrutinized to uncover malicious intent.
 This method of inspecting a program's structure, instructions, and information without actually
-running it, is one of the most popular and dependable tools in the cybersecurity toolbox. It
-is essential in settings where safety, speed, and scalability are critical since it eliminates the
+running it, is one of the most popular and dependable tools in the cybersecurity toolbox. It is
+essential in settings where safety, speed, and scalability are critical since it eliminates the
 possibility of running potentially dangerous code. It is the keystone in early malware
-identification and categorization, due to its automation capabilities (i.e. antivirus engines or
+identification and categorization, due to its automation capabilities (i.e.\ antivirus engines or
 intrusion detection systems).
 
 However, as threat actors evolve their tactics and adopt increasingly sophisticated evasion
@@ -150,8 +147,7 @@ addition ot the original we have:\\
 }\\
 
 \subsubsection{Retrieval-Augmented Generation}
-Retrieval-Augmented Generation (RAG)
-[\cite{lewis2021retrievalaugmentedgenerationknowledgeintensivenlp}] is a technique that allows for
+Retrieval-Augmented Generation (RAG) [\cite{lewis2020retrieval}] is a technique that allows for
 LLMs to query information from a specific type of datastore and use it as context for the response
 it provides. This allows for adaptive learning of the models without the need of retraining
 (fine-tuning). It improves the quality of LLM output as the model does not rely solely on

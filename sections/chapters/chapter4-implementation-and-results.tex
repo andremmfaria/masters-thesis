@@ -1,0 +1,76 @@
+\chapter{Implementation and Results}\label{sec:ImplementationAndResults}\label{Chapter4} % For referencing the chapter elsewhere, use \ref{Chapter4}
+% Briefly restate the research objectives and the purpose of this chapter.
+% Provide an overview of the implementation strategy and key findings.
+% Outline how this chapter is structured.
+TODO...
+
+\section{Implementation Overview}\label{sec:ImplementationOverview}
+% Describe the technical implementation of the system and pipelines.
+% Cover how the REXIS CLI is structured (e.g., modules for ingestion, classification).
+% Include information on:
+%   - Folder structure and entry points (e.g., Typer CLI commands, src/rexis layout)
+%   - Configuration management (e.g., Dynaconf or environment variables)
+%   - Integration of tools (Ghidra, PostgreSQL, Haystack, LLM APIs)
+%   - How components interact during runtime (feature extraction → retrieval → prompt → inference)
+%   - Use of Docker or containerization for reproducibility
+% Optionally include short code snippets, CLI command samples, or log outputs.
+TODO...
+
+\section{Summary of Key Findings}\label{sec:SummaryOfFindings}
+% Summarize the main results obtained from both the baseline and the LLM+RAG pipelines.
+% Avoid detailed numerical analysis — focus on broad outcomes such as:
+%   - LLM+RAG’s classification accuracy compared to the baseline
+%   - Quality of explanations or reasoning given by the LLM
+%   - Retrieval relevance and diversity across malware families
+%   - Support for flexible input types (e.g., script-based malware)
+% Highlight patterns and trends that emerged across experiments.
+TODO...
+
+\section{Interpretation of Findings}\label{sec:InterpretationOfFindings}
+% Analyze and interpret the significance of the results in relation to your research questions.
+% Discuss:
+%   - How RAG improved static analysis (accuracy, relevance, interpretability)
+%   - Where the LLM pipeline underperformed and possible causes
+%   - Degree of alignment between LLM inferences and VirusTotal tags
+%   - Evidence of hallucinations or compliance issues
+% Cross-reference previous literature (e.g., Fujii 2024, Gao 2023) to contextualize your outcomes.
+% Discuss whether findings were expected, and any surprises or anomalies encountered.
+TODO...
+
+\section{Implications of the Study}\label{sec:Implications}
+% Reflect on the practical and academic significance of your research.
+% Discuss how your system design and findings may:
+%   - Influence future tools for static malware analysis
+%   - Support security teams through explainable classification
+%   - Extend to other cybersecurity domains (e.g., phishing, vulnerability triage)
+% Consider both short-term and long-term implications for real-world use.
+TODO...
+
+\section{Limitations}\label{sec:Limitations}
+% Clearly state the limitations of your system and experiments.
+% Address issues such as:
+%   - Limited sample diversity or dataset size
+%   - Scope limited to static analysis, excluding behavioral/dynamic data
+%   - Heuristic rules being brittle or oversimplified
+%   - Dependence on third-party APIs (e.g., OpenAI, VirusTotal)
+%   - No adversarial robustness or user-study evaluation
+% Be transparent and balanced — link limitations to specific design choices where applicable.
+TODO...
+
+\section{Recommendations for Future Research}\label{sec:FutureWork}
+% Based on your experience and findings, propose:
+%   - Future exploration of hybrid pipelines (static + dynamic)
+%   - Inclusion of larger, labeled datasets
+%   - Alternative LLMs or fine-tuned models for specific tasks
+%   - Improvements in retrieval quality (e.g., better chunking, embeddings)
+%   - Real-world evaluation or deployment (e.g., SOC integration, red-team use)
+% Ensure recommendations are feasible and rooted in what you observed during implementation.
+TODO...
+
+\section{Conclusion}\label{sec:ChapterConclusion}
+% Recap the chapter by:
+%   - Summarizing what was implemented and what results were achieved
+%   - Highlighting how your work addresses the research objectives
+%   - Providing a closing reflection on the value of combining LLMs and RAG for static malware analysis
+%   - Transitioning into the final conclusion chapter
+TODO...
