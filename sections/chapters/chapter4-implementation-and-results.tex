@@ -2,7 +2,23 @@
 % Briefly restate the research objectives and the purpose of this chapter.
 % Provide an overview of the implementation strategy and key findings.
 % Outline how this chapter is structured.
-TODO...
+This chapter presents the implementation details and key findings of the research system designed
+to enhance static malware analysis using \glspl{llm} and \gls{rag}. It outlines the architectural
+realization of the proposed pipelines, describes how individual components were integrated, and
+evaluates their performance across a representative corpus of malicious \glspl{pe} samples. The
+experiments were conducted on a dataset of 15 malware samples across five commonly studied
+families~\cite{berrios2025malware,abrazak2016rise,mat2021systematic} (See
+section~~\ref{subsec:MalwareSamplesSourcing}), enabling comparative evaluation of classification
+behavior.
+
+The chapter is structured as follows: Section~\ref{sec:ImplementationOverview} introduces the
+system's technical composition, including command-line tools, database integration, and
+retrieval-inference workflows. Section~\ref{sec:SummaryOfFindings} highlights core experimental
+results and classification outputs. Section~\ref{sec:InterpretationOfFindings} interprets these
+findings in the context of the research objectives, while Section~\ref{sec:Implications} discusses
+their practical implications. Sections~\ref{sec:Limitations} and~\ref{sec:FutureWork} address the
+system's limitations and suggest directions for future research. The chapter concludes with a brief
+summary in Section~\ref{sec:ChapterConclusion}.
 
 \section{Implementation Overview}\label{sec:ImplementationOverview}
 % Describe the technical implementation of the system and pipelines.
@@ -14,12 +30,137 @@ TODO...
 %   - How components interact during runtime (feature extraction → retrieval → prompt → inference)
 %   - Use of Docker or containerization for reproducibility
 % Optionally include short code snippets, CLI command samples, or log outputs.
-TODO...
+The system is implemented as a modular Python application using the
+\texttt{Typer}\footnote{\url{https://typer.tiangolo.com/}} framework for CLI orchestration. The
+codebase is organized to support two primary analysis pipelines: a baseline static classifier and
+an enhanced \gls{llm}-driven pipeline backed by \gls{rag}. Common modules handle preprocessing,
+data ingestion, feature extraction, and logging, while each pipeline defines its own classification
+logic and output formatting.
+
+\subsection{Common Modules}\label{subsec:CommonModules}
+The following components are shared across all pipeline operations:
+
+\begin{itemize}
+      \item \textbf{Sample Loader:} Loads \gls{pe} files from the designated
+            corpus directory and calculates hashes (SHA256, MD5) for sample tracking.
+
+      \item \textbf{Ghidra Integration:} Static feature extraction is performed
+            using \gls{ghidra} via the \texttt{PyGhidra} API. A containerized Ghidra server
+            is initialized at runtime, and samples are submitted in batch mode.
+
+      \item \textbf{Feature Extractor:} Extracts structural and semantic features,
+            including PE headers, DLL imports, printable strings, section entropy, and
+            entry point offsets. Results are serialized into both JSON and \texttt{pandas}
+            DataFrames for consistency and reuse.
+
+      \item \textbf{Logger:} Captures structured logs for each pipeline execution,
+            including runtime events, errors, hashes, timestamps, and tool versions.
+            Logging is centralized for reproducibility and debugging.
+
+      \item \textbf{Configuration Manager:} Runtime parameters, including API
+            keys, credentials, and feature toggles, are managed via
+            \texttt{dynaconf}\footnote{\url{https://www.dynaconf.com/}} to allow
+            profile-specific overrides and secure separation of secrets.
+
+      \item \textbf{CLI Interface:} A unified CLI under the \texttt{rexis} command,
+            implemented using the \texttt{Typer}\footnote{\url{https://typer.tiangolo.com/}} framework,
+            enables isolated or batch execution of both pipelines via subcommands
+            (e.g., \texttt{rexis run baseline}, \texttt{rexis run rag}).
+\end{itemize}
+
+\subsection{Data Ingestion Pipeline}\label{subsec:DataIngestionImpl}
+The ingestion pipeline populates the \gls{rag} vector database by processing external threat
+intelligence sources into semantically searchable embeddings.
+
+\begin{itemize}
+      \item \textbf{Document Loader:} Gathers raw documents from predefined
+            directories, API clients (e.g., \gls{malwarebazaar}), and web archives
+            (e.g., \gls{malpedia}, VX-Underground). Each document is tagged with
+            source metadata and a unique identifier.
+
+      \item \textbf{Preprocessing Engine:} Cleans input text by removing
+            boilerplate, embedded scripts, and redundant entries. It performs
+            language normalization and token cleaning.
+
+      \item \textbf{Chunker:} Splits documents into semantically meaningful
+            sections using length-aware heuristics (e.g., newline or heading-based
+            segmentation). This step ensures each chunk remains within the token
+            window limits of the embedding model.
+
+      \item \textbf{Embedder:} Encodes each chunk using a transformer-based
+            embedding model, such as OpenAI's \texttt{text-embedding-3-small} or
+            DeepSeek-compatible alternatives. Embeddings are batched and
+            streamed to reduce latency.
+
+      \item \textbf{Vector Store Writer:} Inserts chunks and associated metadata
+            into a \gls{postgresql} + \gls{pgvector} database. The Haystack
+            \texttt{DocumentStore} abstraction is used to manage indexing,
+            similarity metrics, and metadata-based filtering.
+\end{itemize}
+
+The ingestion process is automated via the CLI using the command \texttt{rexis ingest
+      --source=<name>} and may be run incrementally. All ingested data is versioned to ensure
+reproducibility and traceability of semantic retrieval during classification.
+
+\subsection{Baseline Pipeline Implementation}\label{subsec:BaselineImplementation}
+The baseline pipeline uses deterministic rule-based logic combined with metadata enrichment via
+\gls{virustotal}. Its architecture includes the following modules:
+
+\begin{itemize}
+      \item \textbf{Heuristic Classifier:} Applies manually curated rules to
+            extracted features. For instance, the presence of obfuscation-related
+            imports or unusually high section entropy can trigger detection of
+            suspicious behavior.
+
+      \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} API using
+            the sample's hash and retrieves engine detections, tags, and metadata.
+            Results are normalized into canonical family labels via a tag-mapping layer.
+
+      \item \textbf{Decision Engine:} Merges heuristic and VirusTotal outputs
+            using a confidence-based reconciliation strategy. If conflicts occur,
+            priority is determined by a configurable threshold
+            rule.?\footnote{This reconciliation engine was not implemented due
+                  to time constraints. The proposed approach is outlined here: https://github.com/andremmfaria/rexis/blob/main/guides/Reconciliation.md.}
+
+      \item \textbf{Output Formatter:} Produces structured classification
+            summaries, which include heuristic scores, final labels, and audit logs.
+\end{itemize}
+
+\subsection{LLM+RAG Pipeline Implementation}\label{subsec:RAGImplementation}
+The enhanced pipeline performs semantic retrieval and inference through external \glspl{llm},
+enabling context-aware classification and explanation.
+
+\begin{itemize}
+      \item \textbf{Semantic Query Builder:} Transforms extracted features into
+            natural language questions (e.g., 'What malware family uses these API
+            calls and strings?'), incorporating string samples, header attributes, and
+            import function names.
+
+      \item \textbf{Retriever:} Uses Haystack's retriever module to search the
+            \gls{pgvector} database for top-$k$ relevant documents. Each retrieval includes
+            document ID, similarity score, and context snippet.
+
+      \item \textbf{Prompt Builder:} Generates a structured prompt containing the
+            static features, retrieved content, and task-specific instruction
+            templates. This step uses a fixed template with content placeholders.
+
+      \item \textbf{Compliance Filter:} Scans and sanitizes the final prompt to
+            remove potentially harmful or non-compliant artifacts (e.g., large hex
+            dumps, file paths, sensitive domains), mitigating prompt injection risks.
+
+      \item \textbf{Inference Client:} Sends the prompt to either OpenAI’s
+            \gls{gpt4o} or \gls{deepseek-r1} via their respective APIs. Responses
+            are logged with latency, token usage, and engine identifiers.
+
+      \item \textbf{Result Parser:} Extracts structured information from the
+            LLM response, including malware classification, rationale, and references to
+            retrieved documents.
+\end{itemize}
 
 \section{Summary of Key Findings}\label{sec:SummaryOfFindings}
 % Summarize the main results obtained from both the baseline and the LLM+RAG pipelines.
 % Avoid detailed numerical analysis — focus on broad outcomes such as:
-%   - LLM+RAG’s classification accuracy compared to the baseline
+%   - LLM+RAG's classification accuracy compared to the baseline
 %   - Quality of explanations or reasoning given by the LLM
 %   - Retrieval relevance and diversity across malware families
 %   - Support for flexible input types (e.g., script-based malware)

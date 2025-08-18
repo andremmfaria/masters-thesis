@@ -2,100 +2,13 @@
 %	ABBREVIATIONS and GLOSSARY
 %----------------------------------------------------------------------------------------
 
-% --- ChatGPT and aliases ---
-\newglossaryentry{chatgpt}{
-    name={ChatGPT},
-    description={An AI language model developed by OpenAI that can understand and generate human-like text based on prompts}
-}
-\newglossaryentry{chat-gpt}{
-    name={Chat-GPT},
-    description={See \gls{chatgpt}},
-    see=[main entry:]{chatgpt}
-}
-\newglossaryentry{Chat-GPT}{
-    name={Chat GPT},
-    description={See \gls{chatgpt}},
-    see=[main entry:]{chatgpt}
-}
-
-% --- GPT-4o ---
-\newacronym{gpt4o}{GPT-4o}{Generative Pre-trained Transformer 4 Omni}
-\newglossaryentry{gpt-4o}{
-    name={GPT-4o},
-    description={A multimodal \gls{large-language-model} developed by OpenAI that processes text, vision, and audio inputs natively and in real time},
-    see=[acronym:]{gpt4o}
-}
-
-% --- DeepSeek-R1 ---
-\newacronym{deepseekr1}{DeepSeek-R1}{DeepSeek Research Model 1}
-\newglossaryentry{deepseek-r1}{
-    name={DeepSeek-R1},
-    description={An open-source \gls{large-language-model} developed by DeepSeek, designed for general-purpose reasoning and code understanding},
-    see=[acronym:]{deepseekr1}
-}
-
-% --- Python Programming Language ---
-\newglossaryentry{python}{
-    name={Python},
-    description={A high-level, interpreted programming language known for its readability, simplicity, and versatility in fields such as web development, data science, automation, and artificial intelligence}
-}
-\newglossaryentry{python-language}{
-    name={Python language},
-    description={See \gls{python}},
-    see=[main entry:]{python}
-}
-
-% --- API and aliases ---
-\newacronym{api}{API}{Application Programming Interface}
-\newglossaryentry{application-programming-interface}{
-    name={Application Programming Interface},
-    description={A set of protocols and tools that allows different software applications to communicate and interact with each other},
-    see=[acronym:]{api}
-}
-\newglossaryentry{api-entry}{
-    name={API},
-    description={See \gls{application-programming-interface}},
-    see=[main entry:]{application-programming-interface}
-}
-
-% --- RAG and aliases ---
-\newacronym{rag}{RAG}{Retrieval-Augmented Generation}
-\newglossaryentry{retrieval-augmented-generation}{
-    name={Retrieval-Augmented Generation},
-    description={A technique that combines information retrieval with language generation to improve the accuracy and relevance of AI-generated responses},
-    see=[acronym:]{rag}
-}
-\newglossaryentry{rag-approach}{
-    name={RAG approach},
-    description={See \gls{retrieval-augmented-generation}},
-    see=[main entry:]{retrieval-augmented-generation}
-}
-\newglossaryentry{rag-method}{
-    name={RAG method},
-    description={See \gls{retrieval-augmented-generation}},
-    see=[main entry:]{retrieval-augmented-generation}
-}
-
-% --- LLM and aliases ---
-\newacronym{llm}{LLM}{Large Language Model}
-\newglossaryentry{large-language-model}{
-    name={Large Language Model},
-    description={A type of AI trained on vast text data to understand, generate, and manipulate human language},
-    see=[acronym:]{llm}
-}
-\newglossaryentry{language-model}{
-    name={language model},
-    description={See \gls{large-language-model}},
-    see=[main entry:]{large-language-model}
-}
-\newglossaryentry{LLMs}{
-    name={LLMs},
-    description={See \gls{large-language-model}},
-    see=[main entry:]{large-language-model}
-}
-
-% --- AI and aliases ---
+% --- Artificial Intelligence (AI) ---
 \newacronym{ai}{AI}{Artificial Intelligence}
+\newglossaryentry{ai-systems}{
+    name={AI systems},
+    description={See \gls{artificial-intelligence}},
+    see=[main entry:]{artificial-intelligence}
+}
 \newglossaryentry{artificial-intelligence}{
     name={Artificial Intelligence},
     description={The simulation of human intelligence in machines designed to think, learn, and solve problems},
@@ -106,58 +19,153 @@
     description={See \gls{artificial-intelligence}},
     see=[main entry:]{artificial-intelligence}
 }
-\newglossaryentry{ai-systems}{
-    name={AI systems},
-    description={See \gls{artificial-intelligence}},
-    see=[main entry:]{artificial-intelligence}
+
+% --- Application Programming Interface (API) ---
+\newacronym{api}{API}{Application Programming Interface}
+\newglossaryentry{api-entry}{
+    name={API},
+    description={See \gls{application-programming-interface}},
+    see=[main entry:]{application-programming-interface}
+}
+\newglossaryentry{application-programming-interface}{
+    name={Application Programming Interface},
+    description={A set of protocols and tools that allows different software applications to communicate and interact with each other},
+    see=[acronym:]{api}
 }
 
-% --- Static Malware Analysis and aliases ---
-\newglossaryentry{static-malware-analysis}{
-    name={Static Malware Analysis},
-    description={The process of examining malware without executing it, typically by analyzing its code, structure, and metadata to identify its functionality and potential threats}
+% --- Language Models (LLM, GPT, DeepSeek) ---
+\newacronym{llm}{LLM}{Large Language Model}
+\newglossaryentry{LLMs}{
+    name={LLMs},
+    description={See \gls{large-language-model}},
+    see=[main entry:]{large-language-model}
 }
-\newglossaryentry{static-analysis}{
-    name={static analysis},
-    description={See \gls{static-malware-analysis}},
-    see=[main entry:]{static-malware-analysis}
+\newglossaryentry{language-model}{
+    name={language model},
+    description={See \gls{large-language-model}},
+    see=[main entry:]{large-language-model}
+}
+\newglossaryentry{large-language-model}{
+    name={Large Language Model},
+    description={A type of AI trained on vast text data to understand, generate, and manipulate human language},
+    see=[acronym:]{llm}
+}
+\newacronym{gpt4o}{GPT-4o}{Generative Pre-trained Transformer 4 Omni\newline\url{https://openai.com/blog/gpt-4o}}
+\newglossaryentry{gpt-4o}{
+    name={GPT-4o},
+    description={A multimodal \gls{large-language-model} developed by OpenAI that processes text, vision, and audio inputs natively and in real time. See \url{https://openai.com/blog/gpt-4o}},
+    see=[acronym:]{gpt4o}
+}
+\newacronym{deepseekr1}{DeepSeek-R1}{DeepSeek Research Model 1\newline\url{https://deepseek.com/research}}
+\newglossaryentry{deepseek-r1}{
+    name={DeepSeek-R1},
+    description={An open-source \gls{large-language-model} developed by DeepSeek, designed for general-purpose reasoning and code understanding. See \url{https://deepseek.com/research}},
+    see=[acronym:]{deepseekr1}
 }
 
-% --- Machine Learning and aliases ---
+% --- ChatGPT and aliases ---
+\newglossaryentry{chat-gpt}{
+    name={Chat-GPT},
+    description={See \gls{chatgpt}},
+    see=[main entry:]{chatgpt}
+}
+\newglossaryentry{Chat-GPT}{
+    name={Chat GPT},
+    description={See \gls{chatgpt}},
+    see=[main entry:]{chatgpt}
+}
+\newglossaryentry{chatgpt}{
+    name={ChatGPT},
+    description={An AI language model developed by OpenAI that can understand and generate human-like text based on prompts. See \url{https://chat.openai.com}}
+}
+
+% --- Machine Learning (ML) ---
 \newacronym{ml}{ML}{Machine Learning}
 \newglossaryentry{machine-learning}{
     name={Machine Learning},
     description={A subset of artificial intelligence that enables systems to learn and improve from experience without being explicitly programmed},
     see=[acronym:]{ml}
 }
-\newglossaryentry{ml-system}{
-    name={ML system},
-    description={See \gls{machine-learning}},
-    see=[main entry:]{machine-learning}
-}
 \newglossaryentry{ml-model}{
     name={ML model},
     description={See \gls{machine-learning}},
     see=[main entry:]{machine-learning}
 }
-
-% --- Malware and aliases ---
-\newglossaryentry{malware}{
-    name={Malware},
-    description={Malicious software designed to disrupt, damage, or gain unauthorized access to computer systems}
+\newglossaryentry{ml-system}{
+    name={ML system},
+    description={See \gls{machine-learning}},
+    see=[main entry:]{machine-learning}
 }
+
+% --- Malware and Analysis ---
 \newglossaryentry{malicious-software}{
     name={malicious software},
     description={See \gls{malware}},
     see=[main entry:]{malware}
+}
+\newglossaryentry{malware}{
+    name={Malware},
+    description={Malicious software designed to disrupt, damage, or gain unauthorized access to computer systems}
 }
 \newglossaryentry{malware-sample}{
     name={malware sample},
     description={See \gls{malware}},
     see=[main entry:]{malware}
 }
+\newglossaryentry{static-analysis}{
+    name={static analysis},
+    description={See \gls{static-malware-analysis}},
+    see=[main entry:]{static-malware-analysis}
+}
+\newglossaryentry{static-malware-analysis}{
+    name={Static Malware Analysis},
+    description={The process of examining malware without executing it, typically by analyzing its code, structure, and metadata to identify its functionality and potential threats}
+}
 
-% --- Decompilation and aliases ---
+% --- Malware Repositories and Platforms ---
+\newglossaryentry{malpedia}{
+    name={Malpedia},
+    description={An open, community-driven platform that provides structured information and samples about malware families to support threat intelligence and research. See \url{https://malpedia.caad.fkie.fraunhofer.de/}}
+}
+\newglossaryentry{malwarebazaar}{
+    name={MalwareBazaar},
+    description={A platform for sharing and downloading malware samples, aimed at aiding cybersecurity researchers and analysts in studying malware. See \url{https://bazaar.abuse.ch/}}
+}
+\newglossaryentry{virustotal}{
+    name={VirusTotal},
+    description={A free online service that analyses files and URLs for viruses, worms, trojans, and other kinds of malicious content using multiple antivirus engines. See \url{https://www.virustotal.com/}}
+}
+
+% --- PE File and Related Tools ---
+\newglossaryentry{pe}{
+    name={PE format},
+    description={The file format specification for Portable Executable (PE) files used in Windows operating systems; defines the structure and layout of executable files, object code, and DLLs}
+}
+\newglossaryentry{pe-file}{
+    name={PE file},
+    description={A Portable Executable (PE) file, the standard file format for executables, object code, and DLLs in 32-bit and 64-bit versions of Windows operating systems}
+}
+\newglossaryentry{pe-files}{
+    name={PE files},
+    description={See \gls{pe-file}},
+    see=[main entry:]{pe-file}
+}
+\newglossaryentry{portable-executable}{
+    name={Portable Executable},
+    description={See \gls{pe-file}},
+    see=[main entry:]{pe-file}
+}
+\newglossaryentry{pe-frame}{
+    name={PE frame},
+    description={See \gls{peframe}},
+    see=[main entry:]{peframe}
+}
+\newglossaryentry{peframe}{
+    name={PEFrame},
+    description={An open-source tool used for static analysis of Portable Executable (PE) files to detect malware and extract useful information}
+}
+
+% --- Decompilation and Reverse Engineering ---
 \newglossaryentry{decompilation}{
     name={Decompilation},
     description={The process of translating low-level machine code or bytecode back into a higher-level, human-readable source code}
@@ -177,30 +185,6 @@
     description={See \gls{decompilation}},
     see=[main entry:]{decompilation}
 }
-
-% --- PostgreSQL and aliases ---
-\newglossaryentry{postgresql}{
-    name={PostgreSQL},
-    description={An advanced, open-source relational database management system known for its extensibility and SQL compliance}
-}
-\newglossaryentry{postgres}{
-    name={Postgres},
-    description={See \gls{postgresql}},
-    see=[main entry:]{postgresql}
-}
-
-% --- pgvector and aliases ---
-\newglossaryentry{pgvector}{
-    name={pgvector},
-    description={An extension for \gls{postgresql} that provides support for vector similarity search, enabling efficient handling of embeddings and machine learning workloads}
-}
-\newglossaryentry{pg-vector}{
-    name={pg-vector},
-    description={See \gls{pgvector}},
-    see=[main entry:]{pgvector}
-}
-
-% --- Ghidra and aliases ---
 \newglossaryentry{ghidra}{
     name={Ghidra},
     description={An open-source software reverse engineering (SRE) suite developed by the NSA, used for analyzing compiled code, decompilation, and malware analysis}
@@ -211,10 +195,59 @@
     see=[main entry:]{ghidra}
 }
 
-% --- Haystack (Python library) and aliases ---
+% --- Retrieval-Augmented Generation (RAG) ---
+\newacronym{rag}{RAG}{Retrieval-Augmented Generation}
+\newglossaryentry{rag-approach}{
+    name={RAG approach},
+    description={See \gls{retrieval-augmented-generation}},
+    see=[main entry:]{retrieval-augmented-generation}
+}
+\newglossaryentry{rag-method}{
+    name={RAG method},
+    description={See \gls{retrieval-augmented-generation}},
+    see=[main entry:]{retrieval-augmented-generation}
+}
+\newglossaryentry{retrieval-augmented-generation}{
+    name={Retrieval-Augmented Generation},
+    description={A technique that combines information retrieval with language generation to improve the accuracy and relevance of AI-generated responses},
+    see=[acronym:]{rag}
+}
+
+% --- Database and Vector Search ---
+\newglossaryentry{pg-vector}{
+    name={pg-vector},
+    description={See \gls{pgvector}},
+    see=[main entry:]{pgvector}
+}
+\newglossaryentry{pgvector}{
+    name={pgvector},
+    description={An extension for \gls{postgresql} that provides support for vector similarity search, enabling efficient handling of embeddings and machine learning workloads}
+}
+\newglossaryentry{postgres}{
+    name={Postgres},
+    description={See \gls{postgresql}},
+    see=[main entry:]{postgresql}
+}
+\newglossaryentry{postgresql}{
+    name={PostgreSQL},
+    description={An advanced, open-source relational database management system known for its extensibility and SQL compliance}
+}
+
+% --- Python Programming Language ---
+\newglossaryentry{python}{
+    name={Python},
+    description={A high-level, interpreted programming language known for its readability, simplicity, and versatility in fields such as web development, data science, automation, and artificial intelligence}
+}
+\newglossaryentry{python-language}{
+    name={Python language},
+    description={See \gls{python}},
+    see=[main entry:]{python}
+}
+
+% --- Haystack (Python library) ---
 \newglossaryentry{haystack}{
     name={Haystack (Python library)},
-    description={An open-source Python framework for building large language model (LLM) applications, including question answering, retrieval-augmented generation (RAG), and document search}
+    description={An open-source AI framework designed for building end-to-end pipelines for tasks such as question answering, document retrieval, and natural language processing. See \url{https://haystack.deepset.ai/}}
 }
 \newglossaryentry{haystack-llm}{
     name={Haystack LLM},
@@ -225,53 +258,4 @@
     name={Haystack Python library},
     description={See \gls{haystack}},
     see=[main entry:]{haystack}
-}
-
-% --- peframe and aliases ---
-\newglossaryentry{peframe}{
-    name={PEFrame},
-    description={An open-source tool used for static analysis of Portable Executable (PE) files to detect malware and extract useful information}
-}
-\newglossaryentry{pe-frame}{
-    name={PE frame},
-    description={See \gls{peframe}},
-    see=[main entry:]{peframe}
-}
-
-% --- PE file and aliases ---
-\newglossaryentry{pe-file}{
-    name={PE file},
-    description={A Portable Executable (PE) file, the standard file format for executables, object code, and DLLs in 32-bit and 64-bit versions of Windows operating systems}
-}
-\newglossaryentry{portable-executable}{
-    name={Portable Executable},
-    description={See \gls{pe-file}},
-    see=[main entry:]{pe-file}
-}
-\newglossaryentry{pe-files}{
-    name={PE files},
-    description={See \gls{pe-file}},
-    see=[main entry:]{pe-file}
-}
-\newglossaryentry{pe}{
-    name={PE format},
-    description={The file format specification for Portable Executable (PE) files used in Windows operating systems; defines the structure and layout of executable files, object code, and DLLs}
-}
-
-% --- VirusTotal ---
-\newglossaryentry{virustotal}{
-    name={VirusTotal},
-    description={A free online service that analyses files and URLs for viruses, worms, trojans, and other kinds of malicious content using multiple antivirus engines}
-}
-
-% --- MalwareBazaar ---
-\newglossaryentry{malwarebazaar}{
-    name={MalwareBazaar},
-    description={A platform for sharing and downloading malware samples, aimed at aiding cybersecurity researchers and analysts in studying malware}
-}
-
-% --- Haystacks---
-\newglossaryentry{haystacks}{
-    name={Haystacks},
-    description={An open-source AI framework designed for building end-to-end pipelines for tasks such as question answering, document retrieval, and natural language processing}
 }
