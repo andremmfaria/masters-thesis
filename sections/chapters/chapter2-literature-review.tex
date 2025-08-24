@@ -108,7 +108,7 @@ struggle with obfuscated or packed malware where feature extraction fails to sur
 signals~\cite{cassanova2022systematic}.
 
 \subsection{Practical Considerations and Analyst Workflows}
-According to field studies such as Wong et al.~\cite{wong2021practice}, malware analysts adopt a
+According to field studies such as Wong \emph{et al.}~\cite{wong2021practice}, malware analysts adopt a
 tiered approach to static analysis, starting with basic tools like hash extractors and moving
 toward disassembly and \gls{decompilation} as needed. Tools like \texttt{Ghidra}, \texttt{IDA Pro},
 and \texttt{Radare2} are central to this process, offering powerful \gls{decompilation} and
@@ -172,7 +172,7 @@ prompted appropriately—especially using role-based prompts such as “You are 
 This highlights the importance of Model-Centric Prompting (MCP), where prompts are tailored to
 align with model reasoning behavior rather than merely input format~\cite{sahoo2024systematic}.
 
-Recent surveys such as Nourmohammadzadeh et al.~\cite{nourmohammadzadeh2024llmsurvey} and Ferrag et
+Recent surveys such as Nourmohammadzadeh \emph{et al.}~\cite{nourmohammadzadeh2024llmsurvey} and Ferrag et
 al.~\cite{ferrag2024allinsights} show growing interest in applying \gls{LLMs} to cybersecurity, but
 also emphasize that these models require adaptation to operate on binary code, disassembled
 structures, and malicious behavior patterns. The research by Metta et
@@ -202,7 +202,7 @@ However, several limitations persist:
 	      auditability~\cite{nourmohammadzadeh2024llmsurvey}.
 \end{itemize}
 
-Ferrag et al. (2024) further explore the vulnerabilities and risks associated with deploying
+Ferrag \emph{et al.} (2024) further explore the vulnerabilities and risks associated with deploying
 \gls{LLMs} in cybersecurity workflows, including prompt injection, data poisoning, and adversarial
 manipulation—even as they highlight methods for adaptation like fine-tuning, retrieval
 augmentation, and reinforcement learning~\cite{ferrag2024allinsights}.
@@ -223,13 +223,13 @@ structured data—which is then used to condition the generative response. This 
 particularly beneficial in knowledge-intensive tasks such as question answering, summarization, and
 factual reasoning~\cite{lewis2020retrieval, gao2023retrieval}.
 
-Lewis et al.~\cite{lewis2020retrieval} introduced the original \gls{rag} framework by combining a
+Lewis \emph{et al.}~\cite{lewis2020retrieval} introduced the original \gls{rag} framework by combining a
 dense retriever with a seq2seq \gls{llm}, demonstrating improvements in open-domain QA by grounding
 outputs in retrieved passages. Subsequent research has refined the retrieval mechanisms (e.g.,
 dense vs.\ sparse, hybrid models), document chunking strategies, and integration techniques,
 leading to significant gains in factual correctness and reduced hallucinations across tasks.
 
-Gao et al.~\cite{gao2023retrieval} provide a comprehensive survey of \gls{rag} systems and identify
+Gao \emph{et al.}~\cite{gao2023retrieval} provide a comprehensive survey of \gls{rag} systems and identify
 key benefits:
 \begin{itemize}
 	\item \textbf{Factual accuracy:} Retrieved documents act as grounding
@@ -308,7 +308,7 @@ reasoning paths. When paired with structured prompt design methodologies like Mo
 Prompting (MCP), the combined \gls{rag}-\gls{llm} approach could significantly improve automation
 and accuracy in static analysis pipelines.
 
-Security and reliability challenges remain. As noted by Zou et al.~\cite{zou2024poisonedrag},
+Security and reliability challenges remain. As noted by Zou \emph{et al.}~\cite{zou2024poisonedrag},
 poisoned documents or manipulated retrieval indices can lead to knowledge corruption and misleading
 outputs. To mitigate these risks, trusted retrieval indices, curated malware corpora, and retrieval
 integrity checks should be considered foundational elements of any cybersecurity-focused \gls{rag}
@@ -364,7 +364,7 @@ interaction strategies hinders reproducibility and evaluation.
 
 \subsection{Emerging Security Risks in AI-Augmented Pipelines}
 
-As outlined by Zou et al.~\cite{zou2024poisonedrag} and echoed in the generative \gls{ai} security
+As outlined by Zou \emph{et al.}~\cite{zou2024poisonedrag} and echoed in the generative \gls{ai} security
 report~\cite{metta2024generativeai}, \gls{rag}-based and \gls{llm}-powered systems face risks such
 as data poisoning, prompt injection, and misinformation amplification. None of the surveyed malware
 analysis frameworks account for these threats, indicating a serious oversight in current

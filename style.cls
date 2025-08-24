@@ -181,6 +181,37 @@
 \captionsetup{justification=centerlast,font=small,labelfont=sc,margin=50pt}
 
 %----------------------------------------------------------------------------------------
+%  PROMPT BLOCK (tcolorbox) ENVIRONMENTS
+%----------------------------------------------------------------------------------------
+
+% Ensure tcolorbox is available for custom prompt blocks
+\RequirePackage[most]{tcolorbox}
+
+% Global tcolorbox styling used by the prompt block
+\tcbset{
+	colback=black!2,
+	colframe=black!30,
+	coltitle=black,
+	boxrule=0.4pt,
+	arc=2mm,
+	left=6pt,right=6pt,top=6pt,bottom=6pt,
+}
+
+% Monospace prompt box, breakable across pages
+\newtcolorbox{promptblock}{
+	enhanced, breakable,
+	title={Prompt},
+	fonttitle=\bfseries,
+	colback=black!2,
+	colframe=black!35,
+	before skip=6pt, after skip=6pt,
+	overlay={},
+}
+
+% Convenience environment for monospace content inside promptblock
+\newenvironment{promptcode}{\ttfamily\small}{}
+
+%----------------------------------------------------------------------------------------
 %	DEFINE CUSTOM THESIS INFORMATION COMMANDS
 %----------------------------------------------------------------------------------------
 

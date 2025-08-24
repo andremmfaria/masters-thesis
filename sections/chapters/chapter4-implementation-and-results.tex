@@ -11,14 +11,71 @@ families~\cite{berrios2025malware,abrazak2016rise,mat2021systematic} (See
 section~~\ref{subsec:MalwareSamplesSourcing}), enabling comparative evaluation of classification
 behavior.
 
-The chapter is structured as follows: Section~\ref{sec:ImplementationOverview} introduces the
-system's technical composition, including command-line tools, database integration, and
-retrieval-inference workflows. Section~\ref{sec:SummaryOfFindings} highlights core experimental
-results and classification outputs. Section~\ref{sec:InterpretationOfFindings} interprets these
-findings in the context of the research objectives, while Section~\ref{sec:Implications} discusses
-their practical implications. Sections~\ref{sec:Limitations} and~\ref{sec:FutureWork} address the
-system's limitations and suggest directions for future research. The chapter concludes with a brief
-summary in Section~\ref{sec:ChapterConclusion}.
+\section{Environment}\label{sec:Environment}
+% Describes the Python-based toolchain used across the project:
+% - **PDM** for managing dependencies and isolating virtual environments.
+% - **Malwarebazaar/VX-Underground/Malpedia**: Data sources for the RAG datastore
+% - **PostgreSQL + pgvector** as the vector store for document embeddings.
+% - **Haystack** for RAG orchestration.
+% - **Ghidra + PyGhidra** for static feature extraction from PE files.
+% - **OpenAI API** for LLM inference.
+% - **VirusTotal API** for metadata enrichment.
+% - Versioning and reproducibility strategies.
+The experimental environment was built with open-source tools and APIs, with an emphasis on modular
+components, reproducibility, and transparent workflows. All development was carried out in
+\gls{python}, using containerized services and reproducible dependency management.
+
+\vspace{0.5em}
+\noindent This overview describes the environment and supporting tools used across
+the project. A step-by-step guide to the setup and configuration can be found in the
+repository:~\footnote{\url{https://github.com/andremmfaria/rexis}}
+
+\vspace{1em}
+\noindent The main tools and frameworks are:
+\begin{itemize}
+      \item \textbf{\gls{python}} --~Primary implementation language for orchestration logic and
+            pipeline components. Python was chosen for its strong ecosystem in cybersecurity,
+            data analysis, and \gls{machine-learning}.\footnote{\url{https://www.python.org}}
+
+      \item \textbf{PDM (Python Development Master)} --~Manages dependencies and virtual
+            environments. It provides deterministic builds and isolated execution, supporting
+            reproducibility across runs and machines.\footnote{\url{https://pdm-project.org}}
+
+      \item \textbf{\gls{postgresql} + \gls{pgvector}} --~Relational database extended with the
+            \texttt{pgvector} module\footnote{\url{https://www.postgresql.org},
+                  \url{https://github.com/pgvector/pgvector}} for similarity search on embeddings. It
+            acts as the vector store backing the retrieval stage of the \gls{rag} pipeline. The
+            database runs in a Docker container for consistency and portability.\footnote{\url{https://www.docker.com}}
+
+      \item \textbf{\gls{haystack}} --~Framework used to implement the \gls{rag} workflow,
+            including ingestion, chunking, embedding, and retrieval. Its modular components
+            simplify pipeline orchestration and integration with external
+            \glspl{llm}.\footnote{\url{https://haystack.deepset.ai}}
+
+      \item \textbf{\gls{gpt4o} (inference-only)} --~No fine-tuning was
+            performed. The model is used strictly for contextual reasoning and static
+            feature analysis, relying on structured prompts enriched with retrieved
+            context.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
+
+      \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} serves as the static analysis and
+            decompilation tool. PyGhidra enables automated extraction of imports, functions,
+            strings, and decompiled code from \gls{pe} samples.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra},
+                  \url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
+
+      \item \textbf{Docker} --~Used to containerize services such as \gls{postgresql} with
+            \gls{pgvector}. Containerization ensures reproducibility, isolation, and consistent
+            builds across environments.\footnote{\url{https://www.docker.com}}
+
+      \item \textbf{\gls{malwarebazaar} API} --~Source of real-world samples, hashes, tags, and
+            metadata, used for enrichment and validation.\footnote{\url{https://bazaar.abuse.ch/api/}}
+
+      \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and vendor
+            consensus labels. This data supports the baseline classifier and reconciliation
+            logic.\footnote{\url{https://developers.virustotal.com/reference}}
+\end{itemize}
+Version control was handled with Git and GitHub, ensuring traceability of code and
+configuration changes. All pipelines were developed to run deterministically under PDM allowing
+results to be reproduced on different systems with the same setup.
 
 \section{Implementation Overview}\label{sec:ImplementationOverview}
 % Describe the technical implementation of the system and pipelines.

@@ -18,14 +18,14 @@ code and extracted metadata for classification tasks. Broader
 surveys~\cite{nourmohammadzadeh2024llmsurvey,ferrag2024allinsights,metta2024generativeai} confirm
 the growing role of \glspl{llm} in security analysis, particularly where interpretability and
 contextual reasoning are important. The comparative setup also reflects the practitioner view
-described by Wong et al.~\cite{wong2021practice}, where simple, transparent heuristics remain
-central to \gls{malware} triage.
+described by Wong \emph{et al.}~\cite{wong2021practice}, where simple, transparent heuristics
+remain central to \gls{malware} triage.
 
-Using \glspl{rag} introduces new risks. As Zou et al.~\cite{zou2024poisonedrag} note, retrieval
-pipelines can be poisoned or manipulated, leading to distorted outputs. To address this, the data
-for the corpus comes from a selection of trusted sources, including VX-Underground APT reports,
-MalwareBazaar submissions, and Malpedia documentation. The provenance of these sources reduces the
-chance of corrupted context and strengthens the reliability of the retrieval process.
+Using \glspl{rag} introduces new risks. As Zou \emph{et al.}~\cite{zou2024poisonedrag} note,
+retrieval pipelines can be poisoned or manipulated, leading to distorted outputs. To address this,
+the data for the corpus comes from a selection of trusted sources, including VX-Underground APT
+reports, MalwareBazaar submissions, and Malpedia documentation. The provenance of these sources
+reduces the chance of corrupted context and strengthens the reliability of the retrieval process.
 
 \section{Research Design}\label{sec:ResearchDesign}
 % Describe the nature of your research: exploratory, experimental, comparative.
@@ -51,16 +51,16 @@ compare two independent approaches under the same conditions:
 
 This design reflects earlier work by Fujii and Yamagishi~\cite{fujii2024llm}, who showed that
 general-purpose \glspl{llm} can interpret decompiled code and static features to support
-classification. It also builds on Wong et al.~\cite{wong2021practice}, who describe the role of
-lightweight heuristics in everyday malware triage. The pipelines are evaluated strictly in
-\textbf{inference mode}, following Gao et al.~\cite{gao2023retrieval}, who highlight how
+classification. It also builds on Wong \emph{et al.}~\cite{wong2021practice}, who describe the role
+of lightweight heuristics in everyday malware triage. The pipelines are evaluated strictly in
+\textbf{inference mode}, following Gao \emph{et al.}~\cite{gao2023retrieval}, who highlight how
 \glspl{rag} can improve reasoning without retraining by injecting relevant external knowledge into
 prompts.
 
 Because retrieval systems can be manipulated, the risks of hallucination or poisoning identified by
-Zou et al.~\cite{zou2024poisonedrag} are addressed by strict control over data provenance: only
-curated, high-quality sources (VX-Underground, MalwareBazaar, and Malpedia) are ingested into the
-datastore. All outputs are logged for traceability and later comparison.
+Zou \emph{et al.}~\cite{zou2024poisonedrag} are addressed by strict control over data provenance:
+only curated, high-quality sources (VX-Underground, MalwareBazaar, and Malpedia) are ingested into
+the datastore. All outputs are logged for traceability and later comparison.
 
 \subsection{Experimental Workflow}\label{subsec:ExperimentalWorkflow}
 Each sample is processed through both pipelines in parallel to produce outputs under identical
@@ -262,78 +262,10 @@ Samples are annotated using metadata from \gls{vt} when analysed through the bas
 section \ref{subsec:BaselinePipeline}). This provides a consistent benchmark for comparing the
 baseline and \gls{llm}+\gls{rag} pipelines in terms of accuracy and explanation quality.
 
-\section{Environment and Workflows}\label{sec:EnvironmentAndWorkflows}
-This section provides an explanation of the implementation environment, supporting tools, and the
-internal workings of each pipeline designed for the experiment. It justifies tool choices, explains
-how different components interact, and ensures clarity and reproducibility across the baseline,
-LLM+RAG, and data ingestion pipelines.
-
-\subsection{Environment}\label{subsec:Environment}
-% Describes the Python-based toolchain used across the project:
-% - **PDM** for managing dependencies and isolating virtual environments.
-% - **Malwarebazaar/VX-Underground/Malpedia**: Data sources for the RAG datastore
-% - **PostgreSQL + pgvector** as the vector store for document embeddings.
-% - **Haystack** for RAG orchestration.
-% - **Ghidra + PyGhidra** for static feature extraction from PE files.
-% - **OpenAI API** for LLM inference.
-% - **VirusTotal API** for metadata enrichment.
-% - Versioning and reproducibility strategies.
-The experimental environment was built with open-source tools and APIs, with an emphasis on modular
-components, reproducibility, and transparent workflows. All development was carried out in
-\gls{python}, using containerized services and reproducible dependency management.
-
-\vspace{0.5em}
-\noindent This overview describes the environment and supporting tools used across the project.
-A step-by-step guide to the setup and configuration can be found in the repository:~\footnote{\url{https://github.com/andremmfaria/rexis}}
-
-\vspace{1em}
-\noindent The main tools and frameworks are:
-\begin{itemize}
-      \item \textbf{\gls{python}} --~Primary implementation language for orchestration logic and
-            pipeline components. Python was chosen for its strong ecosystem in cybersecurity,
-            data analysis, and \gls{machine-learning}.\footnote{\url{https://www.python.org}}
-
-      \item \textbf{PDM (Python Development Master)} --~Manages dependencies and virtual
-            environments. It provides deterministic builds and isolated execution, supporting
-            reproducibility across runs and machines.\footnote{\url{https://pdm-project.org}}
-
-      \item \textbf{\gls{postgresql} + \gls{pgvector}} --~Relational database extended with the
-            \texttt{pgvector} module\footnote{\url{https://www.postgresql.org},
-                  \url{https://github.com/pgvector/pgvector}} for similarity search on embeddings. It
-            acts as the vector store backing the retrieval stage of the \gls{rag} pipeline. The
-            database runs in a Docker container for consistency and portability.\footnote{\url{https://www.docker.com}}
-
-      \item \textbf{\gls{haystack}} --~Framework used to implement the \gls{rag} workflow,
-            including ingestion, chunking, embedding, and retrieval. Its modular components
-            simplify pipeline orchestration and integration with external
-            \glspl{llm}.\footnote{\url{https://haystack.deepset.ai}}
-
-      \item \textbf{\gls{gpt4o} (in inference-only mode)} --~No fine-tuning was
-            performed. The model is used strictly for contextual reasoning and static
-            feature analysis, relying on structured prompts enriched with retrieved
-            context.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
-
-      \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} serves as the static analysis and
-            decompilation tool. PyGhidra enables automated extraction of imports, functions,
-            strings, and decompiled code from \gls{pe} samples.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra},
-                  \url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
-
-      \item \textbf{Docker} --~Used to containerize services such as \gls{postgresql} with
-            \gls{pgvector}. Containerization ensures reproducibility, isolation, and consistent
-            builds across environments.\footnote{\url{https://www.docker.com}}
-
-      \item \textbf{\gls{malwarebazaar} API} --~Source of real-world samples, hashes, tags, and
-            metadata, used for enrichment and validation.\footnote{\url{https://bazaar.abuse.ch/api/}}
-
-      \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and vendor
-            consensus labels. This data supports the baseline classifier and reconciliation
-            logic.\footnote{\url{https://developers.virustotal.com/reference}}
-\end{itemize}
-
-\vspace{1em}
-\noindent Version control was handled with Git and GitHub, ensuring traceability of code and
-configuration changes. All pipelines were developed to run deterministically under PDM allowing
-results to be reproduced on different systems with the same setup.
+\section{Workflows}\label{sec:Workflows}
+This section provides an explanation of the internal workings of each pipeline designed for the
+experiment. It explains in detail the steps involved in the baseline, LLM+RAG, and data ingestion
+pipelines.
 
 \subsection{Baseline Pipeline}\label{subsec:BaselinePipeline}
 % Covers the non-LLM static pipeline:
@@ -379,7 +311,7 @@ sources of evidence:
             packed or encrypted sections, and known obfuscation markers. These rules produce
             heuristic labels such as ``ransomware-like'' or ``downloader''~\cite{gaber2024malware,
                   cassanova2022systematic}.
-      \item \textbf{VirusTotal Tags:} For each sample, the \gls{virustotal} API is queried using the
+      \item \textbf{VirusTotal Metadata:} For each sample, the \gls{virustotal} API is queried using the
             SHA-256 hash. Family names and vendor tags (e.g., \texttt{AgentTesla}, \texttt{Emotet})
             are retrieved and normalized into canonical categories, reducing variation between
             vendors~\cite{wong2021practice}.
@@ -395,10 +327,11 @@ sources of evidence:
       \item In ambiguous cases (e.g., low-confidence heuristics or missing \gls{virustotal} tags), the decision
             engine applies weighted rules to produce a best-effort classification.
 \end{itemize}
-
 This weighted reconciliation balances determinism with practical reliance on external consensus.
 The full explanation on how the reconciliation engine works can be found on the project
 repository\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/Reconciliation.md}}.
+The user has the option to not include \gls{virustotal} data on the pipeline. This makes the
+decision engine pass through the result from the heuristics engine effectively disabling this step.
 
 \vspace{0.5em}
 \noindent\textbf{Output Format:} Each classification generates a structured report containing:
@@ -416,25 +349,8 @@ repository\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/
       \item \textbf{Metadata Snapshot:} Contextual information including file hash, timestamp, PE
             size, and section-level details, retained for audit and traceability.
 \end{itemize}
-
 The report structure is output in JSON format, enabling side-by-side comparison with the output of
 the \gls{rag}-based pipeline.
-
-\vspace{0.5em}
-\noindent\textbf{Technologies Used:}
-\begin{itemize}
-      \item \textbf{Ghidra + PyGhidra} -- Automates feature extraction from binaries inside \gls{ghidra}.
-      \item \textbf{Custom Heuristic Engine} -- Implements static rules for classification based on
-            imports, entropy, and string analysis.
-      \item \textbf{VirusTotal API} -- Provides external metadata, including family names and vendor
-            detections, to enrich local heuristics.
-      \item \textbf{Decision Engine} -- Fuses heuristic and \gls{virustotal} results, applying
-            reconciliation rules to produce a single canonical label and confidence measure.
-      \item \textbf{Logging Layer} -- Ensures extracted features, intermediate results, and
-            final outputs are consistently structured and reproducible for evaluation.
-\end{itemize}
-The user has the option to not include \gls{virustotal} data on the pipeline. This makes the
-decision engine pass through the result from the heuristics engine.
 
 \vspace{0.5em}
 \noindent A detailed breakdown of the baseline pipeline design and decision logic is available
@@ -457,10 +373,10 @@ logic, supporting zero-shot generalization without fine-tuning.
 
 \vspace{0.5em}
 \noindent\textbf{Input Format and Feature Extraction:} The pipeline begins in
-the same way as the baseline one. Each \gls{pe} sample is processed with
-\gls{ghidra} through \texttt{PyGhidra}, producing static features such as the
-ones seen in section \ref{subsec:StaticFeatureExtraction}. These features are
-logged into JSON format for use in later stages.
+the same way as the baseline one (see section \ref{subsec:BaselinePipeline}).
+Each \gls{pe} sample is processed with \gls{ghidra} through \texttt{PyGhidra},
+producing static features such as the ones seen in section \ref{subsec:StaticFeatureExtraction}.
+These features are logged into JSON format for use in later stages.
 
 \vspace{0.5em}
 \noindent\textbf{Semantic Query Generation:}
@@ -470,11 +386,10 @@ serialized into a structured textual representation. This representation is then
 OpenAI’s \texttt{text-embedding-3-small} model, which produces dense vector representations
 suitable for semantic search. By translating low-level static features into natural-language-like
 descriptions, the system allows the retrieval engine to align binary characteristics with external
-threat intelligence documents. For example, a sample that imports
-\texttt{CreateRemoteThread}, \texttt{VirtualAllocEx}, and contains obfuscated networking strings
-would yield a query embedding that captures both behavioral and structural intent. The generated
-query vector is logged along with metadata such as chunk size, token count, and timestamp to ensure
-traceability.
+threat intelligence documents. For example, a sample that imports \texttt{CreateRemoteThread},
+\texttt{VirtualAllocEx}, and contains obfuscated networking strings would yield a query embedding
+that captures both behavioral and structural intent. The generated query vector is logged along
+with metadata such as chunk size, token count, and timestamp.
 
 \vspace{0.5em}
 \noindent\textbf{Contextual Document Retrieval:}
@@ -482,20 +397,16 @@ The embedded query is passed to a hybrid retriever implemented in \gls{haystack}
 combines dense vector similarity search (via \gls{pgvector}) with keyword-based BM25 retrieval,
 ensuring that both semantically similar and lexically overlapping documents can be surfaced.
 The underlying datastore is a PostgreSQL database enhanced with the \texttt{pgvector} extension,
-which holds embeddings of curated malware corpora sourced from MalwareBazaar JSON records,
-VX-Underground APT reports, and Malpedia articles (see~\ref{subsec:RAGIngestionPipeline}).
-Documents are preprocessed into uniform chunks before embedding, with each chunk linked
-to metadata such as source type, family/actor tags, original filename, and publication date.
-This approach follows Gao et al.~\cite{gao2023retrieval}, who show that retrieval improves
-reliability by grounding model outputs in external knowledge.
+which holds embeddings and contents of curated malware related documents corpora
+(see~\ref{subsec:RAGCorpusConstruction}). Documents are preprocessed into uniform chunks before
+embedding, with each chunk linked to metadata such as source type, family/actor tags, original
+filename, and publication date.
 
 When a query is executed, the top-$k$ candidate documents are returned along with their cosine
 similarity scores, source identifiers, and document IDs. If reranking is enabled (via a
 cross-encoder model such as \texttt{gpt-4o-mini}), the candidate set can be refined to prioritize
 documents with higher contextual relevance; by default, this step is skipped to reduce latency. All
-retrieval events are logged, including query latency, document ranks, and similarity values. This
-structured retrieval process ensures that every classification decision by the model can be traced
-back to specific external evidence, maintaining transparency and reproducibility.
+retrieval events are logged, including query latency, document ranks, and similarity values.
 
 \vspace{0.5em}
 \noindent\textbf{Prompt Construction:}
@@ -547,15 +458,6 @@ This uniform structure ensures comparability between the baseline and LLM+RAG pi
 providing additional layers of interpretability and traceability. By explicitly linking each
 classification to both static features and external documents, the pipeline produces outputs that
 are explainable, reproducible, and auditable.
-
-\vspace{0.5em}
-\noindent\textbf{Technologies Used:}
-\begin{itemize}
-      \item \textbf{Ghidra + PyGhidra} -- Static feature extraction from binaries
-      \item \textbf{Haystack} -- Query building and retrieval orchestration
-      \item \textbf{PostgreSQL + pgvector} -- Vector store for the threat corpus
-      \item \textbf{OpenAI API} -- Inference endpoints for \glspl{llm}
-\end{itemize}
 
 \vspace{0.5em}
 \noindent A detailed breakdown of the LLM+RAG analysis pipeline design, implementation and
@@ -644,17 +546,6 @@ construction, and metadata filtering. Each row in the datastore contains:
 This structure allows both fine-grained retrieval and reconstruction of the original document if required.
 
 \vspace{0.5em}
-\noindent\textbf{Technologies Used:} The ingestion pipeline is implemented in
-Python and orchestrated using the following components:
-\begin{itemize}
-      \item \textbf{Haystack} --~For document chunking, embedding, and datastore integration
-      \item \textbf{OpenAI API} --~For embedding generation
-      \item \textbf{Custom Python Scripts} --~For source collection, reconciliation,
-            and preprocessing
-      \item \textbf{PostgreSQL + pgvector} --~For embedding storage and similarity search
-\end{itemize}
-
-\vspace{0.5em}
 \noindent Full technical details on the ingestion workflow used to build the RAG corpus and
 scripts are provided in the guide:~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/IngestionPipeline.md}}
 
@@ -662,91 +553,97 @@ scripts are provided in the guide:~\footnote{\url{https://github.com/andremmfari
 % Discuss how you craft prompts for different tasks: classification, explanation, and comparison.
 % Include examples of how static features and retrieved context are structured in the prompt.
 % Explain the decision to use GPT-4 in inference-only mode.
-The design of prompts is central to the performance of the \gls{llm}+\gls{rag} pipeline. In this
-study, prompts are assembled with a hybrid approach: a fixed system message that enforces output
-schema and consistency, and a user message that presents static features and retrieved evidence in
-a structured natural-language format. This balance preserves reproducibility while giving the model
-a more interpretable context in which to reason.
+The design of prompts is central to the performance of the \gls{llm}+\gls{rag} pipeline. Prompt
+construction influences both classification accuracy and the interpretability of results, as
+highlighted in prior studies on prompt engineering for reasoning tasks~\cite{sahoo2024systematic,
+      fujii2024llm}. To balance flexibility with reproducibility, prompts in this study follow a hybrid
+structure: a fixed system message that enforces output schema and consistency, and a dynamically
+assembled user message that integrates static features and retrieved evidence in a structured
+natural-language format.
 
 \subsection{Prompt Structure}\label{subsec:PromptStructure}
 Prompts follow a modular template with two main components:
 
 \begin{itemize}
-      \item \textbf{System Message:} Provides the role instruction and enforces the strict JSON schema
-            required for output. The schema includes mandatory fields such as family label, classification,
-            capabilities, tactics, supporting evidence, and an uncertainty measure. By fixing this schema at
-            the system level, consistency is maintained across all samples.
+      \item \textbf{System Message:} Defines the role of the model and enforces a strict JSON schema
+            for outputs. Mandatory fields include family label, classification type, capabilities, tactics,
+            supporting evidence, and an uncertainty measure. By fixing this schema at the system level,
+            structural consistency is maintained across all samples.
 
-      \item \textbf{User Message:} Assembled dynamically for each sample and divided into three parts:
+      \item \textbf{User Message:} Dynamically assembled per sample, divided into three sections:
             \begin{enumerate}
-                  \item \textbf{Context Block:} A concise list of static features extracted from the binary,
-                        such as API imports, section entropy values, and embedded strings, formatted as natural-language
+                  \item \textbf{Context Block:} A concise list of static features extracted from the binary
+                        (e.g., API imports, entropy values of sections, embedded strings), formatted as natural-language
                         bullet points.
-                  \item \textbf{Retrieved Documents:} Up to three semantically similar documents retrieved from
+                  \item \textbf{Retrieved Documents:} Up to three semantically similar documents drawn from
                         the vector store. Each entry includes its source (e.g., Malpedia, VX-Underground), title or tag,
                         document ID, and a short snippet.
-                  \item \textbf{Task Instructions:} A fixed directive asking the model to classify the sample into
-                        a known family and either justify the decision with both static and retrieved evidence, or compare it with
-                        related malware if applicable. This is controlled by the prompt variant (see section ~\ref{subsec:TaskTypes}).
+                  \item \textbf{Task Instructions:} A fixed directive asking the model to classify the sample
+                        into a known family and justify the decision with evidence, or compare it with related malware
+                        if applicable. This component varies by task type (see Section~\ref{subsec:TaskTypes}).
             \end{enumerate}
 \end{itemize}
 
 \subsection{Filtering and Safety}\label{subsec:PromptFiltering}
-Before submission, prompts are filtered to remove unsafe and/or irrelevant content and to apply
-size filtering for the context window. Large hex dumps, decompiled blocks, or sensitive network
-indicators are excluded to reduce noise and mitigate prompt-injection risks.
+Before submission to the model, prompts are filtered to remove irrelevant or unsafe content. Large
+hex dumps, decompiled code blocks, and sensitive network indicators are excluded to reduce noise
+and mitigate prompt-injection risks. This preprocessing step complements the guardrail strategies
+described in Section~\ref{sec:Guardrails}, which apply downstream safeguards such as evidence
+validation and abstention.
 
 \subsection{Task Templates}\label{subsec:TaskTypes}
-Three prompt variants are implemented to cover different reasoning demands:
+Three prompt variants are implemented to cover different reasoning requirements:
+
 \begin{enumerate}
-      \item \textbf{Classification-Only:} Requests a family label based on static features and retrieved context.
-      \item \textbf{Classification + Justification:} Requires the model to cite both static features and
-            retrieved evidence when assigning a label.
-      \item \textbf{Classification + Comparison:} Adds a comparative element, asking the model to relate
-            the sample to known malware families or behaviors.
+      \item \textbf{Classification-Only:} Requests a family label based on static features and
+            retrieved context.
+      \item \textbf{Classification + Justification:} Requires the model to provide a label
+            \emph{and} cite both static features and retrieved evidence to support its decision.
+      \item \textbf{Classification + Comparison:} Adds a comparative element, asking the model to
+            relate the sample to known families or behaviors, highlighting similarities and differences.
 \end{enumerate}
 
-These templates allow for observation of how the model responds to increasing cognitive
-requirements while keeping the schema stable.
+These templates allow systematic observation of how the model handles increasing reasoning demands
+while maintaining schema stability.
 
 \subsection{Reproducibility and Versioning}\label{subsec:PromptVersioning}
-Every prompt is versioned with a hash computed from the static features and retrieved document IDs.
-This guarantees that a given model output can be traced back and reproduced even if the underlying
-datastore or APIs are updated. Prompt versions and inference logs are stored alongside
-classification results, forming the basis for later evaluation
-(Section~\ref{sec:EvaluationFramework}).
+Every prompt is versioned using a hash computed from its static features and retrieved document
+IDs. This ensures that any model output can be traced back and reproduced, even if the underlying
+datastore or APIs are later updated. Prompt versions and inference logs are stored alongside
+classification results, providing traceability for evaluation (see
+Section~\ref{sec:EvaluationFramework}).
 
 \subsection{Prompt Example}\label{subsec:PromptExample}
-The following excerpt illustrates how prompts are assembled in the \gls{llm}+\gls{rag} pipeline.
-The system message enforces schema compliance, while the user message provides structured context,
-retrieved documents, and a task directive. Only the user message is shown here for clarity.
+The excerpt below illustrates how prompts are assembled in the \gls{llm}+\gls{rag} pipeline. The
+system message enforces schema compliance, while the user message provides structured context,
+retrieved evidence, and task instructions. Only the user message is shown for clarity.
 
-\begin{quote}
-      \texttt{Context:}
-      - The file imports \texttt{CreateRemoteThread}, \texttt{VirtualAllocEx}, and \texttt{WriteProcessMemory}.
-      - High entropy detected in \texttt{.text} and \texttt{.rsrc} sections.
-      - Embedded strings include URLs (\texttt{hxxp://malicious-site.com}) and encoded PowerShell commands.
+\begin{promptblock}
+      \begin{promptcode}
+            Context: \\
+            - The file imports CreateRemoteThread, VirtualAllocEx, and WriteProcessMemory. \\
+            - High entropy detected in .text and .rsrc sections.\\
+            - Embedded strings include URLs (hxxp://malicious-site.com) and encoded PowerShell commands. \\
 
-      \texttt{Retrieved Document [Malpedia: AgentTesla, DocID=malp-1234]}:
-      \emph{``AgentTesla often uses process injection via RemoteThread APIs and
-            obfuscates its communication channels with encoded PowerShell payloads.''}
+            Retrieved Document [Malpedia: AgentTesla, DocID=malp-1234]: \\ "AgentTesla often uses process
+            injection via RemoteThread APIs and obfuscates its communication channels with encoded PowerShell
+            payloads." \\
 
-      \texttt{Retrieved Document [VX-Underground: APT37, DocID=vx-5678]}:
-      \emph{``APT37 campaigns leveraged DLL injection combined with custom packers,
-            embedding URLs for remote payload retrieval.''}
+            Retrieved Document [VX-Underground: APT37, DocID=vx-5678]: \\ "APT37 campaigns leveraged DLL
+            injection combined with custom packers, embedding URLs for remote payload retrieval." \\
 
-      \texttt{Task:}
-      Based on the static features and retrieved documents, classify the sample into
-      a known family. Provide a JSON output following the schema, including:
-      \begin{itemize}
-            \item family label
-            \item classification tags (e.g., trojan, stealer)
-            \item capabilities and tactics
-            \item 4--8 evidence items citing features and retrieved documents
-            \item an uncertainty measure (low, medium, high)
-      \end{itemize}
-      If uncertain, return \texttt{"label": "unknown"} and \texttt{"uncertainty": "high"}.
-\end{quote}
+            Task: \\ Based on the static features and retrieved documents, classify the sample into a known
+            family. Provide a JSON output following the schema, including: \\ --- family label \\ ---
+            classification tags (e.g., trojan, stealer) \\ --- capabilities and tactics \\ --- 4--8 evidence
+            items citing features and retrieved documents \\ --- an uncertainty measure (low, medium, high) \\
+
+            If uncertain, return ``label'': ``unknown'' and ``uncertainty'': ``high''.
+      \end{promptcode}
+\end{promptblock}
+
+\noindent
+Prompt design directly impacts interpretability, since structured schemas and explicit evidence
+citation allow explanations to be measured against the criteria defined in section ~\ref{sec:EvaluationFramework}.
 
 \section{Guardrails}\label{sec:Guardrails}
 % Describes the safety and reliability mechanisms built into the LLM+RAG pipeline.
@@ -757,50 +654,51 @@ retrieved documents, and a task directive. Only the user message is shown here f
 %   - Human-in-the-loop review for critical or ambiguous cases, especially where ethical or legal concerns arise.
 %   - Logging and traceability of all inference and retrieval events for audit and reproducibility.
 %   - Measures to mitigate risks of prompt injection, retrieval poisoning, and hallucination.
-To mitigate the risks of inaccurate or wrongful classification in our LLM-RAG pipeline, we propose
-a set of \emph{guardrail strategies} aimed at improving reliability, factual grounding, and
-resistance to contextual bias. Each strategy is motivated by recent academic research on
-hallucination mitigation, structured prompting, RAG behavior, and system-level guardrails.
+To mitigate the risks of inaccurate or wrongful classification in the \gls{llm}+\gls{rag} pipeline,
+this study introduces a set of \emph{guardrail strategies} that improve reliability, factual
+grounding, and resilience to contextual bias. Guardrails are defined here as both \emph{technical
+      controls} (e.g., input sanitization, evidence validation) and \emph{procedural measures} (e.g.,
+audit trails, usage controls, human oversight) designed to ensure safe, ethical, and reproducible
+operation. These strategies complement prompt engineering (see
+Section~\ref{sec:PromptEngineering}), which governs how inputs are presented, by adding downstream
+mechanisms that enforce trustworthy outputs.
 
 \subsection{Rationale and Basis}
-Retrieval‐Augmented Generation (RAG) improves factual grounding by retrieving and incorporating
-external documents—but hallucinations can still arise from retrieval noise, lexical anchors, or
-overreliance on cues such as family names~\cite{zhang2025hallucination}. Structured prompting and
-multi-stage reasoning (e.g., hypothesize then verify) have been shown to reduce hallucination and
-improve reliability~\cite{bechard2024reducing, lee2025finetune}. In parallel, system-level
-\emph{guardrails} that sanitize inputs and enforce verification demonstrate stronger
-trustworthiness in LLM deployments~\cite{han2025guardrail, magesh2025assessing}.
+\gls{rag} improves factual grounding by incorporating external documents, but hallucinations
+still arise from retrieval noise, lexical anchoring, or overreliance on spurious cues such as family
+names~\cite{zhang2025hallucination}. Structured prompting and multi-stage reasoning (e.g.,
+hypothesize then verify) reduce hallucination and improve reliability~\cite{bechard2024reducing, lee2025finetune}.
+In parallel, system-level \emph{guardrails} that sanitize inputs, enforce verification, and log
+outputs have been shown to enhance trustworthiness in LLM deployments~\cite{han2025guardrail, magesh2025assessing}.
 
 \subsection{Guardrail Components}
 \begin{enumerate}
       \item \textbf{Name Redaction in Retrieved Passages.}
-            Masking known family names or actor terms in retrieved context helps avoid anchoring
-            bias. This approach aligns with input sanitization techniques advocated in safety‐critical
-            LLM systems~\cite{han2025guardrail}.
+            Masking known family names or actor terms in retrieved context helps avoid anchoring bias.
+            This aligns with input sanitization techniques advocated in safety‐critical LLM systems~\cite{han2025guardrail}.
 
-      \item \textbf{Re-Rank by Technical Evidence, Not Lexical Signals.}
-            Reordering retrieved passages based on domain-specific technical cues (e.g., API names,
-            section labels) and down-weighting family name hits improves the factual relevance of
-            input context~\cite{zhang2025hallucination, magesh2025assessing}.
+      \item \textbf{Re-Rank by Technical Evidence.}
+            Retrieved passages are reordered based on domain-specific technical cues (e.g., API
+            calls, section labels) while down-weighting passages that emphasize family names. This
+            improves factual relevance and reduces susceptibility to lexical
+            noise~\cite{zhang2025hallucination, magesh2025assessing}.
 
       \item \textbf{Two-Stage Classification: Blind Hypothesis → Evidence Verification.}
-            First generate a classification hypothesis based solely on structured features; then
-            validate it using RAG context, encouraging verifiable reasoning. This mirrors structured
-            output generation via RAG and helps reduce hallucination~\cite{bechard2024reducing, lee2025finetune}.
+            A classification hypothesis is first generated from structured features alone, then
+            validated against sanitized RAG context. This structured verification encourages
+            evidence-based reasoning~\cite{bechard2024reducing, lee2025finetune}.
 
-      \item \textbf{Post-Validation and Abstention on Insufficient Evidence.}
-            If fewer than two RAG‐based evidence snippets support the claim, or if the proposed
-            family aligns with masked tokens, the system abstains (labels “unknown\_family”). This
-            enforces accountability and mitigates over-confident speculation~\cite{han2025guardrail, magesh2025assessing}.
+      \item \textbf{Evidence Threshold \& Abstention.}
+            If fewer than two retrieval-based evidence snippets support a claim, or if the proposed
+            family matches a redacted term, the system abstains by returning \texttt{"unknown\_family"}.
+            This prevents overconfident misclassification~\cite{han2025guardrail, magesh2025assessing}.
 
-      \item \textbf{Audit-Trail Metadata.}
-            Every classification logs redacted names, re-ranked passages, blind vs. final
-            hypotheses, evidence item count, and abstention status. Such transparency supports
-            reproducibility and post-hoc analysis—a best practice in trusted AI systems~\cite{han2025guardrail}.
+      \item \textbf{Transparent Audit Trail.}
+            Each classification records redacted names, reranked passages, blind vs. final
+            hypotheses, evidence counts, and abstention status. ~\cite{han2025guardrail}.
 \end{enumerate}
 
 \subsection{Workflow Summary}
-
 \begin{center}
       \begin{tabular}{ll}
             \toprule
@@ -809,37 +707,226 @@ trustworthiness in LLM deployments~\cite{han2025guardrail, magesh2025assessing}.
             1. Redaction                     & Remove family/actor names from retrieved texts        \\
             2. Re-Ranking                    & Score passages by technical relevance, penalize names \\
             3a. Blind Classification         & Hypothesize using structured features only            \\
-            3b. Justification Classification & Validate hypothesis using sanitized RAG               \\
-            4. Post-Validation               & Require $\geq$ 2 supporting quotes; abstain otherwise \\
+            3b. Evidence Verification        & Validate hypothesis using sanitized RAG               \\
+            4. Evidence Threshold \& Abstain & Require $\geq$2 quotes; abstain if insufficient       \\
             5. Audit Trail                   & Record metadata for analysis and trustworthiness      \\
+            6. Human Oversight               & Flag ambiguous or critical cases for review           \\
             \bottomrule
       \end{tabular}
 \end{center}
 
 \subsection{Theoretical Justification}
-
 \begin{itemize}
-      \item \emph{RAG grounding} helps but isn’t sufficient for fidelity; targeted mitigation
-            improves reliability in classification tasks \cite{zhang2025hallucination, bechard2024reducing}.
-      \item \emph{Structured verification (hypothesis + evidence)} encourages factual reasoning
-            and reduces spuriously confident labels \cite{bechard2024reducing, lee2025finetune}.
-      \item \emph{System-level guardrails}, such as sanitization and abstention, are critical in0
-            maintaining trust in deployed LLM systems \cite{han2025guardrail, magesh2025assessing}.
+      \item \emph{RAG grounding} reduces hallucination but requires reinforcement to ensure
+            fidelity~\cite{zhang2025hallucination, bechard2024reducing}.
+      \item \emph{Structured verification (hypothesis + evidence)} encourages factual reasoning and
+            curbs overconfident outputs~\cite{bechard2024reducing, lee2025finetune}.
+      \item \emph{System-level guardrails}, including sanitization, abstention, and audit trails,
+            are critical for trust in deployed LLM systems~\cite{han2025guardrail, magesh2025assessing}.
+      \item \emph{Ethical oversight}, through human-in-the-loop review of ambiguous cases, aligns
+            the pipeline with responsible AI practices and prevents misuse in operational cybersecurity settings.
 \end{itemize}
 
 \section{Evaluation Framework}\label{sec:EvaluationFramework}
 % Define your evaluation metrics: accuracy, efficiency, interpretability.
 % Describe baseline comparisons against traditional static malware classifiers (if applicable).
 % Discuss any human-in-the-loop components for evaluating explanation quality.
-TODO...
+This section defines the framework used to evaluate both the baseline and \gls{rag}-enhanced
+pipelines. Evaluation is organized around three categories: classification accuracy, processing
+efficiency, and interpretability of results. These criteria are selected to balance quantitative
+performance with qualitative insight, reflecting practical requirements of malware analysis in
+operational contexts. The framework ensures that results are directly comparable across pipelines
+by using a unified schema for classification outputs.
+
+Limitations of this framework, including reliance on vendor consensus and the absence of human
+annotation, are discussed in Section~\ref{sec:ReliabilityValidityLimitations}.
+
+\subsection{Accuracy}\label{subsec:Accuracy}
+
+Classification accuracy measures the proportion of correctly assigned categories relative to
+VirusTotal consensus ground truth:
+
+\begin{equation}
+      \text{Accuracy} = \frac{N_{\text{correct}}}{N_{\text{total}}}
+\end{equation}
+
+where \(N_{\text{correct}}\) is the number of samples whose predicted categories match the
+benchmark label, and \(N_{\text{total}}\) is the total number of samples evaluated. To ensure
+comparability, all ground truth labels are normalized into canonical category names. This step
+mitigates inconsistencies between vendor taxonomies and ensures that both pipelines are scored
+against the same reference.
+
+\subsection{Efficiency}\label{subsec:Efficiency}
+
+Efficiency captures average processing latency per sample:
+
+\begin{equation}
+      \text{Efficiency} = \frac{1}{N_{\text{total}}} \sum_{i=1}^{N_{\text{total}}} T_i
+\end{equation}
+
+where \(T_i\) denotes end-to-end processing time for sample \(i\). For the \gls{llm}+\gls{rag}
+pipeline, this includes embedding generation, document retrieval, prompt assembly, and model
+inference latency. For the baseline, \(T_i\) encompasses decompilation, feature extraction, rule
+evaluation, and enrichment via external APIs. This metric highlights trade-offs between richer
+semantic reasoning and the computational cost of achieving it.
+
+\subsection{Interpretability}\label{subsec:Interpretability}
+
+Interpretability is assessed using three sub-metrics adapted from Wong \emph{et
+      al.}~\cite{wong2021practice} and Sahoo \emph{et al.}~\cite{sahoo2024systematic}. These measures
+capture both the presence and quality of explanations:
+
+\begin{enumerate}
+      \item \textbf{Explanation Coverage:}
+            \begin{equation}
+                  \text{Coverage} = \frac{N_{\text{explained}}}{N_{\text{total}}}
+            \end{equation}
+            where \(N_{\text{explained}}\) is the number of samples accompanied by an explanation.
+
+      \item \textbf{Contextual Grounding:}
+            \begin{equation}
+                  \text{Grounding} = \frac{N_{\text{with-citation}}}{N_{\text{explained}}}
+            \end{equation}
+            where \(N_{\text{with-citation}}\) is the number of explanations citing at least one retrieved document,
+            ensuring justification is evidence-based rather than speculative.
+
+      \item \textbf{Rule-Reference Matching (Baseline only):}
+            \begin{equation}
+                  \text{RuleMatch} = \frac{N_{\text{consistent-rules}}}{N_{\text{triggered-rules}}}
+            \end{equation}
+            where \(N_{\text{consistent-rules}}\) is the number of heuristic rules whose triggers
+            are consistent with the final family label. This provides an analogue to justification
+            in the baseline pipeline.
+\end{enumerate}
+
+These sub-metrics allow interpretability to be assessed not only by output presence, but also by
+the degree to which explanations are grounded in verifiable evidence.
+
+\subsection{Composite Score}\label{subsec:CompositeScore}
+
+To enable a holistic comparison between pipelines, a composite score is defined as a weighted sum
+of the three axes:
+
+\begin{equation}
+      \text{Composite} = \alpha \cdot \text{Accuracy}
+      + \beta \cdot \text{Efficiency}^{-1}
+      + \gamma \cdot \text{Interpretability}
+\end{equation}
+
+where \(\alpha + \beta + \gamma = 1\). Efficiency is inverted so that lower processing times
+contribute positively. By default, equal weights are applied (\(\alpha = \beta = \gamma =
+\tfrac{1}{3}\)), though weights can be adjusted depending on analytic priorities (e.g.,
+prioritizing accuracy over efficiency in high-stakes detection scenarios).
 
 \section{Reliability, Validity, and Limitations}\label{sec:ReliabilityValidityLimitations}
-% Discuss how reproducibility is ensured via version control, fixed seeds, and public datasets.
+% Discuss how reproducibility is ensured via version control, and public datasets.
 % Address limitations:
 %   - Limited to static analysis.
 %   - Dependent on retrieval quality and LLM reliability.
 %   - No user-study or adversarial robustness testing (unless planned).
-TODO...
+This section outlines the measures taken to ensure reproducibility of the experiments, discusses
+internal and external validity considerations, and presents the primary limitations of the study.
+Together, these factors frame the boundaries of interpretation for the evaluation results presented
+in Chapter~\ref{sec:EvaluationFramework}.
+
+\subsection{Reproducibility}\label{subsec:Reproducibility}
+Reproducibility is supported through a combination of methodological rigor and technical
+infrastructure:
+
+\begin{itemize}
+      \item \textbf{Version-Controlled Codebase}: All pipeline code, configuration files,
+            and documentation are maintained in a public GitHub repository.\footnote{\url{https://github.com/andremmfaria/rexis}}
+
+      \item \textbf{Containerized Environment}: All software dependencies are managed via
+            \texttt{\gls{pdm}}, deployed in Docker-based containers or are installed in isolated directories.
+
+      \item \textbf{Explicit API Versions}: External services such as OpenAI, VirusTotal, and
+            Malwarebazaar are accessed through versioned API endpoints, with documented model
+            identifiers (e.g., \texttt{gpt-4o}, \texttt{vt-api}).
+
+      \item \textbf{Metadata Logging}: Each pipeline run produces structured logs, recording
+            sample identifiers, timestamps, toolchain versions, and model metadata.
+\end{itemize}
+
+\subsection{Internal Validity}\label{subsec:InternalValidity}
+Internal validity is maintained by controlling experimental variables and applying consistent
+processing steps across pipelines. Static features are extracted using a shared \gls{ghidra}
+backend, while retrieval, embedding, and prompt templates remain fixed throughout experiments. No
+manual analyst intervention is introduced into classification workflows, avoiding bias.
+
+Potential threats include:
+\begin{itemize}
+      \item \textbf{Heuristic Bias}: The baseline pipeline’s rule-based logic may overfit
+            to common rules and patterns and fail against obfuscation or novel attack techniques.
+            Although the rule set can be expanded, coverage gaps remain.
+      \item \textbf{Retrieval Drift}: Embedding-based retrieval is sensitive to corpus changes
+            and chunking strategies, which may influence which context is provided to the model.
+            This is partially mitigated by retrieval guardrails (Section~\ref{sec:Guardrails})
+            and prompt versioning (Section~\ref{sec:PromptEngineering}), but residual variability
+            may still affect consistency across runs.
+\end{itemize}
+
+\subsection{External Validity}\label{subsec:ExternalValidity}
+Findings are limited in scope to \gls{pe}-based malware and static analysis scenarios. Results may
+not generalize to fileless malware, non-Windows binaries, or dynamic behavior-based classification.
+Inference-only \glspl{llm} are employed without fine-tuning. This choice enhances reproducibility
+and reduces operational cost, but it limits adaptability to analyst-in-the-loop scenarios where
+domain-specific customization would normally be expected. By excluding hybrid or dynamic analysis
+features, the results may not generalize to systems that integrate runtime behavior with static
+evidence, specially on obfuscated malware.
+
+\subsection{Evaluation Limitations}\label{subsec:EvaluationLimitations}
+The evaluation framework described in Section~\ref{sec:EvaluationFramework} has several constraints
+that affect how results should be interpreted.
+
+\begin{itemize}
+      \item \textbf{Ground Truth Reliance}: Dependence on VirusTotal consensus introduces noise and
+            inconsistency, which directly impacts the reliability of accuracy scores.
+      \item \textbf{Human-in-the-Loop Absence}: The lack of expert annotation or analyst feedback
+            limits the validity of interpretability assessments.
+      \item \textbf{Surface-Level Metrics}: Metrics such as coverage and citation capture structural
+            qualities but not the semantic fidelity of explanations, potentially overstating
+            interpretability performance.
+\end{itemize}
+
+These constraints affect the precision of comparative evaluation and highlight that
+interpretability scores should be interpreted cautiously.
+
+\subsection{Study Limitations}\label{subsec:StudyLimitations}
+The study operates under several broader constraints that limit generalizability:
+
+\begin{itemize}
+      \item \textbf{Static Analysis Only}: No dynamic or hybrid analysis is performed.
+            Obfuscated or packed binaries may yield incomplete or misleading feature sets.
+
+      \item \textbf{LLM Limitations}: Generated responses may contain hallucinations or
+            overconfident statements~\cite{zou2024poisonedrag, ferrag2024allinsights}.
+            While prompts are structured to minimize risk, adversarial testing is not included.
+
+      \item \textbf{Dataset Scale}: Sample sizes are constrained by API quotas and curation effort,
+            which restricts statistical robustness. This also introduces potential class imbalance,
+            where common families are overrepresented and rare or emerging families receive
+            insufficient coverage.
+
+      \item \textbf{No Adversarial Robustness}: The system is not evaluated against adversarial
+            risks such as prompt injection, retrieval poisoning, or obfuscation-specific evasion.
+            These are well-documented threats to \gls{rag}-powered pipelines~\cite{zou2024poisonedrag},
+            and their omission limits claims about robustness under hostile conditions.
+
+      \item \textbf{Ethical considerations}: Automated classification carries risks of false
+            positives and mislabeling, which in real-world contexts could affect operational
+            decisions or intelligence reporting. While this study mitigates some risks through
+            audit trails and guardrails (Section~\ref{sec:Guardrails}), ultimate responsibility
+            for critical classifications rests with human analysts.
+\end{itemize}
+
+Taken together, these limitations emphasize that while the study provides a reproducible and
+systematic framework for evaluating \gls{llm}+\gls{rag} pipelines in static malware analysis, its
+conclusions should be interpreted within a bounded scope. Technical constraints shape the
+reliability of results, dataset and evaluation limitations affect generalizability, and ethical
+considerations highlight the need for human oversight in operational deployments. These caveats do
+not undermine the validity of the findings, but they define the context in which they can be
+responsibly applied.
 
 \section{Ethical Considerations}\label{sec:EthicalConsiderations}
 % Ensure ethical use of malware datasets.
