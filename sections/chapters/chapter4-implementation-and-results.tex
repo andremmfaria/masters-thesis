@@ -88,9 +88,8 @@ intelligence sources into semantically searchable embeddings.
             window limits of the embedding model.
 
       \item \textbf{Embedder:} Encodes each chunk using a transformer-based
-            embedding model, such as OpenAI's \texttt{text-embedding-3-small} or
-            DeepSeek-compatible alternatives. Embeddings are batched and
-            streamed to reduce latency.
+            embedding model, such as OpenAI's \texttt{text-embedding-3-small}.
+            Embeddings are batched and streamed to reduce latency.
 
       \item \textbf{Vector Store Writer:} Inserts chunks and associated metadata
             into a \gls{postgresql} + \gls{pgvector} database. The Haystack
@@ -118,9 +117,7 @@ The baseline pipeline uses deterministic rule-based logic combined with metadata
 
       \item \textbf{Decision Engine:} Merges heuristic and VirusTotal outputs
             using a confidence-based reconciliation strategy. If conflicts occur,
-            priority is determined by a configurable threshold
-            rule.?\footnote{This reconciliation engine was not implemented due
-                  to time constraints. The proposed approach is outlined here: https://github.com/andremmfaria/rexis/blob/main/guides/Reconciliation.md.}
+            priority is determined by a configurable threshold rule.
 
       \item \textbf{Output Formatter:} Produces structured classification
             summaries, which include heuristic scores, final labels, and audit logs.
