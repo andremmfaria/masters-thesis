@@ -913,7 +913,7 @@ The study operates under several broader constraints that limit generalizability
             These are well-documented threats to \gls{rag}-powered pipelines~\cite{zou2024poisonedrag},
             and their omission limits claims about robustness under hostile conditions.
 
-      \item \textbf{Ethical considerations}: Automated classification carries risks of false
+      \item \textbf{Ethical limitations}: Automated classification carries risks of false
             positives and mislabeling, which in real-world contexts could affect operational
             decisions or intelligence reporting. While this study mitigates some risks through
             audit trails and guardrails (Section~\ref{sec:Guardrails}), ultimate responsibility
@@ -975,4 +975,30 @@ adheres to a read-only analysis posture.
 \section{Summary}\label{sec:MethodologySummary}
 % Recap the methodology structure and justify how it addresses your research questions.
 % Set up the transition into the next chapter, where implementation details or results will follow.
-TODO...
+This chapter established the methodological framework guiding the evaluation of retrieval-augmented
+\glspl{llm} in static malware analysis. The research design (Section~\ref{sec:ResearchDesign})
+follows an experimental, prototype-based approach that contrasts a baseline classifier—combining
+static heuristics with \gls{virustotal} metadata—against an enhanced \gls{llm}+\gls{rag} pipeline.
+The system architecture (Section~\ref{sec:SystemArchitecture}) and experimental workflow
+(Section~\ref{subsec:ExperimentalWorkflow}) were presented in detail, showing how
+\gls{ghidra}-based static feature extraction, containerized environments, and a unified ingestion
+process are combined to provide consistent and reproducible analysis.
+
+Guardrail strategies (Section~\ref{sec:Guardrails}) and prompt engineering methods
+(Section~\ref{sec:PromptEngineering}) were introduced as core mechanisms for ensuring safety,
+accountability, and interpretability. These include name redaction, evidence thresholds with
+abstention, transparent audit trails, and fixed prompt templates. The role of data sources
+(Section~\ref{sec:DataSources}) was described in relation to Malpedia, MalwareBazaar, and
+VX-Underground, which populate the retrieval corpus that grounds LLM reasoning. Together with
+reproducibility measures (Section~\ref{subsec:Reproducibility}), these strategies mitigate risks
+such as hallucination, anchoring bias, and retrieval drift.
+
+Finally, the evaluation framework (Section~\ref{sec:EvaluationFramework}) was defined across three
+axes: accuracy, efficiency, and interpretability, with a composite score to enable holistic
+comparison. Reliability and validity considerations
+(Section~\ref{sec:ReliabilityValidityLimitations}) were addressed, and key limitations
+acknowledged, including reliance on VirusTotal consensus, dataset imbalance, the absence of
+adversarial robustness testing, and ethical concerns surrounding automated classification.
+Together, these elements ensure that the methodology directly addresses the research questions of
+this thesis while clearly delimiting the scope for interpretation. The next chapter presents the
+implementation of these pipelines and the results of their evaluation.

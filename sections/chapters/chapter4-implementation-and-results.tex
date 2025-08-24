@@ -13,71 +13,78 @@ behavior.
 
 \section{Environment}\label{sec:Environment}
 % Describes the Python-based toolchain used across the project:
-% - **PDM** for managing dependencies and isolating virtual environments.
-% - **Malwarebazaar/VX-Underground/Malpedia**: Data sources for the RAG datastore
-% - **PostgreSQL + pgvector** as the vector store for document embeddings.
-% - **Haystack** for RAG orchestration.
-% - **Ghidra + PyGhidra** for static feature extraction from PE files.
-% - **OpenAI API** for LLM inference.
-% - **VirusTotal API** for metadata enrichment.
-% - Versioning and reproducibility strategies.
-The experimental environment was built with open-source tools and APIs, with an emphasis on modular
-components, reproducibility, and transparent workflows. All development was carried out in
-\gls{python}, using containerized services and reproducible dependency management.
+% - PDM for managing dependencies and isolating virtual environments.
+% - MalwareBazaar/VX-Underground/Malpedia as data sources for the RAG datastore.
+% - PostgreSQL + pgvector as the vector store for document embeddings.
+% - Haystack for RAG orchestration.
+% - Ghidra + PyGhidra for static feature extraction from PE files.
+% - OpenAI API for LLM inference.
+% - VirusTotal API for metadata enrichment.
+% - Docker for containerization and environment management.
+% - GitHub for version control.
+% - Versioning, logging, and reproducibility strategies.
+The experimental environment was built using a combination of open-source tools, APIs, and
+containerized services, with an emphasis on modularity, reproducibility, and transparent workflows.
+All development was carried out in \gls{python}, with dependencies managed via isolated
+environments to ensure deterministic builds. A step-by-step guide to the setup and configuration
+can be found in the project repository.\footnote{\url{https://github.com/andremmfaria/rexis}}
 
-\vspace{0.5em}
-\noindent This overview describes the environment and supporting tools used across
-the project. A step-by-step guide to the setup and configuration can be found in the
-repository:~\footnote{\url{https://github.com/andremmfaria/rexis}}
+The main tools and frameworks are:
 
-\vspace{1em}
-\noindent The main tools and frameworks are:
 \begin{itemize}
       \item \textbf{\gls{python}} --~Primary implementation language for orchestration logic and
-            pipeline components. Python was chosen for its strong ecosystem in cybersecurity,
-            data analysis, and \gls{machine-learning}.\footnote{\url{https://www.python.org}}
+            pipeline components. Python was chosen for its mature ecosystem in cybersecurity, data analysis,
+            and \gls{machine-learning}.\footnote{\url{https://www.python.org}}
 
       \item \textbf{PDM (Python Development Master)} --~Manages dependencies and virtual
-            environments. It provides deterministic builds and isolated execution, supporting
-            reproducibility across runs and machines.\footnote{\url{https://pdm-project.org}}
+            environments. PDM provides deterministic builds and isolated execution, supporting reproducibility
+            across runs and machines.\footnote{\url{https://pdm-project.org}}
 
       \item \textbf{\gls{postgresql} + \gls{pgvector}} --~Relational database extended with the
-            \texttt{pgvector} module\footnote{\url{https://www.postgresql.org},
-                  \url{https://github.com/pgvector/pgvector}} for similarity search on embeddings. It
-            acts as the vector store backing the retrieval stage of the \gls{rag} pipeline. The
-            database runs in a Docker container for consistency and portability.\footnote{\url{https://www.docker.com}}
+            exttt{pgvector} module\footnote{\url{https://www.postgresql.org}}\footnote{\url{https://github.com/pgvector/pgvector}} for similarity search on embeddings. It serves
+            as the vector store backing the retrieval stage of the \gls{rag} pipeline. The database is deployed
+            in a Docker container for consistency and portability.\footnote{\url{https://www.docker.com}}
 
-      \item \textbf{\gls{haystack}} --~Framework used to implement the \gls{rag} workflow,
-            including ingestion, chunking, embedding, and retrieval. Its modular components
-            simplify pipeline orchestration and integration with external
-            \glspl{llm}.\footnote{\url{https://haystack.deepset.ai}}
+      \item \textbf{\gls{haystack}} --~Framework used to implement the \gls{rag} workflow, including
+            ingestion, chunking, embedding, and retrieval. Its modular components simplify orchestration and
+            integration with external \glspl{llm}.\footnote{\url{https://haystack.deepset.ai}}
 
-      \item \textbf{\gls{gpt4o} (inference-only)} --~No fine-tuning was
-            performed. The model is used strictly for contextual reasoning and static
-            feature analysis, relying on structured prompts enriched with retrieved
-            context.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
+      \item \textbf{\gls{gpt4o} (inference-only)} --~Used strictly in inference-only mode. No fine-tuning
+            was performed, ensuring reproducibility across runs. The model is responsible for contextual
+            reasoning and static feature analysis, driven by structured prompts enriched with retrieved
+            evidence.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
 
-      \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} serves as the static analysis and
-            decompilation tool. PyGhidra enables automated extraction of imports, functions,
-            strings, and decompiled code from \gls{pe} samples.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra},
-                  \url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
+      \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} is used as the static analysis and
+            decompilation framework. PyGhidra provides bindings to automate extraction of imports,
+            functions, strings, sections, entropy values, and decompiled code from \gls{pe} binaries,
+            enabling feature logging at scale.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra}}\footnote{\url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
 
-      \item \textbf{Docker} --~Used to containerize services such as \gls{postgresql} with
-            \gls{pgvector}. Containerization ensures reproducibility, isolation, and consistent
-            builds across environments.\footnote{\url{https://www.docker.com}}
+      \item \textbf{Docker} --~Used to containerize core services such as \gls{postgresql} with
+            \gls{pgvector}, the \gls{ghidra} server, and auxiliary tools. Containerization ensures reproducibility,
+            isolation, and consistency across systems.\footnote{\url{https://www.docker.com}}
 
-      \item \textbf{\gls{malwarebazaar} API} --~Source of real-world samples, hashes, tags, and
-            metadata, used for enrichment and validation.\footnote{\url{https://bazaar.abuse.ch/api/}}
+      \item \textbf{\gls{malwarebazaar} API} --~Provides malware samples, hashes, tags, and metadata,
+            serving as a key source of enrichment and validation.\footnote{\url{https://bazaar.abuse.ch/api/}}
 
-      \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and vendor
-            consensus labels. This data supports the baseline classifier and reconciliation
-            logic.\footnote{\url{https://developers.virustotal.com/reference}}
+      \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and consensus labels
+            across vendors. These labels support the baseline classifier and reconciliation logic, providing
+            a benchmark for evaluation.\footnote{\url{https://developers.virustotal.com/reference}}
+
+      \item \textbf{\gls{vx-underground} and \gls{malpedia}} --~Additional data sources used to populate
+            the retrieval corpus with threat intelligence reports, APT writeups, and malware family descriptions.
+            These documents strengthen contextual grounding in the \gls{rag} pipeline by supplying semantically
+            rich background evidence.\footnote{\url{https://vx-underground.org}}\footnote{\url{https://malpedia.caad.fkie.fraunhofer.de}}
 \end{itemize}
-Version control was handled with Git and GitHub, ensuring traceability of code and
-configuration changes. All pipelines were developed to run deterministically under PDM allowing
-results to be reproduced on different systems with the same setup.
 
-\section{Implementation Overview}\label{sec:ImplementationOverview}
+\noindent
+Version control was managed through Git and GitHub, ensuring traceability of code, configurations,
+and experiment scripts. Each pipeline execution was logged with structured metadata, including sample
+identifiers, timestamps, tool versions, prompt hashes, and retrieved document IDs, supporting full
+auditability and reproducibility. Containerization and PDM further guaranteed that results can be
+replicated on any compliant environment with minimal configuration drift.
+
+\section{Implementation Overview}
+\label{sec:ImplementationOverview}
 % Describe the technical implementation of the system and pipelines.
 % Cover how the REXIS CLI is structured (e.g., modules for ingestion, classification).
 % Include information on:
@@ -87,128 +94,119 @@ results to be reproduced on different systems with the same setup.
 %   - How components interact during runtime (feature extraction → retrieval → prompt → inference)
 %   - Use of Docker or containerization for reproducibility
 % Optionally include short code snippets, CLI command samples, or log outputs.
-The system is implemented as a modular Python application using the
-\texttt{Typer}\footnote{\url{https://typer.tiangolo.com/}} framework for CLI orchestration. The
-codebase is organized to support two primary analysis pipelines: a baseline static classifier and
-an enhanced \gls{llm}-driven pipeline backed by \gls{rag}. Common modules handle preprocessing,
-data ingestion, feature extraction, and logging, while each pipeline defines its own classification
-logic and output formatting.
+The system is implemented as a modular Python application structured around the
+\texttt{Typer}\footnote{\url{https://typer.tiangolo.com/}} CLI framework. The codebase
+(\texttt{src/rexis}) is organized to support three main operations: data ingestion, baseline static
+classification, and enhanced \gls{llm}+\gls{rag} classification. Common modules handle
+configuration, logging, and feature extraction, while each pipeline defines its own classification
+logic. Documentation and usage examples for each pipeline are provided in dedicated guides:
+ingestion\footnote{\url{https://github.com/andremmfaria/rexis/raw/refs/heads/main/guides/IngestionPipeline.md}},
+baseline\footnote{\url{https://github.com/andremmfaria/rexis/raw/refs/heads/main/guides/BaselinePipeline.md}},
+and
+LLM+RAG\footnote{\url{https://github.com/andremmfaria/rexis/raw/refs/heads/main/guides/LLMRagPipeline.md}}.
+
+The code project can be found at \url{https://github.com/andremmfaria/rexis}.
 
 \subsection{Common Modules}\label{subsec:CommonModules}
-The following components are shared across all pipeline operations:
+The following components are shared across all pipelines:
 
 \begin{itemize}
-      \item \textbf{Sample Loader:} Loads \gls{pe} files from the designated
-            corpus directory and calculates hashes (SHA256, MD5) for sample tracking.
+      \item \textbf{Sample Loader:} Reads \gls{pe} binaries, computes hashes (SHA256, MD5),
+            and registers samples in a consistent directory layout for reproducibility.
 
-      \item \textbf{Ghidra Integration:} Static feature extraction is performed
-            using \gls{ghidra} via the \texttt{PyGhidra} API. A containerized Ghidra server
-            is initialized at runtime, and samples are submitted in batch mode.
+      \item \textbf{Ghidra Integration:} Static feature extraction is automated via
+            \gls{ghidra} using the \texttt{PyGhidra} API. Features include imports, functions,
+            printable strings, section entropy, entry points, and decompiled code.
 
-      \item \textbf{Feature Extractor:} Extracts structural and semantic features,
-            including PE headers, DLL imports, printable strings, section entropy, and
-            entry point offsets. Results are serialized into both JSON and \texttt{pandas}
-            DataFrames for consistency and reuse.
+      \item \textbf{Feature Extractor:} Serializes features into JSON and \texttt{pandas}
+            DataFrames for consistency and downstream reuse.
 
-      \item \textbf{Logger:} Captures structured logs for each pipeline execution,
-            including runtime events, errors, hashes, timestamps, and tool versions.
-            Logging is centralized for reproducibility and debugging.
+      \item \textbf{Logger:} Structured logging captures runtime events, timestamps,
+            tool versions, hashes, and prompt identifiers. This provides an audit trail
+            for every classification decision.
 
-      \item \textbf{Configuration Manager:} Runtime parameters, including API
-            keys, credentials, and feature toggles, are managed via
-            \texttt{dynaconf}\footnote{\url{https://www.dynaconf.com/}} to allow
-            profile-specific overrides and secure separation of secrets.
+      \item \textbf{Configuration Manager:} Runtime parameters such as API keys,
+            thresholds, and feature toggles are handled by
+            \texttt{dynaconf}\footnote{\url{https://www.dynaconf.com/}}, ensuring secrets
+            are separated from code and allowing profile-specific overrides.
 
-      \item \textbf{CLI Interface:} A unified CLI under the \texttt{rexis} command,
-            implemented using the \texttt{Typer}\footnote{\url{https://typer.tiangolo.com/}} framework,
-            enables isolated or batch execution of both pipelines via subcommands
-            (e.g., \texttt{rexis run baseline}, \texttt{rexis run rag}).
+      \item \textbf{CLI Interface:} A unified \texttt{rexis} command provides access
+            to all pipelines. Subcommands support ingestion
+            (\texttt{rexis ingest}), baseline classification (\texttt{rexis run baseline}),
+            and RAG-enhanced classification (\texttt{rexis run rag}).
 \end{itemize}
 
 \subsection{Data Ingestion Pipeline}\label{subsec:DataIngestionImpl}
-The ingestion pipeline populates the \gls{rag} vector database by processing external threat
-intelligence sources into semantically searchable embeddings.
+The ingestion pipeline prepares the retrieval corpus by transforming raw threat intelligence into
+searchable vector embeddings:
 
 \begin{itemize}
-      \item \textbf{Document Loader:} Gathers raw documents from predefined
-            directories, API clients (e.g., \gls{malwarebazaar}), and web archives
-            (e.g., \gls{malpedia}, VX-Underground). Each document is tagged with
-            source metadata and a unique identifier.
+      \item \textbf{Document Loader:} Collects documents from \gls{malwarebazaar},
+            \gls{malpedia}, and VX-Underground, normalizing metadata and assigning unique IDs.
 
-      \item \textbf{Preprocessing Engine:} Cleans input text by removing
-            boilerplate, embedded scripts, and redundant entries. It performs
-            language normalization and token cleaning.
+      \item \textbf{Preprocessing Engine:} Cleans input by removing boilerplate,
+            scripts, and noise, standardizing text for downstream processing.
 
-      \item \textbf{Chunker:} Splits documents into semantically meaningful
-            sections using length-aware heuristics (e.g., newline or heading-based
-            segmentation). This step ensures each chunk remains within the token
-            window limits of the embedding model.
+      \item \textbf{Chunker:} Splits long documents into sections sized for
+            embedding-model token limits using heading- and length-aware heuristics.
 
-      \item \textbf{Embedder:} Encodes each chunk using a transformer-based
-            embedding model, such as OpenAI's \texttt{text-embedding-3-small}.
-            Embeddings are batched and streamed to reduce latency.
+      \item \textbf{Embedder:} Encodes chunks using OpenAI’s
+            \texttt{text-embedding-3-small} model. Embeddings are processed in batches
+            for scalability.
 
-      \item \textbf{Vector Store Writer:} Inserts chunks and associated metadata
-            into a \gls{postgresql} + \gls{pgvector} database. The Haystack
-            \texttt{DocumentStore} abstraction is used to manage indexing,
-            similarity metrics, and metadata-based filtering.
+      \item \textbf{Vector Store Writer:} Stores embeddings and metadata in a
+            \gls{postgresql}+\gls{pgvector} database. Haystack’s \texttt{DocumentStore}
+            abstraction is used for indexing and similarity search.
 \end{itemize}
 
-The ingestion process is automated via the CLI using the command \texttt{rexis ingest
-      --source=<name>} and may be run incrementally. All ingested data is versioned to ensure
-reproducibility and traceability of semantic retrieval during classification.
+Ingestion is automated via \texttt{rexis ingest --source=<name>} and supports incremental updates.
+Prompt versioning ensures that classification results can always be traced to the exact retrieval
+corpus state.
 
 \subsection{Baseline Pipeline Implementation}\label{subsec:BaselineImplementation}
-The baseline pipeline uses deterministic rule-based logic combined with metadata enrichment via
-\gls{virustotal}. Its architecture includes the following modules:
+The baseline pipeline combines heuristic rules with VirusTotal metadata to provide a deterministic
+classification strategy:
 
 \begin{itemize}
-      \item \textbf{Heuristic Classifier:} Applies manually curated rules to
-            extracted features. For instance, the presence of obfuscation-related
-            imports or unusually high section entropy can trigger detection of
-            suspicious behavior.
+      \item \textbf{Heuristic Classifier:} Applies manually curated rules to extracted
+            features. For example, suspicious imports or anomalous entropy can trigger alerts.
 
-      \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} API using
-            the sample's hash and retrieves engine detections, tags, and metadata.
-            Results are normalized into canonical family labels via a tag-mapping layer.
+      \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} API for
+            detections, tags, and metadata. Results are normalized to canonical family labels
+            via a tag-mapping layer.
 
-      \item \textbf{Decision Engine:} Merges heuristic and VirusTotal outputs
-            using a confidence-based reconciliation strategy. If conflicts occur,
-            priority is determined by a configurable threshold rule.
+      \item \textbf{Decision Engine:} Reconciles heuristic outputs with VirusTotal
+            consensus using confidence-weighted thresholds.
 
-      \item \textbf{Output Formatter:} Produces structured classification
-            summaries, which include heuristic scores, final labels, and audit logs.
+      \item \textbf{Output Formatter:} Produces structured JSON summaries containing
+            rules triggered, VirusTotal consensus, and final classification label.
 \end{itemize}
 
 \subsection{LLM+RAG Pipeline Implementation}\label{subsec:RAGImplementation}
-The enhanced pipeline performs semantic retrieval and inference through external \glspl{llm},
-enabling context-aware classification and explanation.
+The enhanced pipeline retrieves semantically relevant evidence and integrates it into structured
+prompts for inference via GPT-4o:
 
 \begin{itemize}
       \item \textbf{Semantic Query Builder:} Transforms extracted features into
-            natural language questions (e.g., 'What malware family uses these API
-            calls and strings?'), incorporating string samples, header attributes, and
-            import function names.
+            natural language queries, incorporating imports, strings, and header attributes.
 
-      \item \textbf{Retriever:} Uses Haystack's retriever module to search the
-            \gls{pgvector} database for top-$k$ relevant documents. Each retrieval includes
-            document ID, similarity score, and context snippet.
+      \item \textbf{Retriever:} Executes top-$k$ retrieval from the \gls{pgvector}
+            store using Haystack, returning documents with IDs, scores, and snippets.
 
-      \item \textbf{Prompt Builder:} Generates a structured prompt containing the
-            static features, retrieved content, and task-specific instruction
-            templates. This step uses a fixed template with content placeholders.
+      \item \textbf{Prompt Builder:} Assembles prompts from static features,
+            retrieved passages, and task instructions. Prompt schemas are fixed
+            to ensure consistent outputs (see Section~\ref{sec:PromptEngineering}).
 
-      \item \textbf{Compliance Filter:} Scans and sanitizes the final prompt to
-            remove potentially harmful or non-compliant artifacts (e.g., large hex
-            dumps, file paths, sensitive domains), mitigating prompt injection risks.
+      \item \textbf{Compliance Filter:} Sanitizes prompts by removing hex dumps,
+            sensitive domains, or oversized content, reducing injection risks
+            (see Section~\ref{sec:Guardrails}).
 
-      \item \textbf{Inference Client:} Sends the prompt to either OpenAI’s
-            \gls{gpt4o} or \gls{deepseek-r1} via their respective APIs. Responses
-            are logged with latency, token usage, and engine identifiers.
+      \item \textbf{Inference Client:} Submits prompts to GPT-4o via the OpenAI API,
+            logging model ID, latency, and token counts for reproducibility.
 
-      \item \textbf{Result Parser:} Extracts structured information from the
-            LLM response, including malware classification, rationale, and references to
-            retrieved documents.
+      \item \textbf{Result Parser:} Extracts structured fields (family, classification tags,
+            rationale, citations, uncertainty) from model outputs, aligning them with the
+            evaluation framework (Section~\ref{sec:EvaluationFramework}).
 \end{itemize}
 
 \section{Summary of Key Findings}\label{sec:SummaryOfFindings}
