@@ -54,7 +54,7 @@ The main tools and frameworks are:
       \item \textbf{\gls{gpt4o} (inference-only)} --~Used strictly in inference-only mode. No fine-tuning
             was performed, ensuring reproducibility across runs. The model is responsible for contextual
             reasoning and static feature analysis, driven by structured prompts enriched with retrieved
-            evidence.\footnote{\url{https://platform.openai.com/docs/api-reference/introduction}}
+            evidence.\footnote{\url{https://platform.openai.com/docs/\gls{api}-reference/introduction}}
 
       \item \textbf{\gls{ghidra} + PyGhidra} --~\gls{ghidra} is used as the static analysis and
             decompilation framework. PyGhidra provides bindings to automate extraction of imports,
@@ -65,11 +65,11 @@ The main tools and frameworks are:
             \gls{pgvector}. Containerisation ensures reproducibility, isolation, and consistency
             across systems.\footnote{\url{https://www.docker.com}}
 
-      \item \textbf{\gls{malwarebazaar} API + helper script} --~Samples for the evaluation cohort were
+      \item \textbf{\gls{malwarebazaar} \gls{api} + helper script} --~Samples for the evaluation cohort were
             downloaded using a helper script~\cite{rexisSamplesExtractorScript} that calls the
-            MalwareBazaar API~\footnote{API docs: \url{https://bazaar.abuse.ch/api/}}.
+            MalwareBazaar \gls{api}~\footnote{\gls{api} docs: \url{https://bazaar.abuse.ch/\gls{api}/}}.
 
-      \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and consensus labels
+      \item \textbf{\gls{virustotal} \gls{api}} --~Supplies scan metadata, antivirus tags, and consensus labels
             across vendors. These labels support the baseline classifier and reconciliation logic, providing
             a benchmark for evaluation~\cite{rexisReconciliationGuide}.\footnote{\url{https://developers.virustotal.com/reference}}
 
@@ -114,7 +114,7 @@ The following components are shared across all pipelines:
             and registers samples in a consistent directory layout for reproducibility.
 
       \item \textbf{Ghidra Integration:} Static feature extraction is automated via
-            \gls{ghidra} using the \texttt{PyGhidra} API. Features include imports, functions,
+            \gls{ghidra} using the \texttt{PyGhidra} \gls{api}. Features include imports, functions,
             printable strings, section entropy, entry points, and decompiled code.
 
       \item \textbf{Feature Extractor:} Serialises features into JSON and \texttt{pandas}
@@ -124,7 +124,7 @@ The following components are shared across all pipelines:
             tool versions, hashes, and prompt identifiers. This provides an audit trail
             for every classification decision.
 
-      \item \textbf{Configuration Manager:} Runtime parameters such as API keys,
+      \item \textbf{Configuration Manager:} Runtime parameters such as \gls{api} keys,
             thresholds, and feature toggles are handled by
             \texttt{dynaconf}\footnote{\url{https://www.dynaconf.com/}}, ensuring secrets
             are separated from code and allowing profile-specific overrides.
@@ -170,7 +170,7 @@ classification strategy:
       \item \textbf{Heuristic Classifier:} Applies manually curated rules to extracted
             features. For example, suspicious imports or anomalous entropy can trigger alerts.
 
-      \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} API for
+      \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} \gls{api} for
             detections, tags, and metadata. Results are normalised to canonical category labels
             via a tag-mapping layer.
 
@@ -200,7 +200,7 @@ prompts for inference via GPT-4o:
             sensitive domains, or oversized content, reducing injection risks
             (see Section~\ref{sec:Guardrails}).
 
-      \item \textbf{Inference Client:} Submits prompts to GPT-4o via the OpenAI API,
+      \item \textbf{Inference Client:} Submits prompts to GPT-4o via the OpenAI \gls{api},
             logging model ID, latency, and token counts for reproducibility.
 
       \item \textbf{Result Parser:} Extracts structured fields (family, classification tags,
@@ -227,7 +227,7 @@ duplicates were removed by SHA-256 and invalid PE files were excluded. Acquisiti
 include the current tag, (ii) must include \texttt{exe}, (iii) must \emph{not} include any other
 tag from the experiment’s tag set (except the current tag). Runs are driven directly via the CLI as
 documented in the project guides. Samples were downloaded using a helper script that calls the
-MalwareBazaar API~\cite{rexisSamplesExtractorScript};
+MalwareBazaar \gls{api}~\cite{rexisSamplesExtractorScript};
 archives were decompressed in bulk via a companion script~\cite{rexisDecompressSamplesScript}.
 \texttt{truth\_category} reflects the MalwareBazaar acquisition tag recorded at selection time
 (see Section~\ref{sec:Limitations} for ground-truth caveats).
@@ -240,7 +240,7 @@ All runs write a report (\texttt{ingest-analysis-\textless RUN\_NAME\textgreater
 timestamps, parameters, and environment. Documents are chunked, embedded (OpenAI embeddings), and
 stored in \texttt{PostgreSQL}+\texttt{pgvector}, enabling hybrid retrieval in the LLM+RAG pipeline.
 
-\subsubsection{Baseline (static heuristics with and without VT)}\label{subsubsec:BaselineExecution}
+\subsubsection{Baseline (static heuristics with and without VT enrichment)}\label{subsubsec:BaselineExecution}
 \noindent\textit{Per-tag commands (one per category).}\\ \noindent\textit{Inputs point to
       the \texttt{decompressed/} folder under each tag, as in the samples tree provided.}
 
@@ -314,16 +314,16 @@ The comparison outputs are organised on a table and its columns are:
       \item \texttt{sha256}: Sample's SHA-256 hash (unique identifier).
       \item \texttt{truth\_category}: Ground-truth tag for the sample (trojan, ransomware, botnet,
             rootkit), defined by cohort selection via a helper script using the \gls{malwarebazaar}
-            API~\cite{rexisSamplesExtractorScript}; the associated acquisition tag was recorded at selection time (cf. Section~\ref{sec:Limitations}).
+            \gls{api}~\cite{rexisSamplesExtractorScript}; the associated acquisition tag was recorded at selection time (cf. Section~\ref{sec:Limitations}).
       \item \texttt{vt\_malicious}: Number of VirusTotal engines that flagged the sample as malicious.
       \item \texttt{vt\_total}: Total number of VirusTotal engines that scanned the sample.
       \item \texttt{baseline\_label}: Raw label produced by the baseline (heuristics-only) pipeline.
       \item \texttt{baseline\_pred\_categories}: Inferred Baseline labels.
       \item \texttt{baseline\_duration\_sec}: Wall-clock runtime (seconds) for the baseline pipeline.
       \item \texttt{baseline\_vt\_label}: Raw label from the baseline pipeline with VirusTotal enrichment.
-      \item \texttt{baseline\_vt\_pred\_category}: VT-enriched baseline label normalised to the
+      \item \texttt{baseline\_vt\_pred\_category}: \gls{vt}-enriched baseline label normalised to the
             evaluation categories.
-      \item \texttt{baseline\_vt\_duration\_sec}: Wall-clock runtime (seconds) for the VT-enriched
+      \item \texttt{baseline\_vt\_duration\_sec}: Wall-clock runtime (seconds) for the \gls{vt}-enriched
             baseline pipeline.
       \item \texttt{llmrag\_label}: Raw label produced by the LLM+RAG pipeline.
       \item \texttt{llmrag\_pred\_categories}: Inferred LLM+RAG labels.
@@ -402,7 +402,7 @@ as \texttt{source=malpedia} is preserved for retrieval-time filtering.
 \subsubsection{MalwareBazaar metadata sourcing and ingestion}\label{subsubsec:MalwareBazaarIngestionExec}
 MalwareBazaar entries were collected either by tag(s) (with a per-tag fetch cap) or by explicit
 SHA-256 list(s). Results are saved as a normalised JSON array and can be directly ingested into the
-datastore with \texttt{--ingest}. An API key is required via config or
+datastore with \texttt{--ingest}. An \gls{api} key is required via config or
 environment~\cite{rexisDataSourcingMB}.
 
 Ingestion command example (collection by tags; per-tag cap; writes JSON):
@@ -631,7 +631,7 @@ similar trade-offs between computational cost and analytic depth~\cite{gao2023re
 analysis can be achieved without disproportionate performance loss.
 
 As discussed in Section~\ref{sec:Limitations}, this interpretation is limited to processing time
-and does not account for monetary cost from token usage in the \gls{openai} API for \gls{gpt4o}
+and does not account for monetary cost from token usage in the \gls{openai} \gls{api} for \gls{gpt4o}
 queries.
 
 \subsection{Interpretability and Transparency}
@@ -645,7 +645,7 @@ relevant references. This aligns with arguments in the literature that emphasise
 grounding as a defence against speculative or hallucinatory outputs~\cite{sahoo2024systematic,
       wong2021practice}.
 
-Example: for one \textbf{trojan} sample, \textbf{LLM+RAG} cited API-hooking behaviour and a
+Example: for one \textbf{trojan} sample, \textbf{LLM+RAG} cited \gls{api}-hooking behaviour and a
 command-and-control routine from two retrieved reports to justify a trojan/backdoor tag, whereas
 the \textbf{Baseline} triggered a generic ``packed'' rule inconsistent with the final category.
 

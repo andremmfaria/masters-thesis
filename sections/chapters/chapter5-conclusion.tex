@@ -134,7 +134,7 @@ as a \textit{15--25\% reduction}\footnote{This projection is an extrapolation fr
 \textit{10--15\% reduction} in median time-to-triage, driven by 100\% explanation coverage and
 grounding in our results (cf.~Table~\ref{tab:results-summary}). In operational contexts, such tools
 can reduce analyst fatigue by filtering and prioritising evidence-backed alerts, complementing
-traditional static features such as API calls and binary structure.
+traditional static features such as \gls{api} calls and binary structure.
 
 \subsection{Operational support}\label{subsec:OperationalSupport}
 For security teams, the potential of explainable classification is particularly important. Unlike
@@ -188,7 +188,7 @@ limitations remain. The cohort was small (\textbf{n=20}; five per tag) and limit
 behavioural/dynamic features). The \textbf{Baseline} used brittle heuristics with under-calibrated
 thresholds and likely underestimates stronger traditional baselines.
 
-Ground truth followed cohort selection via a helper script against the \gls{malwarebazaar} API,
+Ground truth followed cohort selection via a helper script against the \gls{malwarebazaar} \gls{api},
 recording acquisition tags as a proxy for consensus~\cite{rexisSamplesExtractorScript}. This
 carries vendor noise and ambiguity in canonical category mapping~\cite{gaber2024malware}. Accuracy
 was computed \textit{excluding} abstentions; as a sensitivity check, counting abstentions as errors

@@ -1,4 +1,4 @@
-\chapter{Methodology}\label{sec:Method}\label{Chapter3} % For referencing the chapter elsewhere, use \ref{Chapter3}
+\chapter{Methodology}\label{sec:Methodology}\label{Chapter3} % For referencing the chapter elsewhere, use \ref{Chapter3}
 % Introduce the purpose of this chapter.
 % Reiterate your research aim: enhancing static malware analysis with LLMs and RAG.
 % Provide a brief overview of the methodology, including data sources,
@@ -24,8 +24,7 @@ remain central to \gls{malware} triage.
 Using \glspl{rag} introduces new risks. As Zou \emph{et al.}~\cite{zou2024poisonedrag} note,
 retrieval pipelines can be poisoned or manipulated, leading to distorted outputs. To address this,
 the data for the corpus comes from a selection of trusted sources, including VX-Underground APT
-reports, MalwareBazaar submissions, and Malpedia documentation. The provenance of these sources
-reduces the chance of corrupted context and strengthens the reliability of the retrieval process.
+reports, MalwareBazaar submissions, and Malpedia documentation.
 
 \section{Research Design}\label{sec:ResearchDesign}
 % Describe the nature of your research: exploratory, experimental, comparative.
@@ -139,7 +138,7 @@ features include:
             size, etc.
       \item \texttt{Functions summary}: Summary of the functions discovered in the binary.
       \item \texttt{Full code of decompiled functions}: Decompiled function representations for higher-level review.
-      \item \texttt{Imported Functions/API}: Imported API/function names from external libraries/DLLs.
+      \item \texttt{Imported Functions/\gls{api}}: Imported \gls{api}/function names from external libraries/DLLs.
       \item \texttt{Strings}: Printable strings extracted from the binary.
       \item \texttt{Memory Sections}: Memory/PE sections with names, sizes, attributes (e.g., entropy).
       \item \texttt{Exported}: Symbols/functions the binary exports (if any).
@@ -182,9 +181,9 @@ These logs provide the basis for reproducibility and comparative evaluation (Sec
 % Describe where you obtain your malware samples and intelligence documents.
 % Malware sources:
 %   - MalwareBazaar for static binaries and metadata.
-%   - VirusTotal (optional, via API) for reports and behavior data.
+%   - VirusTotal (optional, via \gls{api}) for reports and behavior data.
 %     Detail any preprocessing steps: parsing PE headers, extracting bytecode,
-%     API call strings, etc.
+%     \gls{api} call strings, etc.
 The system relies on two categories of input: malware binaries for analysis, and external
 intelligence documents for retrieval. As shown in Figure~\ref{fig:system_architecture}, both
 pipelines begin with the same samples but diverge in how they use supporting data. The baseline
@@ -234,7 +233,7 @@ different levels of malware knowledge. Three main categories of data were includ
             details are provided in the project guide~\cite{rexisDataSourcingMalpedia}.
 
       \item \textbf{MalwareBazaar Metadata}: Metadata records were retrieved through the
-            \gls{malwarebazaar} API using batch queries. Tags such as \textbf{Trojan},
+            \gls{malwarebazaar} \gls{api} using batch queries. Tags such as \textbf{Trojan},
             \textbf{Ransomware}, \textbf{Botnet}, \textbf{Rootkit} (common malware types), and
             \textbf{exe} (\gls{pe} file type) were selected to align with the focus of this study on
             \gls{pe}-based malware. The metadata include sample hashes, tags, and antivirus
@@ -274,7 +273,7 @@ pipelines.
 %   - **VirusTotal**: Metadata correlation and mapping.
 %   - **Decision engine**: Fuses the heuristic result with data from VT
 % - Output classification format.
-% - Technologies: PyGhidra, custom heuristics, VirusTotal API, Decision engine.
+% - Technologies: PyGhidra, custom heuristics, VirusTotal \gls{api}, Decision engine.
 The baseline pipeline provides a deterministic static classification process that does not rely on
 \glspl{llm}. It serves as a benchmark for comparison with the \gls{rag}-enhanced pipeline. The
 approach combines custom heuristics with \gls{virustotal} metadata, using a reconciliation strategy
@@ -288,7 +287,7 @@ analysis~\cite{fedak2020fundamentals}.
 
 \vspace{0.5em}
 \noindent\textbf{Feature Extraction:} Static features are extracted from binaries using
-\gls{ghidra} with its Python API \texttt{PyGhidra}. The automated extraction
+\gls{ghidra} with its Python \gls{api} \texttt{PyGhidra}. The automated extraction
 step collects data based on \gls{ghidra}'s automated binary detection engine.
 
 These features (outlined on section ~\ref{subsec:StaticFeatureExtraction}) are extracted,
@@ -304,11 +303,11 @@ classification stage.
 sources of evidence:
 \begin{itemize}
       \item \textbf{Rule-Based Heuristics:} A lightweight decision engine evaluates static signals
-            such as suspicious API calls (\texttt{CreateRemoteThread}, \texttt{VirtualAllocEx}),
+            such as suspicious \gls{api} calls (\texttt{CreateRemoteThread}, \texttt{VirtualAllocEx}),
             packed or encrypted sections, and known obfuscation markers. These rules produce
             heuristic labels such as ``ransomware-like'' or ``downloader''~\cite{gaber2024malware,
                   cassanova2022systematic}.
-      \item \textbf{VirusTotal Metadata:} For each sample, the \gls{virustotal} API is queried using the
+      \item \textbf{VirusTotal Metadata:} For each sample, the \gls{virustotal} \gls{api} is queried using the
             SHA-256 hash. Category tags and vendor labels (e.g., \texttt{Trojan}, \texttt{Ransomware})
             are retrieved and normalized into canonical categories, reducing variation between
             vendors~\cite{wong2021practice}.
@@ -359,7 +358,7 @@ in the guide~\cite{rexisBaselinePipeline}
 % - **Semantic query** creation via Haystack.
 % - **Contextual document retrieval** from pgvector vector store.
 % - **Prompt construction** via template builder + guardrails filter.
-% - **Inference** using OpenAI's GPT-4 API.
+% - **Inference** using OpenAI's GPT-4 \gls{api}.
 % - Justification for not fine-tuning (focus on zero-shot generalization and reproducibility).
 % - Output handling and logging.
 The LLM+RAG pipeline integrates large language models with retrieval-augmented generation to extend
@@ -378,7 +377,7 @@ These features are logged into JSON format for use in later stages.
 \vspace{0.5em}
 \noindent\textbf{Semantic Query Generation:}
 After feature extraction and preprocessing, the pipeline converts selected static attributes into a
-semantic query. Extracted values such as API imports, section entropy, and embedded strings are
+semantic query. Extracted values such as \gls{api} imports, section entropy, and embedded strings are
 serialized into a structured textual representation. This representation is then embedded using
 OpenAI’s \texttt{text-embedding-3-small} model, which produces dense vector representations
 suitable for semantic search. By translating low-level static features into natural-language-like
@@ -411,7 +410,7 @@ Once the top-$k$ documents are retrieved, they are combined with the extracted s
 The structured prompt template consists of the following key components:
 \begin{itemize}
       \item \textbf{Concise summary of static attributes:} Includes details such
-            as API calls, entropy values, and extracted strings from the binary.
+            as \gls{api} calls, entropy values, and extracted strings from the binary.
       \item \textbf{Retrieved contextual documents:} Presents the titles and
             relevant excerpts from the documents retrieved during semantic search.
       \item \textbf{Explicit instructions:} Directs the model to classify the
@@ -426,7 +425,7 @@ execution. For more information see section \ref{subsec:PromptEngineering}.
 
 \vspace{0.5em}
 \noindent\textbf{LLM Inference and Response Handling:}
-The completed prompt is submitted to \gls{gpt4o} via the OpenAI API to be used
+The completed prompt is submitted to \gls{gpt4o} via the OpenAI \gls{api} to be used
 strictly in inference mode. Removing the need for fine-tuning, and emphasizing
 generalization from external context rather than learned weights. The LLM
 produces a structured response containing a proposed malware category label,
@@ -447,7 +446,7 @@ capturing additional context. Each classification record includes:
       \item \textbf{Supporting rationale:} Textual explanation generated by the LLM
       \item \textbf{Retrieved evidence:} List of document IDs, titles, source type (e.g., Malpedia, VX-U),
             and similarity scores
-      \item \textbf{Model metadata:} Model name, API endpoint, token usage, and temperature setting
+      \item \textbf{Model metadata:} Model name, \gls{api} endpoint, token usage, and temperature setting
       \item \textbf{Performance metrics:} Latency measurements for embedding, retrieval, and inference
 \end{itemize}
 
@@ -482,10 +481,10 @@ rather than generating unsupported inferences.
             attacker TTPs, reverse-engineering notes, and contextual indicators. Collected
             via curated archive scraping and exposed through a Python interface.
       \item \textbf{Malpedia Documentation} --~Behavioral descriptions and malware family
-            summaries, retrieved through \gls{malpedia}’s API endpoints (e.g., references,
+            summaries, retrieved through \gls{malpedia}’s \gls{api} endpoints (e.g., references,
             bibliographies). These provide canonical mappings of families and actors.
       \item \textbf{MalwareBazaar Metadata} --~Sample metadata, hashes, and tagging, retrieved
-            via API and aligned with executable (e.g.\ \texttt{exe}) samples to match the scope of
+            via \gls{api} and aligned with executable (e.g.\ \texttt{exe}) samples to match the scope of
             this project’s \gls{pe}-focused analysis.
 \end{itemize}
 Data from all sources is collected in their original formats (\gls{malpedia}'s
@@ -570,7 +569,7 @@ Prompts follow a modular template with two main components:
       \item \textbf{User Message:} Dynamically assembled per sample, divided into three sections:
             \begin{enumerate}
                   \item \textbf{Context Block:} A concise list of static features extracted from the binary
-                        (e.g., API imports, entropy values of sections, embedded strings), formatted as natural-language
+                        (e.g., \gls{api} imports, entropy values of sections, embedded strings), formatted as natural-language
                         bullet points.
                   \item \textbf{Retrieved Documents:} Up to three semantically similar documents drawn from
                         the vector store. Each entry includes its source (e.g., Malpedia, VX-Underground), title or tag,
@@ -647,7 +646,7 @@ citation allow explanations to be measured against the criteria defined in secti
 % Covers technical and procedural guardrails designed to prevent misuse, ensure ethical operation,
 % and maintain the integrity of results. Topics include:
 %   - Automated content filtering to block unsafe, sensitive, or harmful prompts and outputs.
-%   - Rate limiting and API usage controls to prevent abuse and ensure compliance with service policies.
+%   - Rate limiting and \gls{api} usage controls to prevent abuse and ensure compliance with service policies.
 %   - Human-in-the-loop review for critical or ambiguous cases, especially where ethical or legal concerns arise.
 %   - Logging and traceability of all inference and retrieval events for audit and reproducibility.
 %   - Measures to mitigate risks of prompt injection, retrieval poisoning, and hallucination.
@@ -675,7 +674,7 @@ outputs have been shown to enhance trustworthiness in LLM deployments~\cite{han2
             This aligns with input sanitization techniques advocated in safety‐critical LLM systems~\cite{han2025guardrail}.
 
       \item \textbf{Re-Rank by Technical Evidence.}
-            Retrieved passages are reordered based on domain-specific technical cues (e.g., API
+            Retrieved passages are reordered based on domain-specific technical cues (e.g., \gls{api}
             calls, section labels) while down-weighting passages that emphasize family names. This
             improves factual relevance and reduces susceptibility to lexical
             noise~\cite{zhang2025hallucination, magesh2025assessing}.
@@ -837,9 +836,9 @@ infrastructure:
       \item \textbf{Containerized Environment}: All software dependencies are managed via
             \texttt{\gls{pdm}}, deployed in Docker-based containers or are installed in isolated directories.
 
-      \item \textbf{Explicit API Versions}: External services such as OpenAI, VirusTotal, and
-            Malwarebazaar are accessed through versioned API endpoints, with documented model
-            identifiers (e.g., \texttt{gpt-4o}, \texttt{vt-api}).
+      \item \textbf{Explicit \gls{api} Versions}: External services such as OpenAI, VirusTotal, and
+            Malwarebazaar are accessed through versioned \gls{api} endpoints, with documented model
+            identifiers (e.g., \texttt{gpt-4o}, \texttt{vt-\gls{api}}).
 
       \item \textbf{Metadata Logging}: Each pipeline run produces structured logs, recording
             sample identifiers, timestamps, toolchain versions, and model metadata.
@@ -900,7 +899,7 @@ The study operates under several broader constraints that limit generalizability
             overconfident statements~\cite{zou2024poisonedrag, ferrag2024allinsights}.
             While prompts are structured to minimize risk, adversarial testing is not included.
 
-      \item \textbf{Dataset Scale}: Sample sizes are constrained by API quotas and curation effort,
+      \item \textbf{Dataset Scale}: Sample sizes are constrained by \gls{api} quotas and curation effort,
             which restricts statistical robustness. This also introduces potential class imbalance,
             where common families are overrepresented and rare or emerging families receive
             insufficient coverage.
@@ -947,10 +946,10 @@ dataset.
 
 \subsection{Use of Public and Licensed APIs}
 All external APIs (OpenAI, VirusTotal, MalwareBazaar) are accessed through official channels with
-proper authentication and rate limits. API usage complies with the respective Terms of Service, and
+proper authentication and rate limits. \gls{api} usage complies with the respective Terms of Service, and
 no bulk data scraping or unauthorized reverse engineering is conducted.
 
-VirusTotal’s API is used strictly for metadata enrichment and tagging. No personal data,
+VirusTotal’s \gls{api} is used strictly for metadata enrichment and tagging. No personal data,
 user-uploaded files, or proprietary content is accessed or stored.
 
 \subsection{Privacy and Data Anonymity}
