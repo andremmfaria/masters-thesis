@@ -195,21 +195,17 @@ static features with retrieved context.
 The main input focuses on \gls{pe} files of four common malware categories found in systematic
 reviews~\cite{berrios2025malware,abrazak2016rise,mat2021systematic}: \textbf{Trojan},
 \textbf{Ransomware}, \textbf{Botnet} and \textbf{Rootkit}. Five representative samples are drawn at
-random for each type (20 total) from \gls{vt} and/or \gls{malwarebazaar}, and analyzed by both
-pipelines. To avoid biases, these samples's metadata were not ingested onto the \gls{rag}
-datastore.
+random for each type (20 total) and analyzed by both pipelines. To avoid biases, these samples's
+metadata were not ingested onto the \gls{rag} datastore.
+
+Each sample is catalogued with its SHA256 hash and timestamp. They have been obtained from the
+\gls{malwarebazaar} website and stored on the \texttt{<project-root>/samples} directory of the
+project repository~\cite{rexisRepo}.
 
 The \gls{pe} file format was chosen for this research as it is the standard for Windows executables
 (e.g., \texttt{.exe}, \texttt{.dll}), is widely used in static \gls{malware} analysis due to its
 rich structural features such as headers, import/export tables, and embedded
 strings~\cite{fedak2020fundamentals}.
-
-Each sample is catalogued with its SHA256 hash and timestamp. They are obtained from:
-\begin{itemize}
-      \item \textbf{\gls{malwarebazaar}}: An open repository maintained by
-            abuse.ch, providing recent PE malware binaries for research.
-      \item \textbf{\gls{vt}}: Accessed through its API, supplying binaries, scan metadata, and labeling tags.
-\end{itemize}
 
 \subsection{Baseline Metadata Sources}\label{subsec:BaselineSources}
 The baseline analysis pipeline does not require external contextual data to work, however it uses a
@@ -692,7 +688,7 @@ outputs have been shown to enhance trustworthiness in LLM deployments~\cite{han2
       \item \textbf{Evidence Threshold \& Abstention.}
             If fewer than two retrieval-based evidence snippets support a claim, the system abstains by
             returning \texttt{``unknown''}. This prevents overconfident misclassification~\cite{han2025guardrail,
-            magesh2025assessing}.
+                  magesh2025assessing}.
 
       \item \textbf{Transparent Audit Trail.}
             Each classification records redacted names, reranked passages, blind vs. final
