@@ -187,34 +187,6 @@ headsepline, % Uncomment to get a line under the header
 	% particular, the parts may be merged or spread among a set of sentences. Use the
 	% following as a checklist for your next abstract (URL:
 	% http://www.ece.cmu.edu/~koopman/essays/abstract.html):
-
-	Malware's quick growth presents serious cybersecurity concerns, necessitating ongoing innovation in
-	methods for detection, analysis, and mitigation. When it comes to handling complex and adaptable
-	threats, traditional malware analysis techniques, which mostly rely on manual labour and rule-based
-	systems, are progressively less effective. Large language models (LLMs) are a revolutionary way to
-	automate malware analysis, even though Artificial Intelligence (AI) approaches have been
-	effectively incorporated into cybersecurity. Current AI solutions, including machine learning
-	classifiers and clustering algorithms, concentrate on aspects of malware but frequently lack the
-	overall skills necessary to manage intricate datasets or fully understand virus behaviors.
-
-	This study suggests using LLMs to improve and automate static malware analysis. It seeks to
-	automate crucial components of malware reverse engineering, such as code analysis, possible
-	behavior interpretation and anomaly detection, by leveraging LLMs' capacity to handle and
-	synthesize massive, heterogeneous information. In addition to addressing the drawbacks of manual
-	and conventional AI techniques, this strategy adds scalability and adaptability to quickly changing
-	malware threats.
-
-	In order to optimize the efficacy of malware analysis in cybersecurity, this study proposes a
-	methodology that combines domain-specific datasets, such as malware sample databases, with prompt
-	engineering techniques to evaluate samples and identify parameters such as malware classification
-	categories and behavioral patterns on decompiled code. This approach is expected to provide a more
-	comprehensive and accurate analysis of malware samples, as well as to improve the overall
-	efficiency of malware analysis in cybersecurity.
-
-	Keywords: Malware Analysis, Large Language Models, Static Analysis, Cybersecurity, Artificial
-	Intelligence, Generative Artificial Intelligence, Machine Learning, Reverse Engineering, Anomaly
-	Detection, Code Analysis.
-
 	% \begin{description}
 	% 	\item[Motivation:] Why do we care about the problem and the results? If the problem
 	% 	      isn't obviously "interesting" it might be better to put motivation first; but
@@ -247,6 +219,32 @@ headsepline, % Uncomment to get a line under the header
 	% 	      as a road sign indicating that this path is a waste of time (all of the
 	% 	      previous results are useful). Are your results general, potentially
 	% 	      generalizable, or specific to a particular case?
+
+	Malware evolves rapidly, pressuring defenders to analyse threats safely and at scale. Static
+	analysis is safe and repeatable, but it struggles with obfuscation and limited semantic context.
+	This thesis investigates whether Large Language Models (LLMs) grounded with Retrieval-Augmented
+	Generation (RAG) can strengthen static malware analysis. We design a dual-pipeline prototype that
+	contrasts a deterministic baseline—Ghidra-derived heuristics with optional VirusTotal
+	reconciliation—against an LLM+RAG classifier that injects retrieved threat intelligence into
+	structured prompts. The system is implemented in Python with automated feature extraction
+	(Ghidra/PyGhidra), a PostgreSQL+pgvector datastore orchestrated by Haystack, and inference via
+	GPT-4o; all runs are versioned and fully logged for reproducibility.
+
+	We evaluate 20 Windows Portable Executable samples across four classes (trojan, ransomware, botnet,
+	rootkit). Compared to the baseline, LLM+RAG improves category accuracy from 10.0\% (2/20) to 27.8\%
+	(5/18 valid classifications; two abstentions), delivers 100\% explanation coverage grounded by
+	\(\geq 2\) citations, and adds only a modest latency overhead (+6.4 s on average; 90.8 s to 97.1
+	s). A composite score combining accuracy, efficiency, and interpretability increases from 0.28 to
+	0.43.
+
+	Contributions include: (i) a reproducible, auditable framework for static malware analysis that
+	isolates the impact of retrieval-grounded LLM reasoning; (ii) a guardrailed prompting design (name
+	redaction, evidence thresholding, principled abstention); and (iii) a defensible ingestion pipeline
+	for building a safe retrieval corpus. These results indicate that retrieval-grounded LLMs can add
+	measurable, explainable value to static malware triage without fine-tuning.
+
+	Keywords: Static Malware Analysis; Large Language Models; Retrieval-Augmented Generation;
+	Cybersecurity; Explainability; Ghidra; Vector Search; Threat Intelligence; VirusTotal.
 
 	% \end{description}
 \end{abstract}
@@ -345,7 +343,7 @@ headsepline, % Uncomment to get a line under the header
 
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
-\include{./sections/appendices/appendix1-faq}
+% \include{./sections/appendices/appendix1-faq}
 
 %----------------------------------------------------------------------------------------
 %	GLOSSARY
