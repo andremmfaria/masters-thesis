@@ -78,7 +78,7 @@ The workflow for each sample is as follows:
                   \item Extracted features are matched against heuristic rules (e.g., suspicious imports, entropy
                         thresholds).
                   \item On demand, \gls{vt} metadata are acquired (if available) and compared against the heuristic
-                        evaluation through a decision engine to standardized family labels when available.
+                        evaluation through a decision engine to standardized category labels when available.
                   \item Output includes classification, triggered heuristics, and a confidence score.
             \end{itemize}
 
@@ -154,11 +154,12 @@ The baseline pipeline reconciles two sources of evidence: static heuristics deri
 \gls{ghidra} and tag information from \gls{vt}. Extracted features are matched against heuristic
 rules (e.g., entropy thresholds, suspicious imports), producing an internal score and confidence.
 In parallel, \gls{vt} engine results are aggregated into a consensus score with a confidence value
-based on coverage, recency, and naming consistency. A reconciliation layer then fuses these signals
-using a weighted approach that adjusts for conflicts, applies penalties for weak evidence, and can
-abstain when both sources disagree with high confidence. The output is a classification label,
-score, and explanation trace. This design provides a transparent reference point for comparison and
-reflects the reconciliation logic described in Section~\ref{subsec:BaselinePipeline}.
+based on coverage, recency, and naming consistency. A reconciliation layer then fuses these
+signals~\cite{rexisReconciliationGuide} using a weighted approach that adjusts for conflicts,
+applies penalties for weak evidence, and can abstain when both sources disagree with high
+confidence. The output is a classification label, score, and explanation trace. This design
+provides a transparent reference point for comparison and reflects the reconciliation logic
+described in Section~\ref{subsec:BaselinePipeline}.
 
 \subsection{Pipeline B -- LLM+RAG Classifier}\label{subsec:RAGBasedClassification}
 The second pipeline integrates retrieval and model-based reasoning. Extracted features are
@@ -191,12 +192,12 @@ reconciles static heuristics with \gls{vt} tags, while the \gls{llm}+\gls{rag} p
 static features with retrieved context.
 
 \subsection{Malware Samples Sourcing}\label{subsec:MalwareSamplesSourcing}
-The main input focuses on \gls{pe} files of five common malware categories found in systematic
+The main input focuses on \gls{pe} files of four common malware categories found in systematic
 reviews~\cite{berrios2025malware,abrazak2016rise,mat2021systematic}: \textbf{Trojan},
-\textbf{Ransomware}, \textbf{Botnet}, \textbf{Worm}, and \textbf{Rootkit}. Three representative
-samples are drawn at random for each type (15 total) from \gls{vt} and/or \gls{malwarebazaar}, and
-analyzed by both pipelines. To avoid biases, these samples's metadata were not ingested onto the
-\gls{rag} datastore.
+\textbf{Ransomware}, \textbf{Botnet} and \textbf{Rootkit}. Five representative samples are drawn at
+random for each type (20 total) from \gls{vt} and/or \gls{malwarebazaar}, and analyzed by both
+pipelines. To avoid biases, these samples's metadata were not ingested onto the \gls{rag}
+datastore.
 
 The \gls{pe} file format was chosen for this research as it is the standard for Windows executables
 (e.g., \texttt{.exe}, \texttt{.dll}), is widely used in static \gls{malware} analysis due to its
@@ -214,7 +215,8 @@ Each sample is catalogued with its SHA256 hash and timestamp. They are obtained 
 The baseline analysis pipeline does not require external contextual data to work, however it uses a
 set of parameters that, when combined with the built in rules, define the thresholds and tune the
 sample analysis score and reconciliation strategy that fuses heuristics derived from \gls{ghidra}
-with consensus scores from \gls{vt}. As can be seen at section ~\ref{subsec:BaselinePipeline}.
+with consensus scores from \gls{vt}~\cite{rexisReconciliationGuide}. As can be seen at section
+~\ref{subsec:BaselinePipeline}.
 
 \subsection{RAG Corpus Data Sources and Construction}\label{subsec:RAGCorpusConstruction}
 The \gls{llm}+\gls{rag} pipeline relies on a dedicated corpus of contextual documents to provide
@@ -224,25 +226,24 @@ different levels of malware knowledge. Three main categories of data were includ
 
 \begin{itemize}
       \item \textbf{VX-Underground APT Writeups}: All Advanced Persistent Threat (APT) reports
-            published between 2022 and August 2025 were downloaded and ingested. These reports
+            published between 1st of Jan 2022 and 1st of August 2025 were downloaded and ingested. These reports
             contain adversary tactics, binary structures, and reverse engineering notes. The data
-            were collected following project guides~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/DataSourcingVXUnderground.md},
-                  \url{https://github.com/andremmfaria/rexis/blob/main/guides/IngestVXUnderground.md}}.
+            was collected through the project guides on the code repository~\cite{rexisDataSourcingVXU,rexisIngestVXU}.
 
       \item \textbf{Malpedia Documentation}\cite{plohmann2017malpedia}: Family-level articles and
-            technical descriptions were retrieved from Malpedia between 2022 and August 2025.
+            technical descriptions were retrieved from Malpedia between 1st of Jan 2022 and 1st of August 2025.
             These documents include IOCs, YARA rules, and summaries of static and behavioral
             traits. Some articles could not be included due to scraping failures, caused by
             protected pages, removed content, timeouts, or server errors (e.g., HTTP 503). Collection
-            details are provided in the project guide~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/DataSourcingMalpedia.md}}.
+            details are provided in the project guide~\cite{rexisDataSourcingMalpedia}.
 
       \item \textbf{MalwareBazaar Metadata}: Metadata records were retrieved through the
             \gls{malwarebazaar} API using batch queries. Tags such as \textbf{Trojan},
-            \textbf{Ransomware}, \textbf{Botnet}, \textbf{Worm}, \textbf{Rootkit}, and
-            \textbf{exe} were selected to align with the focus of this study on \gls{pe}-based malware.
-            The metadata include sample hashes, tags, and antivirus results. Only metadata were
-            ingested; raw binaries were excluded to keep the datastore limited to contextual
-            evidence.
+            \textbf{Ransomware}, \textbf{Botnet}, \textbf{Rootkit} (common malware types), and
+            \textbf{exe} (\gls{pe} file type) were selected to align with the focus of this study on
+            \gls{pe}-based malware. The metadata include sample hashes, tags, and antivirus
+            results. Only metadata were ingested; raw binaries were excluded to keep the datastore
+            limited to contextual evidence.
 \end{itemize}
 
 \vspace{0.5em}
@@ -312,7 +313,7 @@ sources of evidence:
             heuristic labels such as ``ransomware-like'' or ``downloader''~\cite{gaber2024malware,
                   cassanova2022systematic}.
       \item \textbf{VirusTotal Metadata:} For each sample, the \gls{virustotal} API is queried using the
-            SHA-256 hash. Family names and vendor tags (e.g., \texttt{AgentTesla}, \texttt{Emotet})
+            SHA-256 hash. Category tags and vendor labels (e.g., \texttt{Trojan}, \texttt{Ransomware})
             are retrieved and normalized into canonical categories, reducing variation between
             vendors~\cite{wong2021practice}.
 \end{itemize}
@@ -329,14 +330,14 @@ sources of evidence:
 \end{itemize}
 This weighted reconciliation balances determinism with practical reliance on external consensus.
 The full explanation on how the reconciliation engine works can be found on the project
-repository\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/Reconciliation.md}}.
+repository~\cite{rexisReconciliationGuide}.
 The user has the option to not include \gls{virustotal} data on the pipeline. This makes the
 decision engine pass through the result from the heuristics engine effectively disabling this step.
 
 \vspace{0.5em}
 \noindent\textbf{Output Format:} Each classification generates a structured report containing:
 \begin{itemize}
-      \item \textbf{Canonical Family Label:} The reconciled family name (e.g., \texttt{LokiBot}),
+      \item \textbf{Canonical Category Label:} The reconciled malware category (e.g., \texttt{Trojan}),
             chosen after harmonizing vendor tags and heuristic results.
       \item \textbf{Classification Source:} Indicates whether the final decision was based on
             heuristics, \gls{virustotal} tags, or a weighted combination of both.
@@ -345,7 +346,7 @@ decision engine pass through the result from the heuristics engine effectively d
       \item \textbf{Triggered Rules:} The specific heuristic rules that fired, providing transparency
             into why a heuristic label was assigned.
       \item \textbf{VirusTotal Matches:} The number of antivirus engines on \gls{virustotal} that
-            agreed on the family or type, offering a measure of external consensus.
+            agreed on the category, offering a measure of external consensus.
       \item \textbf{Metadata Snapshot:} Contextual information including file hash, timestamp, PE
             size, and section-level details, retained for audit and traceability.
 \end{itemize}
@@ -354,7 +355,7 @@ the \gls{rag}-based pipeline.
 
 \vspace{0.5em}
 \noindent A detailed breakdown of the baseline pipeline design and decision logic is available
-in the guide:~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/BaselinePipeline.md}}
+in the guide~\cite{rexisBaselinePipeline}
 
 \subsection{LLM+RAG Pipeline}\label{subsec:LLMRAGPipeline}
 % Details the enhanced pipeline:
@@ -419,7 +420,7 @@ The structured prompt template consists of the following key components:
             relevant excerpts from the documents retrieved during semantic search.
       \item \textbf{Explicit instructions:} Directs the model to classify the
             sample, justify the decision with supporting evidence, and highlight
-            related malware families if applicable.
+            related malware categories or behaviors if applicable.
 \end{itemize}
 Prompt construction is handled programmatically to ensure consistency across all samples. Sensitive
 content such as raw hex dumps, shellcode, or very large decompiled blocks is filtered out to
@@ -432,10 +433,10 @@ execution. For more information see section \ref{subsec:PromptEngineering}.
 The completed prompt is submitted to \gls{gpt4o} via the OpenAI API to be used
 strictly in inference mode. Removing the need for fine-tuning, and emphasizing
 generalization from external context rather than learned weights. The LLM
-produces a structured response containing a proposed malware family label,
+produces a structured response containing a proposed malware category label,
 justification using the retrieved evidence, and optional comparisons to related malware or tactics.
 
-Response handling includes parsing the model output into structured fields (family label,
+Response handling includes parsing the model output into structured fields (category label,
 rationale, references). Additional metadata such as model identifier, temperature setting, latency,
 and token usage are recorded. These details provide transparency in model performance and
 facilitate later analysis of cost, efficiency, and reproducibility.
@@ -446,7 +447,7 @@ The output of the LLM+RAG pipeline is standardized to align with the baseline pi
 capturing additional context. Each classification record includes:
 \begin{itemize}
       \item \textbf{Sample identifiers:} SHA256 hash and timestamp of analysis
-      \item \textbf{Predicted family label:} Canonicalized malware family or “unknown” if undecided
+      \item \textbf{Predicted category label:} Canonicalized malware category or “unknown” if undecided
       \item \textbf{Supporting rationale:} Textual explanation generated by the LLM
       \item \textbf{Retrieved evidence:} List of document IDs, titles, source type (e.g., Malpedia, VX-U),
             and similarity scores
@@ -461,7 +462,7 @@ are explainable, reproducible, and auditable.
 
 \vspace{0.5em}
 \noindent A detailed breakdown of the LLM+RAG analysis pipeline design, implementation and
-prompt structure can be found in the guide:~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/LLMRagPipeline.md}}
+prompt structure can be found in the guide~\cite{rexisLLMRagPipeline}.
 
 \subsection{RAG Ingestion Pipeline}\label{subsec:RAGIngestionPipeline}
 % Describes how the vector database is constructed:
@@ -547,7 +548,7 @@ This structure allows both fine-grained retrieval and reconstruction of the orig
 
 \vspace{0.5em}
 \noindent Full technical details on the ingestion workflow used to build the RAG corpus and
-scripts are provided in the guide:~\footnote{\url{https://github.com/andremmfaria/rexis/blob/main/guides/IngestionPipeline.md}}
+scripts are provided in the guide~\cite{rexisIngestionPipeline}.
 
 \section{Prompt Engineering}\label{sec:PromptEngineering}
 % Discuss how you craft prompts for different tasks: classification, explanation, and comparison.
@@ -566,7 +567,7 @@ Prompts follow a modular template with two main components:
 
 \begin{itemize}
       \item \textbf{System Message:} Defines the role of the model and enforces a strict JSON schema
-            for outputs. Mandatory fields include family label, classification type, capabilities, tactics,
+            for outputs. Mandatory fields include category label, classification type, capabilities, tactics,
             supporting evidence, and an uncertainty measure. By fixing this schema at the system level,
             structural consistency is maintained across all samples.
 
@@ -579,7 +580,7 @@ Prompts follow a modular template with two main components:
                         the vector store. Each entry includes its source (e.g., Malpedia, VX-Underground), title or tag,
                         document ID, and a short snippet.
                   \item \textbf{Task Instructions:} A fixed directive asking the model to classify the sample
-                        into a known family and justify the decision with evidence, or compare it with related malware
+                        into a known category and justify the decision with evidence, or compare it with related malware
                         if applicable. This component varies by task type (see Section~\ref{subsec:TaskTypes}).
             \end{enumerate}
 \end{itemize}
@@ -595,12 +596,12 @@ validation and abstention.
 Three prompt variants are implemented to cover different reasoning requirements:
 
 \begin{enumerate}
-      \item \textbf{Classification-Only:} Requests a family label based on static features and
+      \item \textbf{Classification-Only:} Requests a category label based on static features and
             retrieved context.
-      \item \textbf{Classification + Justification:} Requires the model to provide a label
+      \item \textbf{Classification + Justification:} Requires the model to provide a category label
             \emph{and} cite both static features and retrieved evidence to support its decision.
       \item \textbf{Classification + Comparison:} Adds a comparative element, asking the model to
-            relate the sample to known families or behaviors, highlighting similarities and differences.
+            relate the sample to known categories or behaviors, highlighting similarities and differences.
 \end{enumerate}
 
 These templates allow systematic observation of how the model handles increasing reasoning demands
@@ -632,8 +633,8 @@ retrieved evidence, and task instructions. Only the user message is shown for cl
             Retrieved Document [VX-Underground: APT37, DocID=vx-5678]: \\ "APT37 campaigns leveraged DLL
             injection combined with custom packers, embedding URLs for remote payload retrieval." \\
 
-            Task: \\ Based on the static features and retrieved documents, classify the sample into a known
-            family. Provide a JSON output following the schema, including: \\ --- family label \\ ---
+            Task: \\ Based on the static features and retrieved documents, classify the sample into a malware
+            category. Provide a JSON output following the schema, including: \\ --- category label \\ ---
             classification tags (e.g., trojan, stealer) \\ --- capabilities and tactics \\ --- 4--8 evidence
             items citing features and retrieved documents \\ --- an uncertainty measure (low, medium, high) \\
 
@@ -689,9 +690,9 @@ outputs have been shown to enhance trustworthiness in LLM deployments~\cite{han2
             evidence-based reasoning~\cite{bechard2024reducing, lee2025finetune}.
 
       \item \textbf{Evidence Threshold \& Abstention.}
-            If fewer than two retrieval-based evidence snippets support a claim, or if the proposed
-            family matches a redacted term, the system abstains by returning \texttt{"unknown\_family"}.
-            This prevents overconfident misclassification~\cite{han2025guardrail, magesh2025assessing}.
+            If fewer than two retrieval-based evidence snippets support a claim, the system abstains by
+            returning \texttt{``unknown''}. This prevents overconfident misclassification~\cite{han2025guardrail,
+            magesh2025assessing}.
 
       \item \textbf{Transparent Audit Trail.}
             Each classification records redacted names, reranked passages, blind vs. final
@@ -795,7 +796,7 @@ capture both the presence and quality of explanations:
                   \text{RuleMatch} = \frac{N_{\text{consistent-rules}}}{N_{\text{triggered-rules}}}
             \end{equation}
             where \(N_{\text{consistent-rules}}\) is the number of heuristic rules whose triggers
-            are consistent with the final family label. This provides an analogue to justification
+            are consistent with the final category label. This provides an analogue to justification
             in the baseline pipeline.
 \end{enumerate}
 
