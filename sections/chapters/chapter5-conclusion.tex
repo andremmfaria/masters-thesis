@@ -2,7 +2,14 @@
 % Briefly restate the research problem and objectives.
 % Remind the reader of the significance of your topic (LLMs + RAG for static malware analysis).
 % Provide a roadmap of what this chapter will cover.
-TODO...
+This chapter closes the thesis by revisiting the central objective: to assess whether Large
+Language Models (\glspl{llm}) augmented with Retrieval-Augmented Generation (\gls{rag}) can improve
+static malware analysis in terms of accuracy, interpretability, and practical usefulness. Motivated
+by the limitations of traditional static approaches and the emerging potential of context-grounded
+\glspl{llm} (Ch.~\ref{Chapter2}), a dual-pipeline prototype was designed and implemented
+(Ch.~\ref{Chapter3}) and evaluated it on a representative cohort (Ch.~\ref{Chapter4}). This chapter
+summarises the research, answers the guiding questions, highlights contributions and implications,
+discusses limitations, outlines future work, and offers final reflections.
 
 \section{Summary of Research}
 % Concisely summarize your overall research journey:
@@ -10,16 +17,59 @@ TODO...
 %   - Your methodological approach
 %   - Key components of your system (RAG pipeline, prompt engineering, static feature analysis)
 % Keep this section high-level and focused on key ideas, not details.
-TODO...
+The literature review (Ch.~\ref{Chapter2}) identified three persistent gaps: limited semantic
+understanding in static workflows, weak interpretability in ML-based detectors, and a lack of
+evaluations that combine \gls{rag} with \glspl{llm} for malware tasks. To address these, an
+experimental, dual-pipeline system (Ch.~\ref{Chapter3}) is implemented: a deterministic baseline
+that fuses \gls{ghidra}-derived heuristics with optional \gls{virustotal} tags, and an \gls{llm}
++\gls{rag} pipeline that grounds model reasoning on a curated corpus (VX-Underground APT writeups,
+Malpedia documentation, and MalwareBazaar metadata). The \gls{rag} pipeline relied on structured
+prompt engineering, guardrails (redaction, evidence thresholding, abstention), and traceable
+logging.
+
+Implementation and evaluation (Ch.~\ref{Chapter4}) used 20 Windows \gls{pe} samples across four
+categories. Results showed that \textbf{LLM+RAG} improved category accuracy from 10.0\% (2/20) to
+27.8\% (5/18 valid classifications; two abstentions), increased explanation quality with 100\%
+evidence grounding (\(\geq 2\) citations), and incurred a modest latency increase (90.8\,s to
+97.1\,s). A composite score (accuracy, efficiency, interpretability) favoured \textbf{LLM+RAG}
+(0.43 vs 0.28), indicating that grounding \glspl{llm} with trustworthy context can tangibly
+strengthen static malware analysis.
 
 \section{Answers to Research Questions}
 % Clearly address each of your research questions.
 % Use a separate paragraph for each question:
-%   - Q1: How can LLMs be leveraged to enhance static malware analysis?
-%   - Q2: How does a RAG-enhanced LLM compare to traditional techniques?
-%   - Q3: What role does RAG play in improving contextual relevance and interpretability?
+% 1. How can \glspl{llm} be leveraged to enhance static malware analysis?
+% 2. How does a \gls{rag}-enhanced \gls{llm} perform in terms of accuracy, efficiency,
+%    and interpretability when compared to traditional static analysis techniques?
+% 3. What role does \gls{rag} play in improving \gls{llm}-driven malware classification,
+%    particularly in terms of contextual relevance and justification of results?
 % For each, summarize what your findings reveal and how they contribute new insights.
-TODO...
+\textbf{Q1: How can \glspl{llm} be leveraged to enhance static malware analysis?}
+\newline
+\glspl{llm} complement static feature extraction by synthesising disparate signals (imports,
+strings, entropy, \gls{decompilation} snippets) into coherent, analyst-style rationales. In our
+prototype, structured prompts and a fixed output schema enabled consistent, auditable
+classifications with complete explanation coverage (100\%). Even without fine-tuning, the
+\gls{llm} produced actionable summaries and comparisons across malware behaviours, improving
+triage utility.
+
+\textbf{Q2: How does a \gls{rag}-enhanced \gls{llm} perform in terms of accuracy, efficiency, and interpretability when compared to traditional static analysis techniques?}
+\newline
+Against a deterministic baseline, \textbf{LLM+RAG} yielded higher category accuracy (27.8\% vs
+10.0\% when skipping abstentions), far stronger interpretability (100\% grounded explanations),
+and only a modest latency overhead (\(+\)6.4\,s on average). Guardrails enabled abstention in
+low-evidence cases (2/20), avoiding overconfident errors. While absolute accuracy remains modest
+due to dataset scope and static-only signals, the relative gains suggest practical benefit in
+analyst workflows. A composite score combining accuracy, efficiency, and interpretability also
+favoured \textbf{LLM+RAG} (0.43 vs 0.28).
+
+\textbf{Q3: What role does \gls{rag} play in improving \gls{llm}-driven malware classification, particularly in terms of contextual relevance and justification of results?}
+\newline
+\gls{rag} provided verifiable context that anchored explanations in retrieved evidence (\(\geq 2\)
+citations in all cases). Name redaction and re-ranking by technical signals mitigate anchoring
+bias. Empirically, \gls{rag} was decisive for explanation quality and for some correct
+classifications, supporting the thesis that retrieval-grounded prompts enhance contextual
+relevance, justification, and transparency.
 
 \section{Research Contributions}
 % Highlight your original contributions to the field.
@@ -28,38 +78,199 @@ TODO...
 %   - Improved interpretability through context-aware prompting
 %   - A reproducible evaluation pipeline for comparing static analysis tools with AI models
 % Emphasize why these are valuable for academia or practice.
-TODO...
+This thesis contributes a reproducible, dual-pipeline framework for static malware analysis that
+systematically contrasts a deterministic baseline against a retrieval-grounded \gls{llm} approach.
+The baseline fuses \gls{ghidra}-derived heuristics with optional \gls{virustotal} reconciliation,
+providing a transparent reference for comparison. The \gls{llm}+\gls{rag} pipeline integrates
+\gls{haystack} over \gls{postgresql}+\gls{pgvector} with \gls{gpt4o} in inference-only mode and a
+curated corpus drawn from VX-Underground APT writeups, Malpedia documentation, and MalwareBazaar
+metadata. Both pipelines share a unified output schema, structured logging, and prompt versioning
+(hashing), exposed via a \texttt{Typer}-based CLI for end-to-end repeatability. An ingestion
+pipeline contributes a defensible recipe for building a safe retrieval store for malware analysis:
+documents are normalised, chunked, embedded (OpenAI \texttt{text-embedding-3-small}), and stored
+with provenance metadata and time windows, enabling auditable retrieval.
 
-\section{Implications of the Study}
-% Discuss what your findings mean for the broader field of cybersecurity.
-% Reflect on practical applications, such as:
-%   - Security operations
-%   - Threat analysis workflows
-%   - Explainable AI in malware detection
-% Include both theoretical and real-world implications.
-TODO...
+The work introduces a guardrailed prompting design tailored to static triage: name redaction to
+mitigate anchoring, re-ranking by technical signals, a two-stage ``blind hypothesis then evidence
+verification'' flow, and an evidence threshold with principled abstention. Together with a simple
+but consistent evaluation protocol and composite metric (accuracy, efficiency, interpretability),
+these choices improved explanation reliability and measurement clarity. Empirically, on a fixed
+20-sample \gls{pe} cohort, \textbf{LLM+RAG} increased category accuracy from \textbf{10.0\%} (2/20)
+to \textbf{27.8\%} (5/18 valid classifications; 2 abstentions), maintained \textbf{100\%}
+explanation coverage with \textbf{100\%} contextual grounding (\(\geq\)2 citations), and incurred
+only a modest latency increase (\textbf{90.8\,s} to \textbf{97.1\,s}). The composite score improved
+from \textbf{0.28} to \textbf{0.43}. Collectively, these contributions provide an auditable
+blueprint and quantitative evidence that retrieval-grounded language models can add measurable
+value to static malware analysis in research and practitioner settings.
 
-\section{Limitations}
-% Acknowledge key limitations of your research.
-% Examples:
-%   - Focus limited to static analysis (not dynamic or hybrid)
-%   - Limited dataset scope or quality of RAG source material
-%   - Dependence on general-purpose LLMs with no fine-tuning
-% Be honest and objective, but also note where the limitations can be addressed in future work.
-TODO...
+\section{Implications of the Study}\label{sec:Implications}
+% Reflect on the practical and academic significance of your research.
+% Discuss how your system design and findings may:
+%   - Influence future tools for static malware analysis
+%   - Support security teams through explainable classification
+%   - Extend to other cybersecurity domains (e.g., phishing, vulnerability triage)
+% Consider both short-term and long-term implications for real-world use.
+By demonstrating how \gls{llm} reasoning, when combined with \gls{rag}, enhances the reliability
+and transparency of static malware analysis, this work provides evidence that language models can
+be adapted to domains traditionally dominated by heuristic rules and signature-based approaches. As
+shown in Section~\ref{subsec:ResultsSummary} (Table~\ref{tab:results-summary}), the
+\gls{llm}+\gls{rag} pipeline improved accuracy and explanation quality with a modest latency
+overhead.
 
-\section{Recommendations for Future Research}
-% Suggest specific areas where future research could build on your work.
-% Possibilities include:
-%   - Incorporating dynamic features alongside static analysis
-%   - Using fine-tuned LLMs or domain-specific models
-%   - Evaluating RAG performance with higher-quality curated corpora
-%   - Studying robustness against adversarial prompts or evasive malware
-TODO...
+\subsection{Short-term implications}\label{subsec:ShortTermImplications}
+In the short term, the results suggest that integrating retrieval-enhanced language models into
+analysis pipelines can improve the quality of malware classification without prohibitive efficiency
+trade-offs (see Section~\ref{sec:Limitations}). The consistent grounding of explanations in
+external evidence enables analysts to validate model outputs and trace the rationale behind
+predictions. This supports the development of explainable malware analysis tools, where
+transparency is as critical as accuracy. Practically, LLM+RAG can operate as a triage gate:
+high-confidence outputs (with citations) are auto-labelled, while abstentions (\texttt{unknown}) or
+low-confidence cases are routed to analysts. Organisations can target measurable improvements, such
+as a \textit{15--25\% reduction}\footnote{This projection is an extrapolation from the 20-sample
+    evaluation suite used in this study. It assumes that the observed rates of explanation coverage
+    (100\%) and abstention behaviour (2/20 samples) would scale proportionally in larger datasets.
+    While indicative of potential operational gains, these figures should be interpreted as
+    illustrative rather than empirically validated benchmarks.} in manual reviews per day or a
+\textit{10--15\% reduction} in median time-to-triage, driven by 100\% explanation coverage and
+grounding in our results (cf.~Table~\ref{tab:results-summary}). In operational contexts, such tools
+can reduce analyst fatigue by filtering and prioritising evidence-backed alerts, complementing
+traditional static features such as API calls and binary structure.
+
+\subsection{Operational support}\label{subsec:OperationalSupport}
+For security teams, the potential of explainable classification is particularly important. Unlike
+rule-based systems that may generate opaque alerts, \gls{llm}+\gls{rag} outputs provide contextual
+citations and clear rationales for decisions. This improves trust and accelerates incident triage
+by linking observed behaviour to cited intelligence. To integrate with SOC tooling, pipelines
+should export structured fields (category, rationale, citations, confidence/abstention) to
+SIEM/SOAR/MISP in JSON or STIX~2.1. Calibration is essential: apply thresholding, honour
+abstentions (no auto-block on \textit{suspicious} without corroboration), and log decisions for
+auditability. Privacy and compliance should be maintained by restricting the \gls{rag} corpus to
+metadata/prose (no binaries) and filtering sensitive data via guardrails
+(cf.~Section~\ref{sec:Guardrails}). Over time, such capabilities can help close the expertise gap
+in malware analysis by lowering cognitive overhead for less experienced practitioners.
+
+\subsection{Cross-domain applications}\label{subsec:CrossDomainApplications}
+Beyond malware classification, the principles demonstrated here extend to cybersecurity tasks where
+static artefacts are abundant but context is fragmented. Examples include phishing analysis that
+explains why a lure is suspicious, or CVE advisory triage that prioritises advisories based on
+retrieved PoCs and exploitation reports, with citations for audit. Prior work has highlighted the
+role of retrieval in broadening the contextual window for \glspl{llm}~\cite{gao2023retrieval,
+    lewis2020retrieval}, and this study confirms its value in static-first analysis. Future research
+could adapt similar architectures to threat intelligence enrichment or automated reporting.
+
+\subsection{Long-term implications}\label{subsec:LongTermImplications}
+In the longer term, the study suggests a path towards hybrid workflows where \glspl{llm} act as
+interpreters and equalisers of context rather than decision-makers. This aligns with emerging
+trends in explainable AI for cybersecurity~\cite{fujii2024llm, nourmohammadzadeh2024llmsurvey}. By
+grounding outputs in verifiable references, the risk of unchecked hallucinations is reduced, while
+the system remains adaptable to evolving threats. Operationally, organisations should plan for
+corpus curation (periodic re-ingestion and de-duplication), prompt/guardrail versioning, and
+continuous evaluation (re-running the fixed 20-sample suite plus a growing benchmark quarterly) to
+monitor accuracy, abstention, and latency trends. Governance should document decision policies
+(when to abstain/escalate), change management for prompts/guardrails, and audit trails (leveraging
+the existing metadata logging and prompt hashes in this project). From an academic perspective,
+these findings strengthen the case for bridging static feature extraction and semantic reasoning,
+paving the way for more resilient and interpretable detection pipelines.
+
+\section{Limitations}\label{sec:Limitations}
+% Clearly state the limitations of your system and experiments. % Address issues such as:
+% - Limited sample diversity or dataset size
+% - Scope limited to static analysis, excluding behavioural/dynamic data
+% - Heuristic rules being brittle or oversimplified
+% - Dependence on third-party APIs (e.g., OpenAI, VirusTotal)
+% - No adversarial robustness or user-study evaluation
+% - No cost information and analysis have been made
+% Be transparent and balanced — link limitations to specific design choices where applicable.
+While the study demonstrates the potential of \gls{llm}+\gls{rag} in static malware analysis, key
+limitations remain. The cohort was small (\textbf{n=20}; five per tag) and limited to Windows
+\gls{pe} executables (\texttt{exe}), yielding wide Wilson 95\% CIs
+(Section~\ref{subsec:ResultsSummary}) and limited generalisability. The scope was static-only (no
+behavioural/dynamic features). The \textbf{Baseline} used brittle heuristics with under-calibrated
+thresholds and likely underestimates stronger traditional baselines.
+
+Ground truth followed cohort selection via a helper script against the \gls{malwarebazaar} API,
+recording acquisition tags as a proxy for consensus~\cite{rexisSamplesExtractorScript}. This
+carries vendor noise and ambiguity in canonical category mapping~\cite{gaber2024malware}. Accuracy
+was computed \textit{excluding} abstentions; as a sensitivity check, counting abstentions as errors
+would reduce \textbf{LLM+RAG} to \textbf{25.0\%} (5/20) vs \textbf{Baseline} \textbf{10.0\%}
+(2/20). Composite scoring used equal weights; different weightings could change the ranking.
+
+Retrieval quality depended on a corpus from VX-Underground, Malpedia, and MalwareBazaar for
+Jan\,2022--Aug\,2025 (Section~\ref{subsec:RAGIngestionExec}), which may miss relevant threats;
+private or region-specific sources were not included, and drift/re-ingestion effects were not
+studied. Prompts and guardrails were intentionally simple (Section~\ref{sec:PromptEngineering}); no
+hyperparameter or guardrail sensitivity was run. Provider-side variability and nondeterminism
+remain despite fixed pipeline settings (Section~\ref{sec:ExperimentalSteps}).
+
+Operationally, the system depends on third-party APIs (\gls{malwarebazaar}, \gls{vt}, \gls{openai})
+with implications for cost, rate limits, and data handling. Token usage for \gls{gpt4o} was not
+analysed. Privacy was preserved by indexing metadata/prose only; guardrails were not formally
+tested against adversarial threats (e.g., prompt injection).
+
+These limitations should be addressed in future work to enhance the robustness and applicability of
+\gls{llm}+\gls{rag} for malware analysis.
+
+\section{Recommendations for Future Research}\label{sec:RecommendationsFutureWork}
+% Based on your experience and findings, propose:
+%   - Future exploration of hybrid pipelines (static + dynamic)
+%   - Inclusion of larger, labelled datasets
+%   - Alternative LLMs or fine-tuned models for specific tasks
+%   - Improvements in retrieval quality (e.g., better chunking, embeddings)
+%   - Real-world evaluation or deployment (e.g., SOC integration, red-team use)
+% Ensure recommendations are feasible and rooted in what you observed during implementation.
+This study demonstrates the feasibility of \gls{llm}+\gls{rag} for static malware analysis and
+points to clear next steps: broaden datasets, enrich retrieval sources, refine models/prompts, and
+validate in operational settings.
+
+\subsection{Hybrid Pipelines}\label{sec:HybridPipelines}
+Future work should extend beyond static analysis and explore hybrid pipelines that combine static
+features with behavioural or dynamic traces. Prior work has shown that hybrid approaches can
+improve detection resilience against packing and obfuscation~\cite{fedak2020fundamentals}, and
+\glspl{llm} are well positioned to synthesise heterogeneous evidence into coherent explanations.
+This would allow evaluation not only of \gls{pe} executables but also scripts, documents, and
+platform-specific binaries (e.g., Android APKs, macOS Mach-O).
+
+\subsection{Larger and Labelled Datasets}\label{sec:LargerAndLabelledDatasets}
+Scaling to larger, labelled datasets is essential for statistical robustness. Public resources such
+as EMBER~\cite{anderson2018ember} or curated subsets of \gls{malwarebazaar} could provide stronger
+ground truth for benchmarking. Community-driven datasets with canonical category mappings would
+also help mitigate vendor noise~\cite{gaber2024malware}. In parallel, systematic evaluations of
+abstentions should be incorporated into accuracy metrics to ensure fair comparisons across models.
+
+\subsection{Model and Prompt Design}\label{sec:ModelAndPromptDesign}
+Alternative \glspl{llm} should be considered, including open-source models fine-tuned for
+cybersecurity tasks~\cite{metta2024generativeai, nourmohammadzadeh2024llmsurvey}. Fine-tuning on
+domain-specific corpora, or applying structured prompting techniques~\cite{sahoo2024systematic},
+may further improve classification accuracy and reduce abstentions. Sensitivity analyses of
+prompting, guardrails, and hyperparameters would provide insights into the stability of results
+over time.
+
+\subsection{Improving Retrieval Quality}\label{sec:ImprovingRetrievalQuality}
+Retrieval quality is a key factor in performance. Future research should investigate improved
+chunking strategies, embedding models optimised for binary-derived text, and active curation of the
+retrieval corpus to reduce drift. Richer sources (e.g., telemetry feeds, red-team reports) could
+increase coverage and contextual relevance~\cite{gao2023retrieval, lewis2020retrieval}.
+
+\subsection{Real-world Evaluation}\label{sec:RealWorldEvaluation}
+Finally, deployment-oriented studies are needed to assess the utility of \gls{llm}+\gls{rag} in
+operational environments such as SOCs. Integration with SIEM/SOAR/MISP platforms, combined with
+analyst-in-the-loop evaluations, would help measure usability, trust, and incident-response impact.
+Red-team exercises could probe adversarial robustness, including resistance to prompt injection and
+retrieval poisoning~\cite{zou2024poisonedrag}. Such evaluations would move beyond feasibility to
+assess readiness for production deployment.
 
 \section{Final Reflections}
 % End with a strong, reflective closing paragraph.
 % Reiterate the importance of your research and what you’ve learned as a researcher.
 % Reinforce your contribution to the field and the potential for your work to
 % inform further innovation.
-TODO...
+This thesis shows that retrieval-grounded \glspl{llm} can add measurable value to static malware
+analysis—framed by the literature and problem statement (Ch.~\ref{Chapter2}), realised via a
+dual-pipeline prototype with guardrails (Ch.~\ref{Chapter3}), and validated through a reproducible
+evaluation (Ch.~\ref{Chapter4}). It is not a replacement for established tools; rather, it is a
+context synthesiser that elevates interpretability and supports trustworthy decisions. The
+prototype, guardrails, and evaluation framework provide a pragmatic blueprint for researchers and
+practitioners to iterate, harden, and scale similar systems. While challenges remain—scope,
+robustness, and cost—the path forward is clear: combine reliable feature extraction with grounded
+language understanding, and hold models accountable to evidence. In doing so, the community moves
+closer to explainable, auditable, and effective AI support for cybersecurity operations.

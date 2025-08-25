@@ -7,8 +7,8 @@ to enhance static malware analysis using \glspl{llm} and \gls{rag}. It outlines 
 realisation of the proposed pipelines, describes how individual components were integrated, and
 evaluates their performance across a representative corpus of malicious \glspl{pe} samples. The
 experiments were conducted on a dataset of 20 malware samples across four commonly studied
-families~\cite{berrios2025malware,abrazak2016rise,mat2021systematic} (See
-section~~\ref{subsec:MalwareSamplesSourcing}), enabling comparative evaluation of classification
+families~\cite{berrios2025malware,abrazak2016rise,mat2021systematic} (see
+Section~\ref{subsec:MalwareSamplesSourcing}), enabling comparative evaluation of classification
 behaviour.
 
 \section{Environment}\label{sec:Environment}
@@ -42,10 +42,10 @@ The main tools and frameworks are:
             environments. PDM provides deterministic builds and isolated execution, supporting reproducibility
             across runs and machines.\footnote{\url{https://pdm-project.org}}
 
-      \item \textbf{\gls{postgresql} + \gls{pgvector}} --~Relational database extended with the
-            exttt{pgvector} module\footnote{\url{https://www.postgresql.org}}\footnote{\url{https://github.com/pgvector/pgvector}} for similarity search on embeddings. It serves
-            as the vector store backing the retrieval stage of the \gls{rag} pipeline. The database is deployed
-            in a Docker container for consistency and portability.\footnote{\url{https://www.docker.com}}
+      \item \textbf{\gls{postgresql} + \gls{pgvector}} --~Relational database\footnote{\url{https://www.postgresql.org}}
+            extended with the \texttt{pgvector} module\footnote{\url{https://github.com/pgvector/pgvector}} for
+            similarity search on embeddings. It serves as the vector store backing the retrieval stage of the
+            \gls{rag} pipeline. The database is deployed in a Docker container for consistency and portability.
 
       \item \textbf{\gls{haystack}} --~Framework used to implement the \gls{rag} workflow, including
             ingestion, chunking, embedding, and retrieval. Its modular components simplify orchestration and
@@ -62,20 +62,21 @@ The main tools and frameworks are:
             enabling feature logging at scale.\footnote{\url{https://github.com/NationalSecurityAgency/ghidra}}\footnote{\url{https://github.com/NationalSecurityAgency/ghidra/blob/master/Ghidra/Features/PyGhidra/src/main/py}}
 
       \item \textbf{Docker} --~Used to containerise core services such as \gls{postgresql} with
-            \gls{pgvector}, the \gls{ghidra} server, and auxiliary tools. Containerisation ensures reproducibility,
-            isolation, and consistency across systems.\footnote{\url{https://www.docker.com}}
+            \gls{pgvector}. Containerisation ensures reproducibility, isolation, and consistency
+            across systems.\footnote{\url{https://www.docker.com}}
 
-      \item \textbf{\gls{malwarebazaar} API} --~Provides malware samples, hashes, tags, and metadata,
-            serving as a key source of enrichment and validation.\footnote{\url{https://bazaar.abuse.ch/api/}}
+      \item \textbf{\gls{malwarebazaar} API + helper script} --~Samples for the evaluation cohort were
+            downloaded using a helper script~\cite{rexisSamplesExtractorScript} that calls the
+            MalwareBazaar API~\footnote{API docs: \url{https://bazaar.abuse.ch/api/}}.
 
       \item \textbf{\gls{virustotal} API} --~Supplies scan metadata, antivirus tags, and consensus labels
             across vendors. These labels support the baseline classifier and reconciliation logic, providing
             a benchmark for evaluation~\cite{rexisReconciliationGuide}.\footnote{\url{https://developers.virustotal.com/reference}}
 
       \item \textbf{\gls{vx-underground} and \gls{malpedia}} --~Additional data sources used to populate
-            the retrieval corpus with threat intelligence reports, APT writeups, and malware family and category descriptions.
+            the retrieval corpus with threat intelligence reports, APT write-ups, and malware family and category descriptions.
             These documents strengthen contextual grounding in the \gls{rag} pipeline by supplying semantically
-            rich background evidence.\footnote{\url{https://vx-underground.org}}\footnote{\url{https://malpedia.caad.fkie.fraunhofer.de}}
+            rich background evidence.\footnote{\url{https://VX-Underground.org}}\footnote{\url{https://malpedia.caad.fkie.fraunhofer.de}}
 \end{itemize}
 
 \noindent
@@ -102,9 +103,8 @@ classification, and enhanced \gls{llm}+\gls{rag} classification. Common modules 
 configuration, logging, and feature extraction, while each pipeline defines its own classification
 logic. Documentation and usage examples for each pipeline are provided in dedicated guides
 ingestion~\cite{rexisIngestionPipeline}, baseline~\cite{rexisBaselinePipeline}, and
-LLM+RAG~\cite{rexisLLMRagPipeline}.
-
-The code project can be found on the GitHub repository~\cite{rexisRepo}.
+LLM+RAG~\cite{rexisLLMRagPipeline}. The project can be found on the GitHub
+repository~\cite{rexisRepo}.
 
 \subsection{Common Modules}\label{subsec:CommonModules}
 The following components are shared across all pipelines:
@@ -215,29 +215,33 @@ prompts for inference via GPT-4o:
 % - Detail how features were extracted, documents retrieved, prompts constructed, and inferences made.
 % - Explain logging, reproducibility, and evaluation procedures.
 % - Reference any scripts, CLI commands, or automation used.
-This section details the design and execution of the evaluation. We define the cohort and scope,
-document the exact commands used to run both pipelines, describe normalisation and metrics, report
-the results, and summarise data ingestion for the RAG corpus that supports retrieval in the LLM+RAG
-pipeline (cf.\ Section~\ref{sec:DataSources}).
+This section details the design and execution of the evaluation. It defines the cohort and scope,
+documents the exact commands used to run both pipelines, describes normalisation and metrics,
+reports the results, and summarises data ingestion for the RAG corpus that supports retrieval in
+the LLM+RAG pipeline (cf.\ Section~\ref{sec:DataSources}).
 
 \subsection{Cohort and Scope}\label{subsec:CohortScope}
 \textbf{20} Windows \gls{pe} samples were evaluated across four tags: \textbf{trojan}, \textbf{ransomware},
-\textbf{botnet}, and \textbf{rootkit} (five per tag). The cohort was frozen on 24th of Aug 2025;
+\textbf{botnet}, and \textbf{rootkit} (five per tag). The cohort was frozen on 24 Aug 2025;
 duplicates were removed by SHA-256 and invalid PE files were excluded. Acquisition rules: (i) must
 include the current tag, (ii) must include \texttt{exe}, (iii) must \emph{not} include any other
 tag from the experiment’s tag set (except the current tag). Runs are driven directly via the CLI as
-documented in the project guides, without a separate \texttt{cohort.csv} manifest.
+documented in the project guides. Samples were downloaded using a helper script that calls the
+MalwareBazaar API~\cite{rexisSamplesExtractorScript};
+archives were decompressed in bulk via a companion script~\cite{rexisDecompressSamplesScript}.
+\texttt{truth\_category} reflects the MalwareBazaar acquisition tag recorded at selection time
+(see Section~\ref{sec:Limitations} for ground-truth caveats).
 
 \subsection{Analysis Execution Procedure}\label{subsec:ExecutionProcedure}
 Both pipelines were executed under identical conditions (same sample order). CLI entry points and
-options follow the repository guides.~\cite{rexisBaselinePipeline,rexisLLMRagPipeline}
+options follow the repository guides~\cite{rexisBaselinePipeline,rexisLLMRagPipeline}.
 
 All runs write a report (\texttt{ingest-analysis-\textless RUN\_NAME\textgreater{}}) with
 timestamps, parameters, and environment. Documents are chunked, embedded (OpenAI embeddings), and
 stored in \texttt{PostgreSQL}+\texttt{pgvector}, enabling hybrid retrieval in the LLM+RAG pipeline.
 
 \subsubsection{Baseline (static heuristics with and without VT)}\label{subsubsec:BaselineExecution}
-\noindent\textit{Per-tag straight commands (one per category).}\\ \noindent\textit{Inputs point to
+\noindent\textit{Per-tag commands (one per category).}\\ \noindent\textit{Inputs point to
       the \texttt{decompressed/} folder under each tag, as in the samples tree provided.}
 
 \begin{verbatim}
@@ -309,12 +313,12 @@ The comparison outputs are organised on a table and its columns are:
 \begin{itemize}
       \item \texttt{sha256}: Sample's SHA-256 hash (unique identifier).
       \item \texttt{truth\_category}: Ground-truth tag for the sample (trojan, ransomware, botnet,
-            rootkit).
+            rootkit), defined by cohort selection via a helper script using the \gls{malwarebazaar}
+            API~\cite{rexisSamplesExtractorScript}; the associated acquisition tag was recorded at selection time (cf. Section~\ref{sec:Limitations}).
       \item \texttt{vt\_malicious}: Number of VirusTotal engines that flagged the sample as malicious.
       \item \texttt{vt\_total}: Total number of VirusTotal engines that scanned the sample.
       \item \texttt{baseline\_label}: Raw label produced by the baseline (heuristics-only) pipeline.
-      \item \texttt{baseline\_pred\_category}: Baseline label normalised to the evaluation categories
-            (trojan/ransomware/botnet/rootkit/\texttt{unknown\_category}).
+      \item \texttt{baseline\_pred\_categories}: Inferred Baseline labels.
       \item \texttt{baseline\_duration\_sec}: Wall-clock runtime (seconds) for the baseline pipeline.
       \item \texttt{baseline\_vt\_label}: Raw label from the baseline pipeline with VirusTotal enrichment.
       \item \texttt{baseline\_vt\_pred\_category}: VT-enriched baseline label normalised to the
@@ -322,7 +326,7 @@ The comparison outputs are organised on a table and its columns are:
       \item \texttt{baseline\_vt\_duration\_sec}: Wall-clock runtime (seconds) for the VT-enriched
             baseline pipeline.
       \item \texttt{llmrag\_label}: Raw label produced by the LLM+RAG pipeline.
-      \item \texttt{llmrag\_pred\_category}: LLM+RAG label normalised to the evaluation categories.
+      \item \texttt{llmrag\_pred\_categories}: Inferred LLM+RAG labels.
       \item \texttt{llmrag\_duration\_sec}: Wall-clock runtime (seconds) for the LLM+RAG pipeline.
       \item \texttt{explanation\_present\_baseline}: Whether the baseline output included an
             explanation/rationale (boolean).
@@ -334,18 +338,18 @@ The comparison outputs are organised on a table and its columns are:
 
 \subsection{Data Ingestion for RAG Corpus}\label{subsec:RAGIngestionExec}
 The retrieval corpus was assembled per Chapter~\ref{sec:DataSources} and the ingestion
-guide~\cite{rexisIngestionPipeline}. Sources and windows: \textbf{VX-Underground APT writeups} (1st
-of Jan 2022 --- 1st of Aug 2025), \textbf{Malpedia} articles (1st of Jan 2022 --- 1st of Aug 2025),
-and \textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware, botnet,
+guide~\cite{rexisIngestionPipeline}. Sources and windows: \textbf{VX-Underground APT write-ups} (1
+Jan 2022 --- 1 Aug 2025), \textbf{Malpedia} articles (1 Jan 2022 --- 1 Aug 2025), and
+\textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware, botnet,
 rootkit, \texttt{exe}). Only metadata and prose documents were indexed; binaries were excluded.
 
 To automate this process and ensure consistent ingestion, a dedicated ingestion pipeline was
 implemented. The details on data source and ingestion are outlined on the next subsections.
 
 \subsubsection{VX-Underground APT Writeups sourcing and ingestion}\label{subsubsec:VXUIngestionExec}
-The APT writeups from VX-Underground were sourced using a browser workflow to collect PDF links and
-download locally, as recommended in the guide~\cite{rexisDataSourcingVXU}. Collected PDFs were then
-ingested into the \gls{pgvector} store with typed PDF ingestion, following the ingestion
+The APT write-ups from VX-Underground were sourced using a browser workflow to collect PDF links
+and download locally, as recommended in the guide~\cite{rexisDataSourcingVXU}. Collected PDFs were
+then ingested into the \gls{pgvector} store with typed PDF ingestion, following the ingestion
 guide~\cite{rexisIngestVXU}.
 
 Ingestion command example (2022 batch):
@@ -357,9 +361,9 @@ pdm run rexis ingest pdf --dir ./data/corpus/vxunderground/2022 \
 
 The ingest command validates mutually exclusive \texttt{--dir}/\texttt{--file}, splits the workload
 into batches (\texttt{--batch}), extracts text with PyMuPDF, normalises and chunks prose (~500
-words, 50 overlap), embeds with OpenAI, and writes to PgVector. A JSON run report is written to
-\texttt{<out-dir>/ingest-analysis-\textless RUN\_NAME\textgreater{}} with parameters, counts, and
-timings.
+words, with 50-word overlap), embeds with OpenAI, and writes to PgVector. A JSON run report is
+written to \texttt{<out-dir>/ingest-analysis-\textless RUN\_NAME\textgreater{}} with parameters,
+counts, and timings.
 
 \subsubsection{Malpedia sourcing and ingestion}\label{subsubsec:MalpediaIngestionExec}
 The dedicated collector is used to merge the Malpedia references index with the BibTeX dump, apply
@@ -438,11 +442,11 @@ report is emitted under \texttt{--out-dir}.
 % Discuss retrieval diversity and grounding rates across tags.
 % Point out edge cases and limitations observed during evaluation.
 This section presents the outcomes of running the Baseline and LLM+RAG pipelines on the fixed
-20-sample cohort (see Section~\ref{subsec:ExecutionProcedure}). We report accuracy, latency, and
-interpretability, and summarise abstentions and guardrail behaviour. A quantitative overview is
-given in section ~\ref{subsec:ResultsSummary}. Unless noted otherwise, values are reported per tag
-and overall, and \texttt{unknown\_category} reflects intentional abstention under the guardrails
-(cf. Section~\ref{sec:Guardrails}).
+20-sample cohort (see Section~\ref{subsec:ExecutionProcedure}). Accuracy, latency, and
+interpretability are reported, and abstentions and guardrail behaviour are summarised. A
+quantitative overview is given in section ~\ref{subsec:ResultsSummary}. Unless noted otherwise,
+values are reported per tag and overall, and \texttt{unknown\_category} reflects intentional
+abstention under the guardrails (cf. Section~\ref{sec:Guardrails}).
 
 \vspace{0.5em}
 \noindent\textit{Note: In this experiment, the baseline pipeline with and without \gls{vt} data
@@ -466,7 +470,7 @@ pdm run rexis aggregate \
       --out-dir ./analysis
 \end{verbatim}
 
-The result of this aggregation can be found in the project repository under the project
+The result of this aggregation can be found in the project
 repository~\cite{rexisResultsAggregationReport}.
 
 \subsection{Aggregation results}\label{subsec:AggregationResults}
@@ -602,7 +606,7 @@ Tables~\ref{tab:per-sample-results-baseline},~\ref{tab:per-sample-results-llmrag
 and~\ref{tab:results-summary}. Throughout this section, “valid classification” denotes predictions
 excluding abstentions.
 
-\subsection*{Accuracy and Robustness}
+\subsection{Accuracy and Robustness}
 The results show a clear, though not absolute, advantage for the \textbf{LLM+RAG} pipeline. Out of
 20 total samples, the \textbf{Baseline} produced 20 classifications, 2 of which were correct
 (10.0\%, Wilson 95\% CI: 2.8--30.1). In comparison, the \textbf{LLM+RAG} pipeline produced 18
@@ -618,7 +622,7 @@ Per-tag, improvements were concentrated in \textbf{trojan} and \textbf{ransomwar
 \textbf{rootkit} showed mixed outcomes but consistently grounded rationales. \textbf{Botnet} had
 the two abstentions, reflecting stricter guardrails where retrieval was insufficient.
 
-\subsection*{Efficiency}
+\subsection{Efficiency}
 With respect to latency, the \textbf{Baseline} averaged 90.8 seconds per sample, while
 \textbf{LLM+RAG} averaged 97.1 seconds. The small increase reflects the added overhead of embedding
 generation, retrieval, and model inference. Prior work on \gls{rag}-enhanced architectures reports
@@ -630,7 +634,7 @@ As discussed in Section~\ref{sec:Limitations}, this interpretation is limited to
 and does not account for monetary cost from token usage in the \gls{openai} API for \gls{gpt4o}
 queries.
 
-\subsection*{Interpretability and Transparency}
+\subsection{Interpretability and Transparency}
 Interpretability emerged as the most significant point of divergence. Both pipelines achieved
 complete explanation coverage, yet the content and quality of those explanations varied. The
 \textbf{Baseline} relied on heuristic rules, with only 48.7\% of triggered rules being consistent
@@ -645,7 +649,7 @@ Example: for one \textbf{trojan} sample, \textbf{LLM+RAG} cited API-hooking beha
 command-and-control routine from two retrieved reports to justify a trojan/backdoor tag, whereas
 the \textbf{Baseline} triggered a generic ``packed'' rule inconsistent with the final category.
 
-\subsection*{Composite Outcomes and Implications}
+\subsection{Composite Outcomes and Implications}
 The composite scores, derived from equal weights across accuracy, efficiency, and interpretability,
 allow for benchmarking of the two approaches. The \textbf{Baseline} achieved 0.28, whereas
 \textbf{LLM+RAG} reached 0.43. This was driven by improvements in accuracy and transparency, which
@@ -654,50 +658,11 @@ expected, given the state-of-the-art capabilities of \glspl{llm} in reasoning ov
 evidence~\cite{nourmohammadzadeh2024llmsurvey, ferrag2024allinsights}.
 
 However, the relatively low absolute accuracy across both pipelines was more surprising. This may
-be attributed to a few factors:
-\begin{itemize}
-      \item Small sample size
-      \item Obfuscated and/or encrypted payloads
-      \item Limited data on the \gls{rag} datastore
-      \item More descriptive prompts and context for the LLM models
-      \item Lack of meaningful static rules or their incorrect scores and thresholds
-      \item Challenges in normalising vendor taxonomies into canonical categories~\cite{gaber2024malware}.
-\end{itemize}
+be attributed to a few factors discussed on a later section (see Section~\ref{sec:Limitations}).
 
 Nonetheless, the experiments confirm that integrating retrieval and \gls{llm}-driven reasoning into
 static analysis provides measurable advantages in classification reliability, interpretability, and
 adaptability.
-
-\section{Implications of the Study}\label{sec:Implications}
-% Reflect on the practical and academic significance of your research.
-% Discuss how your system design and findings may:
-%   - Influence future tools for static malware analysis
-%   - Support security teams through explainable classification
-%   - Extend to other cybersecurity domains (e.g., phishing, vulnerability triage)
-% Consider both short-term and long-term implications for real-world use.
-TODO\ldots
-
-\section{Limitations}\label{sec:Limitations}
-% Clearly state the limitations of your system and experiments.
-% Address issues such as:
-%   - Limited sample diversity or dataset size
-%   - Scope limited to static analysis, excluding behavioural/dynamic data
-%   - Heuristic rules being brittle or oversimplified
-%   - Dependence on third-party APIs (e.g., OpenAI, VirusTotal)
-%   - No adversarial robustness or user-study evaluation
-%   - No cost information and analysis have been made
-% Be transparent and balanced — link limitations to specific design choices where applicable.
-TODO\ldots
-
-\section{Recommendations for Future Research}\label{sec:FutureWork}
-% Based on your experience and findings, propose:
-%   - Future exploration of hybrid pipelines (static + dynamic)
-%   - Inclusion of larger, labelled datasets
-%   - Alternative LLMs or fine-tuned models for specific tasks
-%   - Improvements in retrieval quality (e.g., better chunking, embeddings)
-%   - Real-world evaluation or deployment (e.g., SOC integration, red-team use)
-% Ensure recommendations are feasible and rooted in what you observed during implementation.
-TODO\ldots
 
 \section{Conclusion}\label{sec:ChapterConclusion}
 % Recap the chapter by:
@@ -705,4 +670,26 @@ TODO\ldots
 %   - Highlighting how your work addresses the research objectives
 %   - Providing a closing reflection on the value of combining LLMs and RAG for static malware analysis
 %   - Transitioning into the final conclusion chapter
-TODO\ldots
+This chapter detailed the design and implementation of a modular system for static malware analysis
+and a head-to-head evaluation between a deterministic \textbf{Baseline} and an evidence-grounded
+\textbf{LLM+RAG} pipeline. The ingestion stack, retrieval store, orchestration components, and
+guardrails were outlined, and a fixed Windows \gls{pe} cohort of 20 samples across four tags was
+evaluated.
+
+Empirically, \textbf{LLM+RAG} increased category accuracy from \textbf{10.0\%} (2/20) to
+\textbf{27.8\%} (5/18) with \textbf{2} abstentions, with only a modest latency change
+(\textbf{90.8\,s} to \textbf{97.1\,s}). Explanation coverage reached \textbf{100\%} for both
+pipelines; grounding (\(\geq 2\) citations) reached \textbf{100\%} for \textbf{LLM+RAG}, yielding a
+higher composite score (\textbf{0.43} vs \textbf{0.28}). These results support the use of retrieval
+to contextualise static features and to produce transparent, auditable decisions.
+
+Limitations include the small, static-only cohort; tag-based ground truth; corpus coverage; and
+provider variability. Counting abstentions as errors, \textbf{LLM+RAG} attains \textbf{25.0\%}
+(5/20) compared with \textbf{10.0\%} for the \textbf{Baseline}. Operational costs beyond execution
+time were not analysed. Despite these constraints, the findings indicate that \gls{llm}+\gls{rag}
+is a viable and more interpretable alternative to heuristic-only baselines, and a practical aid for
+triage.
+
+The next chapter concludes the thesis by synthesising contributions, reflecting on limitations, and
+outlining future work: scaling labelled datasets, hybrid static+dynamic pipelines, improved
+retrieval and model/guardrail tuning, and deployment-oriented evaluations.
