@@ -362,7 +362,7 @@ in the guide~\cite{rexisBaselinePipeline}
 % - Uses same features as baseline up to preprocessing.
 % - **Semantic query** creation via Haystack.
 % - **Contextual document retrieval** from pgvector vector store.
-% - **Prompt construction** via template builder + compliance filter.
+% - **Prompt construction** via template builder + guardrails filter.
 % - **Inference** using OpenAI's GPT-4 API.
 % - Justification for not fine-tuning (focus on zero-shot generalization and reproducibility).
 % - Output handling and logging.
@@ -836,7 +836,7 @@ infrastructure:
 
 \begin{itemize}
       \item \textbf{Version-Controlled Codebase}: All pipeline code, configuration files,
-            and documentation are maintained in a public GitHub repository.\footnote{\url{https://github.com/andremmfaria/rexis}}
+            and documentation are maintained in a public GitHub repository~\cite{rexisRepo}.
 
       \item \textbf{Containerized Environment}: All software dependencies are managed via
             \texttt{\gls{pdm}}, deployed in Docker-based containers or are installed in isolated directories.

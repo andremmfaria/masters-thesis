@@ -28,8 +28,7 @@ containerized services, with an emphasis on modularity, reproducibility, and tra
 All experiments were executed on Ubuntu 24.04
 LTS.\footnote{\url{https://releases.ubuntu.com/24.04/}} All development was carried out in
 \gls{python}, with dependencies managed via isolated environments to ensure deterministic builds. A
-step-by-step guide to the setup and configuration can be found in the project
-repository.\footnote{\url{https://github.com/andremmfaria/rexis}}
+step-by-step guide to the setup and configuration can be found in the project repository~\cite{rexisRepo}.
 
 The main tools and frameworks are:
 
@@ -73,7 +72,7 @@ The main tools and frameworks are:
             a benchmark for evaluation~\cite{rexisReconciliationGuide}.\footnote{\url{https://developers.virustotal.com/reference}}
 
       \item \textbf{\gls{vx-underground} and \gls{malpedia}} --~Additional data sources used to populate
-            the retrieval corpus with threat intelligence reports, APT writeups, and malware family descriptions.
+            the retrieval corpus with threat intelligence reports, APT writeups, and malware family and category descriptions.
             These documents strengthen contextual grounding in the \gls{rag} pipeline by supplying semantically
             rich background evidence.\footnote{\url{https://vx-underground.org}}\footnote{\url{https://malpedia.caad.fkie.fraunhofer.de}}
 \end{itemize}
@@ -104,7 +103,7 @@ logic. Documentation and usage examples for each pipeline are provided in dedica
 ingestion~\cite{rexisIngestionPipeline}, baseline~\cite{rexisBaselinePipeline}, and
 LLM+RAG~\cite{rexisLLMRagPipeline}.
 
-The code project can be found at \url{https://github.com/andremmfaria/rexis}.
+The code project can be found on the GitHub repository~\cite{rexisRepo}.
 
 \subsection{Common Modules}\label{subsec:CommonModules}
 The following components are shared across all pipelines:
@@ -171,7 +170,7 @@ classification strategy:
             features. For example, suspicious imports or anomalous entropy can trigger alerts.
 
       \item \textbf{VirusTotal Enricher:} Queries the \gls{virustotal} API for
-            detections, tags, and metadata. Results are normalized to canonical family labels
+            detections, tags, and metadata. Results are normalized to canonical category labels
             via a tag-mapping layer.
 
       \item \textbf{Decision Engine:} Reconciles heuristic outputs with VirusTotal
@@ -196,7 +195,7 @@ prompts for inference via GPT-4o:
             retrieved passages, and task instructions. Prompt schemas are fixed
             to ensure consistent outputs (see Section~\ref{sec:PromptEngineering}).
 
-      \item \textbf{Compliance Filter:} Sanitizes prompts by removing hex dumps,
+      \item \textbf{Guardrails Filter:} Sanitizes prompts by removing hex dumps,
             sensitive domains, or oversized content, reducing injection risks
             (see Section~\ref{sec:Guardrails}).
 
@@ -301,21 +300,46 @@ pdm run rexis analyse llmrag --input ./samples/trojan/decompressed \
 \end{verbatim}
 
 \subsection{Normalization and Alignment}\label{subsec:NormalizationAlignment}
-Outputs from both pipelines were aligned into a single comparison table with fields:
-\texttt{sha256, tag, baseline\_label, rag\_label, baseline\_time\_ms, rag\_time\_ms,
-      explanation\_present, citations\_count, abstained, retrieved\_ids[:k]}. This enables one-to-one
-comparisons across all samples.
+Outputs from both pipelines (baseline with and without \gls{vt} enrichment and LLM+RAG) were
+aligned into a single comparison table. This enables one-to-one comparisons across all samples.
+
+\vspace{0.5em}
+The comparison outputs are organized on a table and its columns are:
+\begin{itemize}
+      \item \texttt{sha256}: Sample's SHA-256 hash (unique identifier).
+      \item \texttt{truth\_category}: Ground-truth tag for the sample (trojan, ransomware, botnet,
+            rootkit).
+      \item \texttt{vt\_malicious}: Number of VirusTotal engines that flagged the sample as malicious.
+      \item \texttt{vt\_total}: Total number of VirusTotal engines that scanned the sample.
+      \item \texttt{baseline\_label}: Raw label produced by the baseline (heuristics-only) pipeline.
+      \item \texttt{baseline\_pred\_category}: Baseline label normalized to the evaluation categories
+            (trojan/ransomware/botnet/rootkit/\texttt{unknown\_category}).
+      \item \texttt{baseline\_duration\_sec}: Wall-clock runtime (seconds) for the baseline pipeline.
+      \item \texttt{baseline\_vt\_label}: Raw label from the baseline pipeline with VirusTotal enrichment.
+      \item \texttt{baseline\_vt\_pred\_category}: VT-enriched baseline label normalized to the
+            evaluation categories.
+      \item \texttt{baseline\_vt\_duration\_sec}: Wall-clock runtime (seconds) for the VT-enriched
+            baseline pipeline.
+      \item \texttt{llmrag\_label}: Raw label produced by the LLM+RAG pipeline.
+      \item \texttt{llmrag\_pred\_category}: LLM+RAG label normalized to the evaluation categories.
+      \item \texttt{llmrag\_duration\_sec}: Wall-clock runtime (seconds) for the LLM+RAG pipeline.
+      \item \texttt{explanation\_present\_baseline}: Whether the baseline output included an
+            explanation/rationale (boolean).
+      \item \texttt{explanation\_present\_llmrag}: Whether the LLM+RAG output included an
+            explanation/rationale (boolean).
+      \item \texttt{grounding\_ge2\_llmrag}: Whether the LLM+RAG output included at least two
+            citations to retrieved documents (evidence grounding; boolean).
+\end{itemize}
 
 \subsection{Data Ingestion for RAG Corpus}\label{subsec:RAGIngestionExec}
 The retrieval corpus was assembled per Chapter~\ref{sec:DataSources} and the ingestion
 guide~\cite{rexisIngestionPipeline}. Sources and windows: \textbf{VX-Underground APT writeups} (1st
-of Jan 2022 --- 1st of Aug 2025), \textbf{Malpedia} family articles (1st of Jan 2022 --- 1st of Aug
-2025), and \textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware,
-botnet, rootkit, \texttt{exe}). Only metadata and prose documents were indexed; binaries were
-excluded.
+of Jan 2022 --- 1st of Aug 2025), \textbf{Malpedia} articles (1st of Jan 2022 --- 1st of Aug 2025),
+and \textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware, botnet,
+rootkit, \texttt{exe}). Only metadata and prose documents were indexed; binaries were excluded.
 
 To automate this process and ensure consistent ingestion, a dedicated ingestion pipeline was
-implemented.
+implemented. The details on data source and ingestion are outlined on the next subsections.
 
 \subsubsection{VX-Underground APT Writeups sourcing and ingestion}\label{subsubsec:VXUIngestionExec}
 The APT writeups from VX-Underground were sourced using a browser workflow to collect PDF links and
@@ -417,37 +441,145 @@ enrichment) and LLM+RAG pipelines on the fixed 20-sample cohort (see
 Section~\ref{subsec:ExecutionProcedure}). We report accuracy, latency, and interpretability, and
 summarize abstentions and guardrail behavior. A quantitative overview is given in
 Table~\ref{tab:ResultsSummary}, with metric definitions and aggregation details in
-Section~\ref{subsec:Metrics}. Unless noted otherwise, values are reported per tag and overall, and
-\texttt{unknown\_family} reflects intentional abstention under the guardrails (cf.
+Section~\ref{subsec:ResultMetrics}. Unless noted otherwise, values are reported per tag and overall, and
+\texttt{unknown\_category} reflects intentional abstention under the guardrails (cf.
 Section~\ref{sec:Guardrails}).
 
-\subsection{Results comparison}\label{subsec:ResultsComparison}
-RAG improved accuracy and grounding relative to the baseline at a modest latency cost (fill values
-after computations). Abstentions reflect guardrail adherence. Per-tag detail appears below.
+\subsection{Aggregation tool}\label{subsec:AggregationTool}
+In order to facilitate the aggregation, a command was created on the project's CLI to streamline
+the process of collecting and normalizing results from different pipelines. This command automates
+the extraction of relevant metrics and their alignment with the canonical category labels and
+metrics. A guide on the command can be found in the project
+repository~\cite{rexisResultsAggregationGuide}.
 
-\begin{table}[h]
+Aggregation command:
+\begin{verbatim}
+pdm run rexis aggregate \
+      --baseline-dir "./analysis/baseline/baseline-analysis-*-run-*" \
+      --baseline-vt-dir "./analysis/baseline/baseline-analysis-*-run-vt-*" \
+      --llmrag-dir "./analysis/llmrag/llmrag-analysis-*-run-*" \
+      --out-dir ./analysis
+\end{verbatim}
+
+The result of this aggregation can be found in the project repository under the project
+repository~\cite{rexisResultsAggregationReport}.
+
+\subsection{Aggregation results}\label{subsec:AggregationResults}
+Results are aggregated per pipeline based on the common parameters between them. There are some
+gaps on the table as either the ground truth is missing or the model could not come up with a
+response. Those gaps will be addressed later on chapter \ref{sec:InterpretationOfFindings}.
+
+\vspace{0.5em}
+\noindent\textit{Note: In this experiment, the baseline pipeline with and without \gls{vt} data
+      enrichment produced identical outputs. Accordingly, these are merged into a single column for
+      reporting and aggregation. The full table with the results can be found in the project
+      repository as output of the aggregation command described on~\ref{subsec:AggregationTool}.}
+
+\begin{table}[htbp]
       \centering
-      \caption{Summary of baseline vs.\ RAG results across four tags (N=20 samples).}
-      \label{tab:ResultsSummary}
-      \begin{tabular}{lcccc}
-            \toprule
-            \textbf{Tag}     & \textbf{Accuracy (Baseline)} & \textbf{Accuracy (RAG)} & \textbf{Latency $\mu$ (ms)} & \textbf{Grounding (\%)} \\
-            \midrule
-            Trojan           & XX\%                         & XX\%                    & Baseline: YY / RAG: ZZ      & AA                      \\
-            Ransomware       & XX\%                         & XX\%                    & Baseline: YY / RAG: ZZ      & AA                      \\
-            Botnet           & XX\%                         & XX\%                    & Baseline: YY / RAG: ZZ      & AA                      \\
-            Rootkit          & XX\%                         & XX\%                    & Baseline: YY / RAG: ZZ      & AA                      \\
-            \midrule
-            \textbf{Overall} & XX\% [CI]                    & XX\% [CI]               & $\Delta$ = +ZZ ms           & BB                      \\
-            \bottomrule
+      \scriptsize
+      \caption{Per-sample Baseline results. sha256 shortened to 12-hex prefix. Durations in seconds.}
+      \label{tab:per-sample-results-baseline}
+      \begin{tabular}{l l l l r}
+            \hline
+            \texttt{sha256} (12) & \texttt{truth\_category} & \texttt{baseline\_label} & \texttt{baseline\_pred\_categories} & \texttt{baseline\_duration\_sec} \\
+            \hline
+            0efeb9b6ed57 & botnet     & benign   &                                  & 11.941 \\
+            10abf4518c37 & trojan     & abstain  & downloader,trojan                & 39.219 \\
+            1f7675ec795a & ransomware & abstain  & downloader                       & 36.131 \\
+            2141974f665f & rootkit    & abstain  & downloader,dropper,loader        & 273.317 \\
+            3215decffc40 & botnet     & abstain  &                                  & 15.464 \\
+            4369aed581de & ransomware & malicious& trojan                           & 596.644 \\
+            6182df9c60f9 & ransomware & abstain  &                                  & 9.847 \\
+            63d61549030f & rootkit    & abstain  & downloader,dropper,loader        & 26.050 \\
+            686bb5ee3717 & ransomware & abstain  & downloader,dropper,loader        & 39.292 \\
+            7240f644298f & trojan     & suspicious& downloader                      & 89.208 \\
+            7fe19185d338 & botnet     & abstain  &                                  & 12.719 \\
+            8695e342477f & ransomware & abstain  & downloader                       & 59.114 \\
+            8f88ef7c7283 & trojan     & benign   & downloader                       & 25.097 \\
+            a829694cec2f & rootkit    & suspicious& trojan                          & 329.335 \\
+            af469070fb16 & botnet     & abstain  &                                  & 33.474 \\
+            b1e3da936d66 & rootkit    & abstain  &                                  & 23.346 \\
+            b7bcb5ec0b22 & botnet     & abstain  &                                  & 33.492 \\
+            cb8e04654a46 & trojan     & abstain  & downloader                       & 39.675 \\
+            dcb7ce8cf51d & trojan     & abstain  & downloader,trojan                & 19.988 \\
+            f62ce3383afe & rootkit    & abstain  & downloader                       & 101.760 \\
+            \hline
       \end{tabular}
 \end{table}
 
-\subsection{Metrics}\label{subsec:Metrics}
-We report: (i) \textbf{Accuracy} with Wilson 95\% CI (overall and per-tag macro means), (ii)
-\textbf{Efficiency} as mean/median latency and $\Delta$ (ms and \%), (iii)
-\textbf{Interpretability} via explanation coverage and grounding (\% with $\geq 2$ citations), and
-(iv) \textbf{Guardrails} (\% \texttt{unknown\_family}, redactions, retrieval mix/quality).
+\begin{table}[htbp]
+      \centering
+      \scriptsize
+      \caption{Per-sample LLM+RAG results. sha256 shortened to 12-hex prefix. Durations in seconds.}
+      \label{tab:per-sample-results-llmrag}
+      \begin{tabular}{l l l l r}
+            \hline
+            \texttt{sha256} (12) & \texttt{truth\_category} & \texttt{llmrag\_label} & \texttt{llmrag\_pred\_categories} & \texttt{llmrag\_duration\_sec} \\
+            \hline
+            0efeb9b6ed57 & botnet     & unknown    &                           & 37.067 \\
+            10abf4518c37 & trojan     & malicious  & backdoor,trojan           & 64.216 \\
+            1f7675ec795a & ransomware & malicious  & backdoor,trojan           & 60.298 \\
+            2141974f665f & rootkit    & malicious  & trojan                    & 206.141 \\
+            3215decffc40 & botnet     & suspicious &                           & 38.846 \\
+            4369aed581de & ransomware & malicious  & backdoor,trojan           & 650.383 \\
+            6182df9c60f9 & ransomware & suspicious & dropper                   & 27.766 \\
+            63d61549030f & rootkit    & suspicious & downloader                & 28.794 \\
+            686bb5ee3717 & ransomware & suspicious & dropper                   & 52.869 \\
+            7240f644298f & trojan     & malicious  & trojan                    & 105.517 \\
+            7fe19185d338 & botnet     & unknown    &                           & 31.963 \\
+            8695e342477f & ransomware & malicious  & rat,stealer               & 75.306 \\
+            8f88ef7c7283 & trojan     & malicious  & backdoor,trojan           & 49.498 \\
+            a829694cec2f & rootkit    & malicious  & rat,stealer               & 171.449 \\
+            af469070fb16 & botnet     & malicious  & dropper,trojan            & 56.001 \\
+            b1e3da936d66 & rootkit    & suspicious & loader                    & 30.817 \\
+            b7bcb5ec0b22 & botnet     & malicious  & dropper,trojan            & 61.048 \\
+            cb8e04654a46 & trojan     & malicious  & backdoor,trojan           & 57.063 \\
+            dcb7ce8cf51d & trojan     & malicious  & backdoor,trojan           & 47.338 \\
+            f62ce3383afe & rootkit    & malicious  & backdoor,trojan           & 90.058 \\
+            \hline
+      \end{tabular}
+\end{table}
+
+\FloatBarrier
+
+\subsection{Result Metrics}\label{subsec:ResultMetrics}
+We aggregate the results across all tags to provide a comprehensive view of the pipeline
+performance. Definitions and formulas follow the Evaluation Framework (see
+Section~\ref{sec:EvaluationFramework}); aggregated values are summarized in
+Table~\ref{tab:results-summary}. Latency increases slightly with RAG, but the trade-off is
+justified by the improved accuracy and explanation quality. We report:
+\begin{itemize}
+      \item \textbf{Cohort size:} 20 samples (joined by \texttt{sha256}).
+      \item \textbf{Accuracy} with Wilson 95\% CI (overall and per-tag macro means) skipping \texttt{unknown} predictions.
+      \item \textbf{Efficiency} as mean/median latency and $\Delta$ (ms and \%).
+      \item \textbf{Interpretability} via explanation coverage and grounding (\% with $\geq 2$ citations).
+            \begin{itemize}
+                  \item Coverage (all pipelines).
+                  \item Grounding $\geq$ 2 citations (LLM+RAG).
+                  \item RuleMatch ratio (baseline).
+            \end{itemize}
+      \item \textbf{Guardrails.} Abstentions (LLM+RAG label=\texttt{unknown}) = 2
+      \item \textbf{Composite Score} combining accuracy, efficiency, and interpretability (0–1 scale; see \ref{sec:EvaluationFramework}).
+\end{itemize}
+
+\begin{table}[h!]
+      \centering
+      \caption{Evaluation of Baseline and LLM+RAG pipelines across accuracy, efficiency, interpretability, and composite score. Accuracy uses category accuracy skipping \texttt{unknown} predictions; values include Wilson 95\% confidence intervals.}
+      \label{tab:results-summary}
+      \begin{tabular}{lcc}
+            \hline
+            \textbf{Metric}      & \textbf{Baseline}            & \textbf{LLM+RAG}              \\
+            \hline
+            Accuracy             & 15.4\% (2/13, CI: 4.3–42.2)  & 29.4\% (5/17, CI: 13.3–53.1)  \\
+            Efficiency (s)       & 90.756                       & 97.122                        \\
+            Explanation Coverage & 100.0\%                      & 100.0\%                       \\
+            Contextual Grounding & ---                          & 100.0\%                       \\
+            RuleMatch Ratio      & 0.252                        & ---                           \\
+            Composite Score      & 0.2636                       & 0.4348                        \\
+            \hline
+      \end{tabular}
+\end{table}
 
 \subsection{Results summary}\label{subsec:ResultsSummary}
 % Summarize the main results obtained from both the baseline and the LLM+RAG pipelines.
