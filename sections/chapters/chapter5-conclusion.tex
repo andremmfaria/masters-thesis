@@ -22,10 +22,10 @@ understanding in static workflows, weak interpretability in ML-based detectors, 
 evaluations that combine \gls{rag} with \glspl{llm} for malware tasks. To address these, an
 experimental, dual-pipeline system (Ch.~\ref{Chapter3}) is implemented: a deterministic baseline
 that fuses \gls{ghidra}-derived heuristics with optional \gls{virustotal} tags, and an \gls{llm}
-+\gls{rag} pipeline that grounds model reasoning on a curated corpus (VX-Underground APT writeups,
-Malpedia documentation, and MalwareBazaar metadata). The \gls{rag} pipeline relied on structured
-prompt engineering, guardrails (redaction, evidence thresholding, abstention), and traceable
-logging.
++\gls{rag} pipeline that grounds model reasoning on a curated corpus (\gls{vx-underground} APT
+writeups, \gls{malpedia} documentation, and \gls{malwarebazaar} metadata). The \gls{rag} pipeline
+relied on structured prompt engineering, guardrails (redaction, evidence thresholding, abstention),
+and traceable logging.
 
 Implementation and evaluation (Ch.~\ref{Chapter4}) used 20 Windows \gls{pe} samples across four
 categories. Results showed that \textbf{LLM+RAG} improved category accuracy from 10.0\% (2/20) to
@@ -83,12 +83,13 @@ systematically contrasts a deterministic baseline against a retrieval-grounded \
 The baseline fuses \gls{ghidra}-derived heuristics with optional \gls{virustotal} reconciliation,
 providing a transparent reference for comparison. The \gls{llm}+\gls{rag} pipeline integrates
 \gls{haystack} over \gls{postgresql}+\gls{pgvector} with \gls{gpt4o} in inference-only mode and a
-curated corpus drawn from VX-Underground APT writeups, Malpedia documentation, and MalwareBazaar
-metadata. Both pipelines share a unified output schema, structured logging, and prompt versioning
-(hashing), exposed via a \texttt{Typer}-based CLI for end-to-end repeatability. An ingestion
-pipeline contributes a defensible recipe for building a safe retrieval store for malware analysis:
-documents are normalised, chunked, embedded (OpenAI \texttt{text-embedding-3-small}), and stored
-with provenance metadata and time windows, enabling auditable retrieval.
+curated corpus drawn from \gls{vx-underground} APT writeups, \gls{malpedia} documentation, and
+\gls{malwarebazaar} metadata. Both pipelines share a unified output schema, structured logging, and
+prompt versioning (hashing), exposed via a \texttt{Typer}-based CLI for end-to-end repeatability.
+An ingestion pipeline contributes a defensible recipe for building a safe retrieval store for
+malware analysis: documents are normalised, chunked, embedded (OpenAI
+\texttt{text-embedding-3-small}), and stored with provenance metadata and time windows, enabling
+auditable retrieval.
 
 The work introduces a guardrailed prompting design tailored to static triage: name redaction to
 mitigate anchoring, re-ranking by technical signals, a two-stage ``blind hypothesis then evidence
@@ -188,19 +189,21 @@ limitations remain. The cohort was small (\textbf{n=20}; five per tag) and limit
 behavioural/dynamic features). The \textbf{Baseline} used brittle heuristics with under-calibrated
 thresholds and likely underestimates stronger traditional baselines.
 
-Ground truth followed cohort selection via a helper script against the \gls{malwarebazaar} \gls{api},
-recording acquisition tags as a proxy for consensus~\cite{rexisSamplesExtractorScript}. This
-carries vendor noise and ambiguity in canonical category mapping~\cite{gaber2024malware}. Accuracy
-was computed \textit{excluding} abstentions; as a sensitivity check, counting abstentions as errors
-would reduce \textbf{LLM+RAG} to \textbf{25.0\%} (5/20) vs \textbf{Baseline} \textbf{10.0\%}
-(2/20). Composite scoring used equal weights; different weightings could change the ranking.
+Ground truth followed cohort selection via a helper script against the \gls{malwarebazaar}
+\gls{api}, recording acquisition tags as a proxy for consensus~\cite{rexisSamplesExtractorScript}.
+This carries vendor noise and ambiguity in canonical category mapping~\cite{gaber2024malware}.
+Accuracy was computed \textit{excluding} abstentions; as a sensitivity check, counting abstentions
+as errors would reduce \textbf{LLM+RAG} to \textbf{25.0\%} (5/20) vs \textbf{Baseline}
+\textbf{10.0\%} (2/20). Composite scoring used equal weights; different weightings could change the
+ranking.
 
-Retrieval quality depended on a corpus from VX-Underground, Malpedia, and MalwareBazaar for
-Jan\,2022--Aug\,2025 (Section~\ref{subsec:RAGIngestionExec}), which may miss relevant threats;
-private or region-specific sources were not included, and drift/re-ingestion effects were not
-studied. Prompts and guardrails were intentionally simple (Section~\ref{sec:PromptEngineering}); no
-hyperparameter or guardrail sensitivity was run. Provider-side variability and nondeterminism
-remain despite fixed pipeline settings (Section~\ref{sec:ExperimentalSteps}).
+Retrieval quality depended on a corpus from \gls{vx-underground}, \gls{malpedia}, and
+\gls{malwarebazaar} for Jan\,2022--Aug\,2025 (Section~\ref{subsec:RAGIngestionExec}), which may
+miss relevant threats; private or region-specific sources were not included, and drift/re-ingestion
+effects were not studied. Prompts and guardrails were intentionally simple
+(Section~\ref{sec:PromptEngineering}); no hyperparameter or guardrail sensitivity was run.
+Provider-side variability and nondeterminism remain despite fixed pipeline settings
+(Section~\ref{sec:ExperimentalSteps}).
 
 Operationally, the system depends on third-party APIs (\gls{malwarebazaar}, \gls{vt}, \gls{openai})
 with implications for cost, rate limits, and data handling. Token usage for \gls{gpt4o} was not
@@ -270,7 +273,7 @@ dual-pipeline prototype with guardrails (Ch.~\ref{Chapter3}), and validated thro
 evaluation (Ch.~\ref{Chapter4}). It is not a replacement for established tools; rather, it is a
 context synthesiser that elevates interpretability and supports trustworthy decisions. The
 prototype, guardrails, and evaluation framework provide a pragmatic blueprint for researchers and
-practitioners to iterate, harden, and scale similar systems. While challenges remain—scope,
-robustness, and cost—the path forward is clear: combine reliable feature extraction with grounded
+practitioners to iterate, harden, and scale similar systems. While challenges remain (scope,
+robustness, and cost), the path forward is clear: combine reliable feature extraction with grounded
 language understanding, and hold models accountable to evidence. In doing so, the community moves
 closer to explainable, auditable, and effective AI support for cybersecurity operations.

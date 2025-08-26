@@ -21,8 +21,8 @@ extracted from static data~\cite{cassanova2022systematic, gaber2024malware}. Des
 improvements in detection rates, many of these models require extensive feature engineering,
 struggle with generalization, and lack transparency regarding decision-making processes.
 
-Recently, the emergence of large-scale language models such as GPT-4 has opened new avenues for
-augmenting static malware analysis. Fujii and Yamagishi~\cite{fujii2024llm} demonstrated that
+Recently, the emergence of large-scale language models such as \gls{gpt4o} has opened new avenues
+for augmenting static malware analysis. Fujii and Yamagishi~\cite{fujii2024llm} demonstrated that
 \gls{LLMs} can explain decompiled functions in plain language and provide analysts with faster
 contextual insights, particularly when guided with structured prompts or roles. These findings
 support the use of Model-Centric Prompting (MCP) as a methodology for optimizing prompt engineering
@@ -328,16 +328,14 @@ The reviewed literature illustrates steady progress in static malware analysis a
 \gls{ai} in cybersecurity. However, several significant gaps persist—both technical and
 methodological—that motivate this research.
 
-\subsection{Lack of Integration Between RAG and Malware Analysis}
-
+\subsection{Lack of Integration Between RAG and Malware Analysis}\label{subsec:LiteratureGaps-RAGIntegration}
 While \gls{rag} has demonstrated success in natural language tasks such as question answering and
 summarization~\cite{lewis2020retrieval, gao2023retrieval}, its application in malware
 analysis—particularly static workflows—remains largely unexplored. No current work bridges
 \gls{llm}-driven reasoning with contextual retrieval of prior malware samples, reports, or IoC
 patterns, despite its strong theoretical fit.
 
-\subsection{LLM Use Is Largely Exploratory and Unbenchmarked}
-
+\subsection{LLM Use Is Largely Exploratory and Unbenchmarked}\label{subsec:LiteratureGaps-LLMBenchmarking}
 \gls{llm}-based research in static analysis is still in its infancy. Studies
 like Fujii and Yamagishi~\cite{fujii2024llm} provide qualitative results
 demonstrating feasibility, but there is a lack of standardized benchmarks,
@@ -346,23 +344,20 @@ YARA or \gls{ml} classifiers. The Generative \gls{ai} in Cybersecurity
 report~\cite{metta2024generativeai} also notes the scarcity of domain-specific
 evaluation methods that account for explainability and analyst trust.
 
-\subsection{Explainability, Auditability, and Analyst Trust Are Underserved}
-
+\subsection{Explainability, Auditability, and Analyst Trust Are Underserved}\label{subsec:LiteratureGaps-ExplainabilityTrust}
 Interpretability is essential for analysts making high-stakes security
 decisions~\cite{wong2021practice}. However, most \gls{ai}-driven malware analysis models—including
 \glspl{llm}—fail to provide transparent reasoning or traceable justifications. This issue is
 compounded by hallucinations and black-box behaviors, limiting practical
 adoption~\cite{metta2024generativeai, sahoo2024systematic}.
 
-\subsection{Underutilization of Prompt Engineering and Interaction Protocols}
-
+\subsection{Underutilization of Prompt Engineering and Interaction Protocols}\label{subsec:LiteratureGaps-PromptEngineering}
 Effective use of \gls{LLMs} requires structured prompt design. Yet, most cybersecurity applications
 ignore prompt engineering methodologies like MCP, which are shown to improve output reliability and
 task alignment~\cite{sahoo2024systematic}. A lack of formalized interaction strategies hinders
 reproducibility and evaluation.
 
-\subsection{Emerging Security Risks in AI-Augmented Pipelines}
-
+\subsection{Emerging Security Risks in AI-Augmented Pipelines}\label{subsec:LiteratureGaps-SecurityRisks}
 As outlined by Zou \emph{et al.}~\cite{zou2024poisonedrag} and echoed in the generative \gls{ai}
 security report~\cite{metta2024generativeai}, \gls{rag}-based and \gls{llm}-powered systems face
 risks such as data poisoning, prompt injection, and misinformation amplification. None of the

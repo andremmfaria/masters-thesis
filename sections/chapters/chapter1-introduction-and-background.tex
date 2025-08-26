@@ -31,16 +31,15 @@ implementation and reports results.
 % Define static malware analysis — Describe it as the process of examining a file's structure, code, or metadata without executing it, using techniques like disassembly, string analysis, and header inspection.
 % Highlight its importance — Explain why static analysis is critical: it's safer than dynamic analysis, allows early detection, and can be automated for large-scale scanning (e.g., in antivirus engines or intrusion detection systems).
 % Mention its limitations — Bring up common challenges like obfuscation, polymorphism, and difficulty in interpreting results without human expertise.
-These software artefacts created by malicious actors are called \gls{malware}. Static malware
-analysis focuses specifically on techniques that decompose, or \gls{decompile}, target
-\gls{malware} down to its most basic bytecode
-elements~\cite{fedak2020fundamentals,anderson2018ember}. These are then scrutinized to uncover
-malicious intent. This method of inspecting a program's structure, instructions, and information
-without actually running it, is one of the most popular and dependable techniques in the
-cybersecurity toolbox. It is essential in settings where safety, speed, and scalability are
-critical since it eliminates the possibility of running potentially dangerous code. It is a
-cornerstone in early malware identification and categorisation, due to its automation capabilities
-(i.e., antivirus engines or intrusion detection systems).
+Software artefacts created by malicious actors are called \gls{malware}. Static malware analysis
+focuses specifically on techniques that decompose, or \gls{decompile}, target \gls{malware} down to
+its most basic bytecode elements~\cite{fedak2020fundamentals,anderson2018ember}. These are then
+scrutinized to uncover malicious intent. This method of inspecting a program's structure,
+instructions, and information without actually running it, is one of the most popular and
+dependable techniques in the cybersecurity toolbox. It is essential in settings where safety,
+speed, and scalability are critical since it eliminates the possibility of running potentially
+dangerous code. It is a cornerstone in early malware identification and categorisation, due to its
+automation capabilities (i.e., antivirus engines or intrusion detection systems).
 
 However, as threat actors evolve their tactics and adopt increasingly sophisticated evasion
 techniques, static analysis has begun to show its limitations. Many contemporary malware variants
@@ -287,7 +286,7 @@ The thesis is guided by the following questions:
 %     Retrieve contextual info through RAG to assist malware classification.
 % Mention evaluation metrics (accuracy, interpretability, efficiency).
 % Limitations or scope (e.g., no dynamic analysis, no expert consultation).
-This study adopts a static-analysis-first pipeline that operates without executing
+This study adopts a static-analysis-first workflow that operates without executing
 samples~\cite{fedak2020fundamentals}. The approach extracts discriminative static features,
 including file headers and metadata (e.g., \gls{pe} identifiers), control-flow motifs, imported
 \glspl{api}/libraries and syscall surfaces, as well as string-derived indicators such as URLs,
@@ -301,10 +300,10 @@ the option to abstain when evidence is insufficient. No execution occurs.
 To enhance grounding and reduce unsubstantiated inferences, the classifier is augmented with
 retrieval~\cite{lewis2020retrieval,gao2023retrieval}. A curated retrieval corpus is constructed
 from operating system and \gls{api} documentation, malware encyclopedias (e.g.,
-Malpedia)~\cite{plohmann2017malpedia}, vendor write-ups, and relevant research summaries, indexed
-with dense embeddings for semantic search. Queries are derived from extracted static features and
-preliminary hypotheses; top-$k$ passages are injected into the prompt, enabling \gls{rag} to
-support claims with citations and to prefer abstentions when retrieved evidence
+\gls{malpedia})~\cite{plohmann2017malpedia}, vendor write-ups, and relevant research summaries,
+indexed with dense embeddings for semantic search. Queries are derived from extracted static
+features and preliminary hypotheses; top-$k$ passages are injected into the prompt, enabling
+\gls{rag} to support claims with citations and to prefer abstentions when retrieved evidence
 conflicts~\cite{bechard2024reducing,zhang2025hallucination}. Lightweight guardrails enforce a
 constrained label set, schema compliance, and safe outputs~\cite{han2025guardrail}, while simple
 heuristics (e.g., section entropy or import anomalies) inform retrieval and prompt routing.
@@ -312,7 +311,7 @@ heuristics (e.g., section entropy or import anomalies) inform retrieval and prom
 Evaluation follows across accuracy, efficiency, and interpretability. Accuracy is computed as the
 proportion of correct labels against a ground truth established via vendor (\gls{malwarebazaar})
 consensus~\cite{gaber2024malware,wong2021practice}. Efficiency is reported as mean end-to-end
-latency per sample, decomposed by stage for the \gls{llm}+\gls{rag} pipeline (embedding, retrieval,
+latency per sample, decomposed by stage for the \gls{llm}+\gls{rag} workflow (embedding, retrieval,
 prompt assembly, inference) and the baseline (decompilation/feature extraction, rule evaluation,
 external \gls{api} enrichment). Interpretability is measured via three sub-metrics: Explanation
 Coverage, Contextual Grounding (presence of at least one citation), and Rule–Reference Matching for
@@ -343,8 +342,8 @@ rule–reference matching), aggregated through a configurable composite
 score~\cite{sahoo2024systematic,wong2021practice,fujii2024llm,nourmohammadzadeh2024llmsurvey}.
 
 The research also contributes a documented corpus construction and ingestion pipeline for retrieval
-grounding across VX-Underground APT write-ups, Malpedia documentation, and MalwareBazaar metadata,
-including normalisation, chunking, embeddings, and provenance
+grounding across \gls{vx-underground} APT write-ups, \gls{malpedia} documentation, and
+\gls{malwarebazaar} metadata, including normalisation, chunking, embeddings, and provenance
 tagging~\cite{rexisIngestionPipeline,plohmann2017malpedia}. It highlights risks such as taxonomy
 noise and retrieval poisoning, and encodes mitigations through source curation, sanitisation,
 abstention policies, and auditability, offering practical guidance for deploying \gls{rag}-enabled

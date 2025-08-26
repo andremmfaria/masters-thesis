@@ -23,8 +23,8 @@ remain central to \gls{malware} triage.
 
 Using \glspl{rag} introduces new risks. As Zou \emph{et al.}~\cite{zou2024poisonedrag} note,
 retrieval pipelines can be poisoned or manipulated, leading to distorted outputs. To address this,
-the data for the corpus comes from a selection of trusted sources, including VX-Underground APT
-reports, MalwareBazaar submissions, and Malpedia documentation.
+the data for the corpus comes from a selection of trusted sources, including \gls{vx-underground}
+APT reports, \gls{malwarebazaar} submissions, and \gls{malpedia} documentation.
 
 \section{Research Design}\label{sec:ResearchDesign}
 % Describe the nature of your research: exploratory, experimental, comparative.
@@ -58,8 +58,8 @@ prompts.
 
 Because retrieval systems can be manipulated, the risks of hallucination or poisoning identified by
 Zou \emph{et al.}~\cite{zou2024poisonedrag} are addressed by strict control over data provenance:
-only curated, high-quality sources (VX-Underground, MalwareBazaar, and Malpedia) are ingested into
-the datastore. All outputs are logged for traceability and later comparison.
+only curated, high-quality sources (\gls{vx-underground}, \gls{malwarebazaar}, and \gls{malpedia})
+are ingested into the datastore. All outputs are logged for traceability and later comparison.
 
 \subsection{Experimental Workflow}\label{subsec:ExperimentalWorkflow}
 Each sample is processed through both pipelines in parallel to produce outputs under identical
@@ -108,7 +108,7 @@ The workflow for each sample is as follows:
 % Provide a high-level description of your system pipeline.
 % Include a diagram (later) showing flow: malware sample → static feature extraction → retrieval → prompt generation → LLM response.
 % List major system components and their interactions.
-The system ingests and analyzes \glspl{malware} samples through a modular pipeline that allows
+The system ingests and analyzes \gls{malware} samples through a modular pipeline that allows
 reproducibility, parallel execution of different analysis methods, and detailed logging. As shown
 in Figure~\ref{fig:system_architecture}, the architecture is built around two pipelines that run
 side by side: a baseline classifier using static heuristics and \gls{vt} metadata, and an
@@ -118,7 +118,7 @@ same input sample and output a classification with supporting metadata.
 \begin{figure}[htbp]
       \centering
       \includegraphics[width=0.85\textwidth]{system-architecture.png}
-      \caption{System Architecture Pipeline}\label{fig:system_architecture}
+      \caption{System architecture showing baseline and LLM+RAG pipelines}\label{fig:system_architecture}
 \end{figure}
 
 \FloatBarrier
@@ -180,7 +180,7 @@ These logs provide the basis for reproducibility and comparative evaluation (Sec
 \section{Data Sources}\label{sec:DataSources}
 % Describe where you obtain your malware samples and intelligence documents.
 % Malware sources:
-%   - MalwareBazaar for static binaries and metadata.
+%   - \gls{malwarebazaar} for static binaries and metadata.
 %   - VirusTotal (optional, via \gls{api}) for reports and behavior data.
 %     Detail any preprocessing steps: parsing PE headers, extracting bytecode,
 %     \gls{api} call strings, etc.
@@ -226,13 +226,13 @@ different levels of malware knowledge. Three main categories of data were includ
             was collected through the project guides on the code repository~\cite{rexisDataSourcingVXU,rexisIngestVXU}.
 
       \item \textbf{Malpedia Documentation}\cite{plohmann2017malpedia}: Family-level articles and
-            technical descriptions were retrieved from Malpedia between 1st of Jan 2022 and 1st of August 2025.
+            technical descriptions were retrieved from \gls{malpedia} between 1st of Jan 2022 and 1st of August 2025.
             These documents include IOCs, YARA rules, and summaries of static and behavioral
             traits. Some articles could not be included due to scraping failures, caused by
             protected pages, removed content, timeouts, or server errors (e.g., HTTP 503). Collection
             details are provided in the project guide~\cite{rexisDataSourcingMalpedia}.
 
-      \item \textbf{MalwareBazaar Metadata}: Metadata records were retrieved through the
+      \item \textbf{\gls{malwarebazaar} Metadata}: Metadata records were retrieved through the
             \gls{malwarebazaar} \gls{api} using batch queries. Tags such as \textbf{Trojan},
             \textbf{Ransomware}, \textbf{Botnet}, \textbf{Rootkit} (common malware types), and
             \textbf{exe} (\gls{pe} file type) were selected to align with the focus of this study on
@@ -421,7 +421,7 @@ Prompt construction is handled programmatically to ensure consistency across all
 content such as raw hex dumps, shellcode, or very large decompiled blocks is filtered out to
 mitigate prompt injection risks and to remain within token limits. Each generated prompt is logged
 with metadata including query ID, sample hash, document IDs, and token length, ensuring reproducible
-execution. For more information see section \ref{subsec:PromptEngineering}.
+execution. For more information see section \ref{sec:PromptEngineering}.
 
 \vspace{0.5em}
 \noindent\textbf{LLM Inference and Response Handling:}
@@ -444,7 +444,7 @@ capturing additional context. Each classification record includes:
       \item \textbf{Sample identifiers:} SHA256 hash and timestamp of analysis
       \item \textbf{Predicted category label:} Canonicalized malware category or “unknown” if undecided
       \item \textbf{Supporting rationale:} Textual explanation generated by the LLM
-      \item \textbf{Retrieved evidence:} List of document IDs, titles, source type (e.g., Malpedia, VX-U),
+      \item \textbf{Retrieved evidence:} List of document IDs, titles, source type (e.g., \gls{malpedia}, \gls{vx-underground}),
             and similarity scores
       \item \textbf{Model metadata:} Model name, \gls{api} endpoint, token usage, and temperature setting
       \item \textbf{Performance metrics:} Latency measurements for embedding, retrieval, and inference
@@ -461,7 +461,7 @@ prompt structure can be found in the guide~\cite{rexisLLMRagPipeline}.
 
 \subsection{RAG Ingestion Pipeline}\label{subsec:RAGIngestionPipeline}
 % Describes how the vector database is constructed:
-% - Input data sources (VX-Underground, Malpedia, MalwareBazaar).
+% - Input data sources (VX-Underground, Malpedia, \gls{malwarebazaar}).
 % - Cleaning and normalization.
 % - Chunking strategy.
 % - Embedding model (e.g., OpenAI's `text-embedding-3-small`).
@@ -483,12 +483,12 @@ rather than generating unsupported inferences.
       \item \textbf{Malpedia Documentation} --~Behavioral descriptions and malware family
             summaries, retrieved through \gls{malpedia}’s \gls{api} endpoints (e.g., references,
             bibliographies). These provide canonical mappings of families and actors.
-      \item \textbf{MalwareBazaar Metadata} --~Sample metadata, hashes, and tagging, retrieved
+      \item \textbf{\gls{malwarebazaar} Metadata} --~Sample metadata, hashes, and tagging, retrieved
             via \gls{api} and aligned with executable (e.g.\ \texttt{exe}) samples to match the scope of
             this project’s \gls{pe}-focused analysis.
 \end{itemize}
-Data from all sources is collected in their original formats (\gls{malpedia}'s
-JSON, VX-Undergrounds's PDFs, Malpedia's HTML or text, etc.), as described on~\ref{subsec:RAGCorpusConstruction}.
+Data from all sources is collected in their original formats (\gls{malwarebazaar}'s
+JSON, \gls{vx-underground}'s PDFs, \gls{malpedia}'s HTML or text, etc.), as described on~\ref{subsec:RAGCorpusConstruction}.
 
 \vspace{0.5em}
 \noindent\textbf{Preprocessing and Cleaning:} The ingestion pipeline applies
@@ -572,7 +572,7 @@ Prompts follow a modular template with two main components:
                         (e.g., \gls{api} imports, entropy values of sections, embedded strings), formatted as natural-language
                         bullet points.
                   \item \textbf{Retrieved Documents:} Up to three semantically similar documents drawn from
-                        the vector store. Each entry includes its source (e.g., Malpedia, VX-Underground), title or tag,
+                        the vector store. Each entry includes its source (e.g., \gls{malpedia}, \gls{vx-underground}), title or tag,
                         document ID, and a short snippet.
                   \item \textbf{Task Instructions:} A fixed directive asking the model to classify the sample
                         into a known category and justify the decision with evidence, or compare it with related malware
@@ -694,7 +694,7 @@ outputs have been shown to enhance trustworthiness in LLM deployments~\cite{han2
             hypotheses, evidence counts, and abstention status. ~\cite{han2025guardrail}.
 \end{enumerate}
 
-\subsection{Workflow Summary}
+\subsection{Workflow Summary}\label{subsec:GuardrailWorkflow}
 \begin{center}
       \begin{tabular}{ll}
             \toprule
@@ -837,7 +837,7 @@ infrastructure:
             \texttt{\gls{pdm}}, deployed in Docker-based containers or are installed in isolated directories.
 
       \item \textbf{Explicit \gls{api} Versions}: External services such as OpenAI, VirusTotal, and
-            Malwarebazaar are accessed through versioned \gls{api} endpoints, with documented model
+            \gls{malwarebazaar} are accessed through versioned \gls{api} endpoints, with documented model
             identifiers (e.g., \texttt{gpt-4o}, \texttt{vt-\gls{api}}).
 
       \item \textbf{Metadata Logging}: Each pipeline run produces structured logs, recording
@@ -945,9 +945,9 @@ detection engineering purposes. No private or unknown-origin malware is introduc
 dataset.
 
 \subsection{Use of Public and Licensed APIs}
-All external APIs (OpenAI, VirusTotal, MalwareBazaar) are accessed through official channels with
-proper authentication and rate limits. \gls{api} usage complies with the respective Terms of Service, and
-no bulk data scraping or unauthorized reverse engineering is conducted.
+All external APIs (OpenAI, VirusTotal, \gls{malwarebazaar}) are accessed through official channels
+with proper authentication and rate limits. \gls{api} usage complies with the respective Terms of
+Service, and no bulk data scraping or unauthorized reverse engineering is conducted.
 
 VirusTotal’s \gls{api} is used strictly for metadata enrichment and tagging. No personal data,
 user-uploaded files, or proprietary content is accessed or stored.
@@ -984,10 +984,10 @@ Guardrail strategies (Section~\ref{sec:Guardrails}) and prompt engineering metho
 (Section~\ref{sec:PromptEngineering}) were introduced as core mechanisms for ensuring safety,
 accountability, and interpretability. These include name redaction, evidence thresholds with
 abstention, transparent audit trails, and fixed prompt templates. The role of data sources
-(Section~\ref{sec:DataSources}) was described in relation to Malpedia, MalwareBazaar, and
-VX-Underground, which populate the retrieval corpus that grounds LLM reasoning. Together with
-reproducibility measures (Section~\ref{subsec:Reproducibility}), these strategies mitigate risks
-such as hallucination, anchoring bias, and retrieval drift.
+(Section~\ref{sec:DataSources}) was described in relation to \gls{malpedia}, \gls{malwarebazaar},
+and \gls{vx-underground}, which populate the retrieval corpus that grounds LLM reasoning. Together
+with reproducibility measures (Section~\ref{subsec:Reproducibility}), these strategies mitigate
+risks such as hallucination, anchoring bias, and retrieval drift.
 
 Finally, the evaluation framework (Section~\ref{sec:EvaluationFramework}) was defined across three
 axes: accuracy, efficiency, and interpretability, with a composite score to enable holistic

@@ -3,7 +3,7 @@
 %----------------------------------------------------------------------------------------
 
 \documentclass[
-11pt, % The default document font size, options: 10pt, 11pt, 12pt
+10pt, % The default document font size, options: 10pt, 11pt, 12pt
 oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
 english, % ngerman for German
 singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
@@ -82,7 +82,7 @@ headsepline, % Uncomment to get a line under the header
 \hypersetup{pdfkeywords=\keywordnames} % Set the PDF's keywords to your keywords
 }
 
-\pagecolor{gray}
+% \pagecolor{gray}
 
 \begin{document}
 
@@ -180,68 +180,50 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{abstract}
 	\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-	% Despite the fact that an abstract is quite brief, it must do almost as much
-	% work as the multi-page paper that follows it. In a computer science paper, this
-	% means that it should in most cases include the following sections. Each section
-	% is typically a single sentence, although there is room for creativity. In
-	% particular, the parts may be merged or spread among a set of sentences. Use the
-	% following as a checklist for your next abstract (URL:
-	% http://www.ece.cmu.edu/~koopman/essays/abstract.html):
-	% \begin{description}
-	% 	\item[Motivation:] Why do we care about the problem and the results? If the problem
-	% 	      isn't obviously "interesting" it might be better to put motivation first; but
-	% 	      if your work is incremental progress on a problem that is widely recognized as
-	% 	      important, then it is probably better to put the problem statement first to
-	% 	      indicate which piece of the larger problem you are breaking off to work on.
-	% 	      This section should include the importance of your work, the difficulty of the
-	% 	      area, and the impact it might have if successful.
-	% 	\item[Problem statement:] What problem are you trying to solve? What is the scope of
-	% 	      your work (a generalized approach, or for a specific situation)? Be careful not
-	% 	      to use too much jargon. In some cases it is appropriate to put the problem
-	% 	      statement before the motivation, but usually this only works if most readers
-	% 	      already understand why the problem is important.
-	% 	\item[Approach:] How did you go about solving or making progress on the problem? Did
-	% 	      you use simulation, analytic models, prototype construction, or analysis of
-	% 	      field data for an actual product? What was the extent of your work (did you
-	% 	      look at one application program or a hundred programs in twenty different
-	% 	      programming languages?) What important variables did you control, ignore, or
-	% 	      measure?
-	% 	\item[Results:] What's the answer? Specifically, most good computer architecture
-	% 	      papers conclude that something is so many percent faster, cheaper, smaller, or
-	% 	      otherwise better than something else. Put the result there, in numbers. Avoid
-	% 	      vague, hand-waving results such as "very", "small", or "significant." If you
-	% 	      must be vague, you are only given license to do so when you can talk about
-	% 	      orders-of-magnitude improvement. There is a tension here in that you should not
-	% 	      provide numbers that can be easily misinterpreted, but on the other hand you
-	% 	      don't have room for all the caveats.
-	% 	\item[Conclusions:] What are the implications of your answer? Is it going to change
-	% 	      the world (unlikely), be a significant "win", be a nice hack, or simply serve
-	% 	      as a road sign indicating that this path is a waste of time (all of the
-	% 	      previous results are useful). Are your results general, potentially
-	% 	      generalizable, or specific to a particular case?
+	Malware's quick growth presents serious cybersecurity concerns, necessitating ongoing innovation in
+	methods for detection, analysis, and mitigation. When it comes to handling complex and adaptable
+	threats, traditional malware analysis techniques, which mostly rely on manual labour and rule-based
+	systems, are progressively less effective. Large language models (LLMs) are a revolutionary
+	technology that has the potential to automate malware analysis. Current Artificial Intelligence
+	(AI) solutions, including machine learning classifiers and clustering algorithms, concentrate on
+	aspects of malware but frequently lack the overall skills necessary to manage intricate datasets
+	or fully understand virus behaviors.
 
-	Malware evolves rapidly, pressuring defenders to analyse threats safely and at scale. Static
-	analysis is safe and repeatable, but it struggles with obfuscation and limited semantic context.
-	This thesis investigates whether Large Language Models (LLMs) grounded with Retrieval-Augmented
-	Generation (RAG) can strengthen static malware analysis. A dual-pipeline prototype was designed
-	that contrasts a deterministic baseline—Ghidra-derived heuristics with optional VirusTotal
-	reconciliation—against an LLM+RAG classifier that injects retrieved threat intelligence into
-	structured prompts. The system is implemented in Python with automated feature extraction
-	(Ghidra/PyGhidra), a PostgreSQL+pgvector datastore orchestrated by Haystack, and inference via
-	GPT-4o. All runs are versioned and fully logged for reproducibility.
+	This study suggests using LLMs and Retrieval-Augmented Generation (RAG) to improve the analysis of
+	malware, with the specific focus on static analysis. It seeks to automate crucial components of
+	malware reverse engineering, such as code analysis, behavior interpretation and anomaly detection,
+	by leveraging LLMs' capacity to handle and synthesize massive, heterogeneous information and RAG's
+	capability to provide context to this information.
 
-	We evaluate 20 Windows Portable Executable samples across four classes (trojan, ransomware, botnet,
-	rootkit). Compared to the baseline, LLM+RAG improves category accuracy from 10.0\% (2/20) to 27.8\%
-	(5/18 valid classifications - two abstentions), delivers 100\% explanation coverage grounded by
-	\(\geq 2\) citations, and adds only a modest latency overhead (+6.4 s on average - 90.8 s to 97.1
-	s). A composite score combining accuracy, efficiency, and interpretability increases from 0.28 to
-	0.43.
+	A dual workflow prototype has been developed to evaluate the effectiveness of LLMs and RAG in
+	static malware analysis. In order to support the LLM+RAG workflow a corpus of data was created from
+	various reputable sources. This corpus serves as the foundation for training and evaluating the
+	LLM+RAG system, ensuring it is equipped with the necessary knowledge to perform effective malware
+	analysis.
 
-	Contributions include: (i) a reproducible, auditable framework for static malware analysis that
-	isolates the impact of retrieval-grounded LLM reasoning, (ii) a guardrailed prompting design (name
-	redaction, evidence thresholding, principled abstention), and (iii) a defensible ingestion pipeline
-	for building a safe retrieval corpus. These results indicate that retrieval-grounded LLMs can add
-	measurable, explainable value to static malware triage without fine-tuning.
+	The baseline workflow applies the traditional method of static analysis, utilizing tools like
+	Ghidra for code disassembly and feature extraction, filtering rules for known malware patterns and
+	data comparison with baseline intelligence from sources like VirusTotal. This workflow serves as a
+	control to measure the effectiveness.
+
+	The LLM+RAG workflow applies a different method where the features from the malware are extracted
+	and a search on the RAG corpus is performed to retrieve relevant information. This process
+	leverages the power of LLMs, such as GPT-4o, to understand and synthesize complex data, providing
+	richer context and insights for malware analysis.
+
+	The results of the experiments speak for themselves. With a sample space of 20 Windows Portable
+	(PE) executable samples across four malware classes (trojan, ransomware, botnet, rootkit), LLM+RAG
+	raises category accuracy from 10.0\% (2/20) to 27.8\% (5/18; two abstentions), while delivering
+	100\% explanation coverage grounded by \(\geq 2\) citations from the RAG corpus. The time
+	efficiency comparison shows a modest latency overhead of +6.4s on average (Baseline = 90.8s;
+	RAG+LLM = 97.1s).
+
+	The analysis also includes a composite score combining accuracy, efficiency, and interpretability
+	to normalize the comparison results, where the baseline workflow scored 0.28, while the LLM+RAG
+	workflow scored 0.43. These results indicate that retrieval-grounded LLMs can add measurable,
+	explainable value to static malware triage when paired with guardrails (name redaction, evidence
+	thresholding, principled abstention) and a defensible ingestion workflow. Several limitations are
+	acknowledged, including a small sample size and reliance on third-party intelligence quality.
 
 	Keywords: Static Malware Analysis, Large Language Models, Retrieval-Augmented Generation,
 	Cybersecurity, Explainability, Ghidra, Vector Search, Threat Intelligence, VirusTotal.
@@ -256,9 +238,6 @@ headsepline, % Uncomment to get a line under the header
 \begin{acknowledgements}
 	\addchaptertocentry{\acknowledgementname} % Add the acknowledgements to the table of contents
 	Thanks to my parents for supporting me through everything over the years\ldots
-	\linebreak
-	\linebreak
-	:D
 \end{acknowledgements}
 
 %----------------------------------------------------------------------------------------

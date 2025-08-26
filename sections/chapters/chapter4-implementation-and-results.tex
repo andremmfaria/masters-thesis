@@ -67,7 +67,7 @@ The main tools and frameworks are:
 
       \item \textbf{\gls{malwarebazaar} \gls{api} + helper script} --~Samples for the evaluation cohort were
             downloaded using a helper script~\cite{rexisSamplesExtractorScript} that calls the
-            MalwareBazaar \gls{api}~\footnote{\gls{api} docs: \url{https://bazaar.abuse.ch/\gls{api}/}}.
+            \gls{malwarebazaar} \gls{api}~\footnote{\gls{api} docs: \url{https://bazaar.abuse.ch/\gls{api}/}}.
 
       \item \textbf{\gls{virustotal} \gls{api}} --~Supplies scan metadata, antivirus tags, and consensus labels
             across vendors. These labels support the baseline classifier and reconciliation logic, providing
@@ -141,7 +141,7 @@ searchable vector embeddings:
 
 \begin{itemize}
       \item \textbf{Document Loader:} Collects documents from \gls{malwarebazaar},
-            \gls{malpedia}, and VX-Underground, normalising metadata and assigning unique IDs.
+            \gls{malpedia}, and \gls{vx-underground}, normalising metadata and assigning unique IDs.
 
       \item \textbf{Preprocessing Engine:} Cleans input by removing boilerplate,
             scripts, and noise, standardising text for downstream processing.
@@ -227,9 +227,9 @@ duplicates were removed by SHA-256 and invalid PE files were excluded. Acquisiti
 include the current tag, (ii) must include \texttt{exe}, (iii) must \emph{not} include any other
 tag from the experiment’s tag set (except the current tag). Runs are driven directly via the CLI as
 documented in the project guides. Samples were downloaded using a helper script that calls the
-MalwareBazaar \gls{api}~\cite{rexisSamplesExtractorScript};
+\gls{malwarebazaar} \gls{api}~\cite{rexisSamplesExtractorScript};
 archives were decompressed in bulk via a companion script~\cite{rexisDecompressSamplesScript}.
-\texttt{truth\_category} reflects the MalwareBazaar acquisition tag recorded at selection time
+\texttt{truth\_category} reflects the \gls{malwarebazaar} acquisition tag recorded at selection time
 (see Section~\ref{sec:Limitations} for ground-truth caveats).
 
 \subsection{Analysis Execution Procedure}\label{subsec:ExecutionProcedure}
@@ -340,16 +340,17 @@ The comparison outputs are organised on a table and its columns are:
 The retrieval corpus was assembled per Chapter~\ref{sec:DataSources} and the ingestion
 guide~\cite{rexisIngestionPipeline}. Sources and windows: \textbf{VX-Underground APT write-ups} (1
 Jan 2022 --- 1 Aug 2025), \textbf{Malpedia} articles (1 Jan 2022 --- 1 Aug 2025), and
-\textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware, botnet,
-rootkit, \texttt{exe}). Only metadata and prose documents were indexed; binaries were excluded.
+\textbf{MalwareBazaar} metadata filtered to PE-focused tags (e.g., trojan, ransomware,
+botnet, rootkit, \texttt{exe}). Only metadata and prose documents were indexed; binaries were
+excluded.
 
 To automate this process and ensure consistent ingestion, a dedicated ingestion pipeline was
 implemented. The details on data source and ingestion are outlined on the next subsections.
 
 \subsubsection{VX-Underground APT Writeups sourcing and ingestion}\label{subsubsec:VXUIngestionExec}
-The APT write-ups from VX-Underground were sourced using a browser workflow to collect PDF links
-and download locally, as recommended in the guide~\cite{rexisDataSourcingVXU}. Collected PDFs were
-then ingested into the \gls{pgvector} store with typed PDF ingestion, following the ingestion
+The APT write-ups from \gls{vx-underground} were sourced using a browser workflow to collect PDF
+links and download locally, as recommended in the guide~\cite{rexisDataSourcingVXU}. Collected PDFs
+were then ingested into the \gls{pgvector} store with typed PDF ingestion, following the ingestion
 guide~\cite{rexisIngestVXU}.
 
 Ingestion command example (2022 batch):
@@ -366,10 +367,10 @@ written to \texttt{<out-dir>/ingest-analysis-\textless RUN\_NAME\textgreater{}} 
 counts, and timings.
 
 \subsubsection{Malpedia sourcing and ingestion}\label{subsubsec:MalpediaIngestionExec}
-The dedicated collector is used to merge the Malpedia references index with the BibTeX dump, apply
-AND-filters, and optionally download+ingest referenced documents (PDF/HTML/TXT). The collector
-writes a normalised JSON plus a run report; with \texttt{--ingest} enabled it also pipelines the
-referenced documents through the ingestion stack~\cite{rexisDataSourcingMalpedia}.
+The dedicated collector is used to merge the \gls{malpedia} references index with the BibTeX dump,
+apply AND-filters, and optionally download+ingest referenced documents (PDF/HTML/TXT). The
+collector writes a normalised JSON plus a run report; with \texttt{--ingest} enabled it also
+pipelines the referenced documents through the ingestion stack~\cite{rexisDataSourcingMalpedia}.
 
 Ingestion command example (collection window + filters; writes JSON):
 \begin{verbatim}
@@ -400,7 +401,7 @@ The ingestion pipeline performs parsing/cleaning, chunking, embeddings, and inde
 as \texttt{source=malpedia} is preserved for retrieval-time filtering.
 
 \subsubsection{MalwareBazaar metadata sourcing and ingestion}\label{subsubsec:MalwareBazaarIngestionExec}
-MalwareBazaar entries were collected either by tag(s) (with a per-tag fetch cap) or by explicit
+\gls{malwarebazaar} entries were collected either by tag(s) (with a per-tag fetch cap) or by explicit
 SHA-256 list(s). Results are saved as a normalised JSON array and can be directly ingested into the
 datastore with \texttt{--ingest}. An \gls{api} key is required via config or
 environment~\cite{rexisDataSourcingMB}.
@@ -570,7 +571,7 @@ justified by the improved accuracy and explanation quality. We report:
 
 \begin{table}[h!]
       \centering
-      \caption{Evaluation of Baseline and LLM+RAG pipelines across accuracy, efficiency, interpretability, and composite score. Accuracy uses category accuracy skipping \texttt{unknown} predictions; values include Wilson 95\% confidence intervals.}
+      \caption{Evaluation of Baseline and LLM+RAG pipelines across accuracy, efficiency, interpretability, and composite score}
       \label{tab:results-summary}
       \begin{tabular}{lcc}
             \hline
@@ -578,7 +579,7 @@ justified by the improved accuracy and explanation quality. We report:
             \hline
             Valid Classification & 100.0\% (20/20)             & 90.0\% (18/20 - 2 abst)      \\
             Accuracy             & 10.0\% (2/20, CI: 2.8–30.1) & 27.8\% (5/18, CI: 12.5–50.9) \\
-            Efficiency (s)       & 90.756                      & 97.122                       \\
+            Mean Efficiency (s)  & 90.756                      & 97.122                       \\
             Explanation Coverage & 100.0\% (20/20)             & 100.0\% (20/20)              \\
             Contextual Grounding & ---                         & 100.0\% (20/20)              \\
             RuleMatch Ratio      & 48.7\%                      & ---                          \\
@@ -631,8 +632,8 @@ similar trade-offs between computational cost and analytic depth~\cite{gao2023re
 analysis can be achieved without disproportionate performance loss.
 
 As discussed in Section~\ref{sec:Limitations}, this interpretation is limited to processing time
-and does not account for monetary cost from token usage in the \gls{openai} \gls{api} for \gls{gpt4o}
-queries.
+and does not account for monetary cost from token usage in the \gls{openai} \gls{api} for
+\gls{gpt4o} queries.
 
 \subsection{Interpretability and Transparency}
 Interpretability emerged as the most significant point of divergence. Both pipelines achieved
