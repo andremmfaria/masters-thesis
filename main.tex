@@ -223,28 +223,28 @@ headsepline, % Uncomment to get a line under the header
 	Malware evolves rapidly, pressuring defenders to analyse threats safely and at scale. Static
 	analysis is safe and repeatable, but it struggles with obfuscation and limited semantic context.
 	This thesis investigates whether Large Language Models (LLMs) grounded with Retrieval-Augmented
-	Generation (RAG) can strengthen static malware analysis. We design a dual-pipeline prototype that
-	contrasts a deterministic baseline—Ghidra-derived heuristics with optional VirusTotal
+	Generation (RAG) can strengthen static malware analysis. A dual-pipeline prototype was designed
+	that contrasts a deterministic baseline—Ghidra-derived heuristics with optional VirusTotal
 	reconciliation—against an LLM+RAG classifier that injects retrieved threat intelligence into
 	structured prompts. The system is implemented in Python with automated feature extraction
 	(Ghidra/PyGhidra), a PostgreSQL+pgvector datastore orchestrated by Haystack, and inference via
-	GPT-4o; all runs are versioned and fully logged for reproducibility.
+	GPT-4o. All runs are versioned and fully logged for reproducibility.
 
 	We evaluate 20 Windows Portable Executable samples across four classes (trojan, ransomware, botnet,
 	rootkit). Compared to the baseline, LLM+RAG improves category accuracy from 10.0\% (2/20) to 27.8\%
-	(5/18 valid classifications; two abstentions), delivers 100\% explanation coverage grounded by
-	\(\geq 2\) citations, and adds only a modest latency overhead (+6.4 s on average; 90.8 s to 97.1
+	(5/18 valid classifications - two abstentions), delivers 100\% explanation coverage grounded by
+	\(\geq 2\) citations, and adds only a modest latency overhead (+6.4 s on average - 90.8 s to 97.1
 	s). A composite score combining accuracy, efficiency, and interpretability increases from 0.28 to
 	0.43.
 
 	Contributions include: (i) a reproducible, auditable framework for static malware analysis that
-	isolates the impact of retrieval-grounded LLM reasoning; (ii) a guardrailed prompting design (name
-	redaction, evidence thresholding, principled abstention); and (iii) a defensible ingestion pipeline
+	isolates the impact of retrieval-grounded LLM reasoning, (ii) a guardrailed prompting design (name
+	redaction, evidence thresholding, principled abstention), and (iii) a defensible ingestion pipeline
 	for building a safe retrieval corpus. These results indicate that retrieval-grounded LLMs can add
 	measurable, explainable value to static malware triage without fine-tuning.
 
-	Keywords: Static Malware Analysis; Large Language Models; Retrieval-Augmented Generation;
-	Cybersecurity; Explainability; Ghidra; Vector Search; Threat Intelligence; VirusTotal.
+	Keywords: Static Malware Analysis, Large Language Models, Retrieval-Augmented Generation,
+	Cybersecurity, Explainability, Ghidra, Vector Search, Threat Intelligence, VirusTotal.
 
 	% \end{description}
 \end{abstract}
