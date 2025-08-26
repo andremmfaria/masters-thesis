@@ -4,12 +4,12 @@
 % Explain that the chapter identifies trends, evaluates contributions, and
 % exposes gaps to justify your research.
 This chapter presents the current state of the art on static malware analysis, with a focus on the
-integration of Large Language Models (\gls{LLMs}) and Retrieval-Augmented Generation (\gls{rag}) to
-enhance automation, semantic understanding, and explainability in malware detection workflows.
-Static analysis plays a crucial role in cybersecurity, enabling the examination of malicious code
-without execution. Its safety, repeatability, and efficiency make it essential for malware triage
-and reverse engineering tasks~\cite{fedak2020fundamentals}. However, challenges such as code
-obfuscation, semantic ambiguity, and limited contextual awareness continue to limit its
+integration of \glspl{llm} and \gls{rag} to enhance automation, semantic understanding, and
+explainability in malware detection workflows. Static analysis plays a crucial role in
+cybersecurity, enabling the examination of malicious code without execution. Its safety,
+repeatability, and efficiency make it essential for malware triage and reverse engineering
+tasks~\cite{fedak2020fundamentals}. However, challenges such as code obfuscation, semantic
+ambiguity, and limited contextual awareness continue to limit its
 effectiveness~\cite{gaber2024malware, cassanova2022systematic}.
 
 Traditional approaches, such as signature-based and heuristic techniques, have been widely deployed
@@ -31,21 +31,21 @@ accuracy and hallucination when insufficient context is provided.
 
 \gls{rag} offers a promising solution to these challenges by dynamically incorporating external
 information—such as threat reports or similar malware case studies—into the prompt context~\cite{gao2023retrieval}.
-While \gls{rag} has shown success in NLP applications like question answering
+While \gls{rag} has shown success in \gls{nlp} applications like question answering
 and summarization, its potential in malware analysis remains underexplored, representing a key
 research opportunity identified in this study~\cite{lewis2020retrieval}.
 
 This literature review synthesizes current efforts across five key themes:
 \begin{itemize}
-	\item Fundamentals and mechanisms of \gls{LLMs} and \gls{rag}.
+	\item Fundamentals and mechanisms of \glspl{llm} and \gls{rag}.
 	\item Characteristics of malware and the importance of static analysis.
 	\item Applications and limitations of traditional and \gls{ml}-based static malware analysis.
-	\item Existing and emerging roles of \gls{LLMs} in cybersecurity.
-	\item Opportunities for integrating \gls{rag} and \gls{LLMs} to enhance analysis accuracy and
+	\item Existing and emerging roles of \glspl{llm} in cybersecurity.
+	\item Opportunities for integrating \gls{rag} and \glspl{llm} to enhance analysis accuracy and
 	      explainability.
 \end{itemize}
 
-\section{Static Malware Analysis}
+\section{Static Malware Analysis}\label{sec:StaticMalwareAnalysis}
 % Define static malware analysis and explain its significance.
 % Discuss techniques such as:
 %   - Signature-based detection
@@ -57,15 +57,15 @@ Static malware analysis refers to the examination of malicious software without 
 typically by inspecting its binary code, structure, metadata, and associated artifacts. It remains
 a foundational practice in cybersecurity due to its safety, speed, and
 reproducibility~\cite{fedak2020fundamentals, gaber2024malware, cassanova2022systematic}. Analysts
-use this method to infer program functionality, extract Indicators of Compromise (IOCs), and
-generate initial threat intelligence without the risk of executing potentially harmful code.
+use this method to infer program functionality, extract \glspl{ioc}, and generate initial threat
+intelligence without the risk of executing potentially harmful code.
 
-Basic static analysis methods include file header inspection (e.g., PE header metadata), string
-extraction, and checksum analysis. Advanced techniques rely on disassembly, \gls{decompilation},
-and control flow graph analysis to reconstruct higher-level logic~\cite{fedak2020fundamentals,
-	wong2021practice}. These techniques provide insights into what the malware does and how it
-operates, but suffer from challenges such as obfuscation, code packing, and the absence of runtime
-context.
+Basic static analysis methods include file header inspection (e.g., \gls{pe} header metadata),
+string extraction, and checksum analysis. Advanced techniques rely on disassembly,
+\gls{decompilation}, and control flow graph analysis to reconstruct higher-level
+logic~\cite{fedak2020fundamentals, wong2021practice}. These techniques provide insights into what
+the malware does and how it operates, but suffer from challenges such as obfuscation, code packing,
+and the absence of runtime context.
 
 Despite their limitations, static methods offer advantages over dynamic analysis, especially for
 rapid triage and offline forensic evaluation. They are immune to anti-virtualization and
@@ -74,25 +74,24 @@ techniques like runtime linking, encrypted payloads, and evasion frameworks, lim
 purely static tools~\cite{fedak2020fundamentals, wong2021practice}.
 
 These limitations have created interest in augmenting static analysis with intelligent reasoning
-systems, especially \gls{LLMs}, which are explored in the following sections.
+systems, especially \glspl{llm}, which are explored in the following sections.
 
-\subsection{Signature-Based and Heuristic Methods}
+\subsection{Signature-Based and Heuristic Methods}\label{subsec:StaticSignatureHeuristic}
 % Describe traditional approaches and tools (e.g., YARA, ClamAV, AV engines).
 % Mention why they’re fast but limited by pattern-dependence.
 Signature-based analysis matches specific byte patterns, string literals, or opcode sequences in a
 binary against known malware fingerprints. This method is fast and widely used by analysis tools
-such as \textit{ClamAV}, \textit{YARA}, and \textit{\gls{virustotal}}~\cite{fedak2020fundamentals}.
-However, even slight changes to the malware's structure—such as packing or encryption—can render
-signatures ineffective.
+such as ClamAV, YARA, and \gls{virustotal}~\cite{fedak2020fundamentals}. However, even slight
+changes to the malware's structure—such as packing or encryption—can render signatures ineffective.
 
 Heuristic analysis improves on this by flagging suspicious patterns based on known behaviours or
 structural anomalies~\cite{patil2014computer}. For example, unusual import tables, abnormal section
-sizes, or the use of specific \gls{api} calls (e.g., \texttt{VirtualAlloc},
+sizes, or the use of specific \glspl{api} calls (e.g., \texttt{VirtualAlloc},
 \texttt{CreateRemoteThread}) are often considered red flags. Yet these rule-based systems are
 limited by their brittleness and potential for false positives~\cite{gaber2024malware,
 	cassanova2022systematic}.
 
-\subsection{Machine Learning-Based Approaches}
+\subsection{Machine Learning-Based Approaches}\label{subsec:StaticMLApproaches}
 % Explore the use of static features (e.g., \gls{api} calls, bytecode) in ML models.
 % Reference key datasets and benchmarks (e.g., EMBER, VirusShare).
 % Highlight common issues: feature engineering overhead, poor explainability.
@@ -108,30 +107,29 @@ learning models can be opaque or hard to interpret. More importantly, many \gls{
 struggle with obfuscated or packed malware where feature extraction fails to surface meaningful
 signals~\cite{cassanova2022systematic}.
 
-\subsection{Practical Considerations and Analyst Workflows}
+\subsection{Practical Considerations and Analyst Workflows}\label{subsec:StaticAnalystWorkflows}
 According to field studies such as Wong \emph{et al.}~\cite{wong2021practice}, malware analysts
 adopt a tiered approach to static analysis, starting with basic tools like hash extractors and
-moving toward disassembly and \gls{decompilation} as needed. Tools like \texttt{Ghidra},
-\texttt{IDA Pro}, and \texttt{Radare2} are central to this process, offering powerful
-\gls{decompilation} and navigation features, albeit requiring significant expertise.
+moving toward disassembly and \gls{decompilation} as needed. Tools like Ghidra, IDA Pro, and
+Radare2 are central to this process, offering powerful \gls{decompilation} and navigation features,
+albeit requiring significant expertise.
 
-Static analysis of PE (Portable Executable) files—commonly used by Windows binaries—reveals
-critical metadata such as entry points, import address tables, and linked libraries. This data
-provides early insights into malware behavior, even before
-\gls{decompilation}~\cite{fedak2020fundamentals}.
+Static analysis of \gls{pe} files—commonly used by Windows binaries—reveals critical metadata such
+as entry points, import address tables, and linked libraries. This data provides early insights
+into malware behavior, even before \gls{decompilation}~\cite{fedak2020fundamentals}.
 
 Fedák and Štulrajter~\cite{fedak2020fundamentals} provide detailed insight into the practical
 toolkit of an analyst, listing tools such as:
 \begin{itemize}
-	\item \textbf{Strings}, \textbf{HexDive}, and \textbf{BinText} for readable text extraction.
+	\item \textbf{Strings}, \textbf{HxD}, and \textbf{BinText} for readable text extraction.
 	\item \textbf{PEiD} and \textbf{Exeinfo PE} for identifying compression techniques and signatures.
 	\item \textbf{CFF Explorer} and \textbf{Dependency Walker} for PE header inspection and DLL analysis.
 \end{itemize}
 
-\subsection{Obfuscation, Compression, and Runtime Challenges}
+\subsection{Obfuscation, Compression, and Runtime Challenges}\label{subsec:StaticObfuscationRuntime}
 Modern malware often leverages runtime linking and obfuscation to bypass static detection. Code is
 compressed or encrypted, with only loader stubs visible to analysts. These stubs typically use
-runtime \gls{api} resolution (e.g., via \texttt{LoadLibrary}, \texttt{GetProcAddress}) to
+runtime \glspl{api} resolution (e.g., via \texttt{LoadLibrary}, \texttt{GetProcAddress}) to
 dynamically fetch and execute malicious payloads~\cite{fedak2020fundamentals}.
 
 The prevalence of obfuscation significantly reduces the efficacy of basic static tools. For
@@ -139,7 +137,7 @@ example, string extraction becomes nearly useless if meaningful strings are encr
 cases, unpacking and de-obfuscation—either manual or using tools like Exeinfo PE—are essential to
 enable deeper analysis~\cite{wong2021practice}.
 
-\subsection{Summary of Limitations and Opportunities}
+\subsection{Summary of Limitations and Opportunities}\label{subsec:StaticLimitations}
 While static malware analysis remains a cornerstone of threat detection, its limitations are
 well-documented~\cite{wong2021practice, fedak2020fundamentals}:
 \begin{itemize}
@@ -158,15 +156,15 @@ that promise greater automation, semantic reasoning, and contextual interpretati
 % (hallucinations, black-box nature).
 \gls{LLMs} have rapidly become key enablers in cybersecurity, offering powerful automation for tasks such
 as malware detection, vulnerability analysis, code auditing, incident summarization, and threat
-intelligence extraction. Pre-trained on diverse code and text, \gls{LLMs} like
-\texttt{GPT}, \texttt{BERT}~\cite{devlin2019bert}, \texttt{CodeBERT} and \texttt{Codex} show
+intelligence extraction. Pre-trained on diverse code and text, \glspl{llm} like
+GPT, BERT~\cite{devlin2019bert}, CodeBERT, and Codex show
 impressive generalization and reasoning over both structured and unstructured
 data~\cite{nourmohammadzadeh2024llmsurvey, sahoo2024systematic, ferrag2024allinsights, metta2024generativeai}.
 These models are built upon the Transformer architecture, introduced by Vaswani et
 al.~\cite{vaswani2023attentionneed}, which uses self-attention mechanisms to
 model global dependencies efficiently and supports highly parallelizable training.
 
-In the domain of malware analysis, \gls{LLMs} are particularly useful for interpreting decompiled
+In the domain of malware analysis, \glspl{llm} are particularly useful for interpreting decompiled
 or disassembled functions and generating natural-language summaries. Fujii and
 Yamagishi~\cite{fujii2024llm} demonstrated that GPT-4 can accurately explain functions when
 prompted appropriately—especially using role-based prompts such as “You are a malware analyst….”
@@ -174,17 +172,17 @@ This highlights the importance of MCP, where prompts are tailored to align with 
 behavior rather than merely input format~\cite{sahoo2024systematic}.
 
 Recent surveys such as Nourmohammadzadeh \emph{et al.}~\cite{nourmohammadzadeh2024llmsurvey} and
-Ferrag \emph{et al.}~\cite{ferrag2024allinsights} show growing interest in applying \gls{LLMs} to
+Ferrag \emph{et al.}~\cite{ferrag2024allinsights} show growing interest in applying \glspl{llm} to
 cybersecurity, but also emphasize that these models require adaptation to operate on binary code,
 disassembled structures, and malicious behavior patterns. The research by Metta et
 al.~\cite{metta2024generativeai} provides a comprehensive risk-centric perspective, highlighting
-both defensive and offensive uses of \gls{LLMs}—from malware analysis and reverse engineering to
+both defensive and offensive uses of \glspl{llm}—from malware analysis and reverse engineering to
 code generation for adversarial purposes.
 
 Key benefits of \gls{LLMs} in cybersecurity include:
 \begin{itemize}
 	\item \textbf{Automated explanation and triage:} translating complex code into natural language.
-	\item \textbf{IOC and pattern extraction:} identifying suspicious \gls{api} calls, encoded payloads, or unusual imports.
+	\item \textbf{IoC and pattern extraction:} identifying suspicious \glspl{api} calls, encoded payloads, or unusual imports.
 	\item \textbf{Augmenting human analysts:} supporting SOC workflows through summarization and prioritization.
 \end{itemize}
 
@@ -198,9 +196,7 @@ However, several limitations persist:
 	      a model made a specific decision~\cite{metta2024generativeai}.
 	\item \textbf{Security concerns:} models may be vulnerable to prompt
 	      injection, adversarial inputs, or training data poisoning.
-	\item \textbf{Opacity:} The internal reasoning of \gls{LLMs} remains a
-	      “black box,” limiting trust and
-	      auditability~\cite{nourmohammadzadeh2024llmsurvey}.
+	\item \textbf{Opacity:} The internal reasoning of \glspl{llm} remains a “black box,” limiting trust and auditability~\cite{nourmohammadzadeh2024llmsurvey}.
 \end{itemize}
 
 Ferrag \emph{et al.} (2024) further explore the vulnerabilities and risks associated with deploying
@@ -208,16 +204,17 @@ Ferrag \emph{et al.} (2024) further explore the vulnerabilities and risks associ
 manipulation—even as they highlight methods for adaptation like fine-tuning, retrieval
 augmentation, and reinforcement learning~\cite{ferrag2024allinsights}.
 
-Despite these challenges, \gls{LLMs} contribute meaningfully to cybersecurity by reducing cognitive
-load and accelerating analysis~\cite{ferrag2024allinsights}. When combined with techniques like
-\gls{rag}, their outputs can be better grounded, more reliable, and transparently justified.
+Despite these challenges, \glspl{llm} contribute meaningfully to cybersecurity by reducing
+cognitive load and accelerating analysis~\cite{ferrag2024allinsights}. When combined with
+techniques like \gls{rag}, their outputs can be better grounded, more reliable, and transparently
+justified.
 
 \section{RAG in NLP}\label{sec:RAGInNLP}
 % Explain what RAG is: a combination of retrieval models and LLMs.
 % Describe how it improves factuality and context-awareness in LLM outputs.
 % Mention successful applications in NLP (e.g., QA, summarization).
 % Start hinting at its potential benefits for malware analysis tasks.
-\gls{rag} is a technique that enhances the performance and factuality of \gls{LLMs} by supplementing them with
+\gls{rag} is a technique that enhances the performance and factuality of \glspl{llm} by supplementing them with
 external, retrievable knowledge sources. Instead of relying solely on pre-trained parameters, \gls{rag}
 models incorporate a retrieval module that fetches relevant context—such as documents, reports, or
 structured data—which is then used to condition the generative response. This paradigm is
@@ -270,17 +267,17 @@ malware analysis and highlights emerging research directions at this intersectio
 %   - Context-aware detection/classification
 %   - Explainability of decisions
 %   - Reducing hallucination by grounding in known malware samples/docs
-While \gls{LLMs} have demonstrated utility in malware analysis tasks such as code explanation, IOC
+While \glspl{llm} have demonstrated utility in malware analysis tasks such as code explanation, IoC
 extraction, and classification, they are often constrained by limited context windows and the
 absence of external knowledge.\ \gls{rag} offers a natural extension to overcome these limitations
 by dynamically supplying relevant, grounded information during inference.
 
 Static malware analysis workflows frequently rely on external resources—such as malware
-repositories, IOC databases, \gls{decompilation} guides, threat reports, and \textit{YARA} rule
-libraries—to contextualize findings. A \gls{rag}-enhanced \gls{llm} can emulate this expert
-behavior by retrieving semantically similar samples, annotated analyses, or supporting
-documentation as prompt context~\cite{lewis2020retrieval, gao2023retrieval}. This contextual
-grounding enables the model to:
+repositories, IoC databases, \gls{decompilation} guides, threat reports, and YARA rule libraries—to
+contextualize findings. A \gls{rag}-enhanced \gls{llm} can emulate this expert behavior by
+retrieving semantically similar samples, annotated analyses, or supporting documentation as prompt
+context~\cite{lewis2020retrieval, gao2023retrieval}. This contextual grounding enables the model
+to:
 \begin{itemize}
 	\item Improve detection accuracy for obfuscated or novel malware by comparing with similar known
 	      variants.
@@ -301,8 +298,8 @@ Integrating \gls{rag} directly addresses this issue by enriching the prompt with
 knowledge, which can include:
 \begin{itemize}
 	\item Decompiled code from known malware families.
-	\item Threat intelligence reports on similar IOC patterns.
-	\item Descriptions of suspicious \gls{api} usage from documentation.
+	\item Threat intelligence reports on similar IoC patterns.
+	\item Descriptions of suspicious \glspl{api} usage from documentation.
 \end{itemize}
 
 Such retrievals not only make model outputs more reliable but also provide analysts with traceable
@@ -316,7 +313,7 @@ knowledge corruption and misleading outputs. To mitigate these risks, trusted re
 curated malware corpora, and retrieval integrity checks should be considered foundational elements
 of any cybersecurity-focused \gls{rag} pipeline.
 
-The integration of \gls{rag} and \gls{LLMs} into static malware analysis pipelines is an emerging
+The integration of \gls{rag} and \glspl{llm} into static malware analysis pipelines is an emerging
 and largely untapped area. Its benefits—contextual grounding, improved explainability, and reduced
 hallucination—are directly aligned with the needs of modern malware analysts.
 
@@ -336,7 +333,7 @@ methodological—that motivate this research.
 While \gls{rag} has demonstrated success in natural language tasks such as question answering and
 summarization~\cite{lewis2020retrieval, gao2023retrieval}, its application in malware
 analysis—particularly static workflows—remains largely unexplored. No current work bridges
-\gls{llm}-driven reasoning with contextual retrieval of prior malware samples, reports, or IOC
+\gls{llm}-driven reasoning with contextual retrieval of prior malware samples, reports, or IoC
 patterns, despite its strong theoretical fit.
 
 \subsection{LLM Use Is Largely Exploratory and Unbenchmarked}
@@ -353,7 +350,7 @@ evaluation methods that account for explainability and analyst trust.
 
 Interpretability is essential for analysts making high-stakes security
 decisions~\cite{wong2021practice}. However, most \gls{ai}-driven malware analysis models—including
-\gls{LLMs}—fail to provide transparent reasoning or traceable justifications. This issue is
+\glspl{llm}—fail to provide transparent reasoning or traceable justifications. This issue is
 compounded by hallucinations and black-box behaviors, limiting practical
 adoption~\cite{metta2024generativeai, sahoo2024systematic}.
 
@@ -373,7 +370,7 @@ surveyed malware analysis frameworks account for these threats, indicating a ser
 current literature.
 
 By addressing these gaps, this research seeks to develop a reproducible framework that combines
-\gls{rag}, \gls{LLMs}, and structured prompts to enhance static malware analysis.
+\gls{rag}, \glspl{llm}, and structured prompts to enhance static malware analysis.
 
 \section{Summary}\label{sec:LiteratureSummary}
 % Recap key points and themes from the chapter.
@@ -381,7 +378,7 @@ By addressing these gaps, this research seeks to develop a reproducible framewor
 % Emphasize how your work addresses the identified gaps and pushes the field
 % forward.
 This chapter has surveyed the state of the art in static malware analysis, the emerging role of
-\gls{LLMs} in cybersecurity, and the promising capabilities of \gls{rag} in improving contextual
+\glspl{llm} in cybersecurity, and the promising capabilities of \gls{rag} in improving contextual
 reasoning and output reliability.
 
 We began by reviewing traditional and machine learning-based static analysis techniques,
@@ -399,7 +396,7 @@ landscapes~\cite{lewis2020retrieval, gao2023retrieval}. However, its use in
 malware analysis remains nascent, and security concerns — such as retrieval
 poisoning — must be considered carefully in high-assurance settings~\cite{zou2024poisonedrag}.
 
-Combining \gls{rag} with \gls{LLMs} in the context of static malware analysis represents an
+Combining \gls{rag} with \glspl{llm} in the context of static malware analysis represents an
 underexplored research opportunity. The literature currently lacks comprehensive studies evaluating
 such integrations or establishing reproducible, explainable pipelines for cybersecurity tasks. This
 gap is further compounded by minimal usage of structured prompting methodologies like MCP, which
@@ -408,5 +405,5 @@ analyses~\cite{sahoo2024systematic}.
 
 The insights from this chapter establish the foundation for the proposed research. In the next
 chapter, a methodology is introduced to develop and evaluate a framework that combines \gls{rag},
-\gls{LLMs}, and structured prompts for static malware analysis — focusing on accuracy,
+\glspl{llm}, and structured prompts for static malware analysis — focusing on accuracy,
 explainability, and resilience.
